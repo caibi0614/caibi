@@ -1,0 +1,726 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  background: #fffdf9;
+  color: #4d443c;
+}
+
+
+/* ===== 導覽列 ===== */
+
+.navbar {
+  width: 100%;
+  height: 82px;
+  padding: 0 7%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: rgba(255, 253, 249, 0.94);
+  border-bottom: 1px solid #eee5d8;
+}
+
+.nav-brand {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: #9b7a45;
+}
+
+.navbar nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navbar nav a {
+  color: #6c6055;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 1px;
+  transition: 0.25s;
+}
+
+.navbar nav a:hover {
+  color: #b18a4c;
+}
+
+.navbar .game-link {
+  padding: 10px 20px;
+  border: 1px solid #c6a66d;
+  border-radius: 30px;
+  color: #9b783e;
+}
+
+
+/* ===== 首頁第一屏 ===== */
+
+.hero {
+  min-height: calc(100vh - 82px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 60px 20px;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #ffffff 0%,
+      #fffdf9 55%,
+      #f8f2e8 100%
+    );
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 850px;
+}
+
+.hero-logo {
+  width: min(520px, 85%);
+  height: auto;
+  margin-bottom: 32px;
+}
+
+.hero-subtitle {
+  font-size: 15px;
+  letter-spacing: 4px;
+  color: #a68b65;
+  margin-bottom: 26px;
+}
+
+.hero h1 {
+  font-family: "Microsoft JhengHei", sans-serif;
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 4px;
+  color: #4d433a;
+}
+
+.hero-description {
+  margin-top: 20px;
+
+  color: #b2a18d;
+
+  font-family: Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 4px;
+}
+
+.hero-buttons {
+  margin-top: 42px;
+
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.hero-buttons a {
+  min-width: 145px;
+  padding: 13px 25px;
+
+  border-radius: 30px;
+  text-decoration: none;
+
+  font-size: 14px;
+  letter-spacing: 2px;
+
+  transition: 0.25s;
+}
+
+.primary-btn {
+  background: #b4935c;
+  color: white;
+  border: 1px solid #b4935c;
+}
+
+.primary-btn:hover {
+  background: #9d7d4b;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #9d7d4b;
+  border: 1px solid #cdb487;
+}
+
+.secondary-btn:hover {
+  background: #f6eee1;
+  transform: translateY(-2px);
+}
+
+
+/* ===== 首頁手機版 ===== */
+
+@media (max-width: 700px) {
+
+  .navbar {
+    height: 70px;
+    padding: 0 20px;
+  }
+
+  .navbar nav a:not(.game-link) {
+    display: none;
+  }
+
+  .nav-brand {
+    font-size: 16px;
+  }
+
+  .hero {
+    min-height: calc(100vh - 70px);
+  }
+
+  .hero h1 {
+    letter-spacing: 2px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-buttons a {
+    width: 200px;
+  }
+}
+
+
+/* ===== 關於菜比 ===== */
+
+.about {
+  padding: 120px 24px;
+  background: #ffffff;
+}
+
+.about-container {
+  max-width: 850px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-label {
+  margin-bottom: 12px;
+
+  font-family: Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 5px;
+
+  color: #b99a6b;
+}
+
+.about h2 {
+  margin-bottom: 50px;
+
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 4px;
+
+  color: #59483a;
+}
+
+.about-text {
+  font-size: 16px;
+  line-height: 2.2;
+  letter-spacing: 1px;
+
+  color: #6c6057;
+}
+
+.about-text p {
+  margin-bottom: 28px;
+}
+
+.about-text strong {
+  color: #a77e45;
+  font-weight: 500;
+}
+
+.about-highlight {
+  margin: 45px 0 !important;
+
+  font-size: 20px;
+  line-height: 2;
+
+  color: #9b7648;
+}
+
+
+/* ===== 創作者 ===== */
+
+.creators {
+  padding: 120px 24px;
+  background: #fbf7f0;
+}
+
+.creators-container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.creators h2 {
+  margin-bottom: 60px;
+
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 4px;
+
+  color: #59483a;
+}
+
+.creator-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 34px;
+}
+
+.creator-card {
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #eadfce;
+  border-radius: 26px;
+
+  box-shadow: 0 14px 35px rgba(104, 83, 55, 0.08);
+
+  transition: 0.3s;
+}
+
+.creator-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 45px rgba(104, 83, 55, 0.13);
+}
+
+.creator-photo {
+  display: block;
+
+  width: 100%;
+  height: 590px;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+.creator-info {
+  padding: 38px 35px 42px;
+}
+
+.creator-tag {
+  display: inline-block;
+  margin-bottom: 18px;
+
+  font-size: 15px;
+  letter-spacing: 2px;
+
+  color: #ad854c;
+}
+
+.creator-info h3 {
+  margin-bottom: 18px;
+
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1.7;
+
+  color: #50443a;
+}
+
+.creator-info p {
+  min-height: 60px;
+
+  font-size: 15px;
+  line-height: 2;
+
+  color: #7a6e65;
+}
+
+.creator-links {
+  margin-top: 28px;
+
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.creator-links a {
+  padding: 11px 22px;
+
+  border: 1px solid #caaa73;
+  border-radius: 30px;
+
+  color: #98733f;
+  text-decoration: none;
+
+  font-size: 13px;
+  letter-spacing: 1px;
+
+  transition: 0.25s;
+}
+
+.creator-links a:first-child {
+  background: #b79359;
+  color: white;
+}
+
+.creator-links a:hover {
+  transform: translateY(-2px);
+}
+
+.creator-quote {
+  margin: 80px auto 0;
+  padding-top: 55px;
+
+  border-top: 1px solid #e6d8c5;
+}
+
+.creator-quote p {
+  margin-bottom: 16px;
+
+  font-size: 27px;
+  letter-spacing: 3px;
+
+  color: #755b3e;
+}
+
+.creator-quote span {
+  font-size: 14px;
+  line-height: 2;
+  letter-spacing: 1px;
+
+  color: #9a8b7c;
+}
+
+
+/* ===== 創作者手機版 ===== */
+
+@media (max-width: 800px) {
+
+  .creators {
+    padding: 90px 16px;
+  }
+
+  .creators h2 {
+    margin-bottom: 45px;
+    font-size: 27px;
+  }
+
+  .creator-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .creator-card {
+    border-radius: 22px;
+  }
+
+  .creator-photo {
+    width: 100%;
+    height: 430px;
+
+    object-fit: cover;
+    object-position: center 35%;
+  }
+
+  .creator-info {
+    padding: 30px 22px 34px;
+  }
+
+  .creator-tag {
+    margin-bottom: 14px;
+    font-size: 14px;
+  }
+
+  .creator-info h3 {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  .creator-info p {
+    min-height: 0;
+
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .creator-links {
+    margin-top: 22px;
+  }
+
+  .creator-links a {
+    padding: 10px 18px;
+    font-size: 12px;
+  }
+
+  .creator-quote {
+    margin-top: 55px;
+    padding-top: 40px;
+  }
+
+  .creator-quote p {
+    font-size: 21px;
+    line-height: 1.8;
+    letter-spacing: 2px;
+  }
+
+  .creator-quote span {
+    font-size: 12px;
+  }
+}
+
+
+/* ===== Discord 社群 ===== */
+
+.discord-section {
+  padding: 120px 24px;
+  background: #ffffff;
+}
+
+.discord-container {
+  width: min(900px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.discord-section h2 {
+  margin-bottom: 14px;
+
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: 4px;
+
+  color: #59483a;
+}
+
+.discord-subtitle {
+  margin-bottom: 20px;
+
+  font-family: Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+
+  color: #b08a55;
+}
+
+.discord-text {
+  margin: 0 auto 50px;
+  max-width: 650px;
+
+  font-size: 15px;
+  line-height: 2;
+
+  color: #7a6d62;
+}
+
+.discord-card {
+  padding: 60px 30px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffdf9 0%,
+      #f9f2e7 100%
+    );
+
+  border: 1px solid #e4d3b8;
+  border-radius: 28px;
+
+  box-shadow: 0 15px 40px rgba(109, 83, 48, 0.08);
+}
+
+.discord-card-label {
+  display: block;
+  margin-bottom: 18px;
+
+  font-family: Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 5px;
+
+  color: #b49160;
+}
+
+.discord-card h3 {
+  margin-bottom: 18px;
+
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: 3px;
+
+  color: #59483a;
+}
+
+.discord-card p {
+  margin-bottom: 32px;
+
+  font-size: 14px;
+  line-height: 2;
+
+  color: #88786a;
+}
+
+.discord-btn {
+  display: inline-block;
+
+  padding: 14px 30px;
+
+  background: #b69258;
+
+  border: 1px solid #b69258;
+  border-radius: 30px;
+
+  color: #ffffff;
+  text-decoration: none;
+
+  font-size: 14px;
+  letter-spacing: 2px;
+
+  transition: 0.25s;
+}
+
+.discord-btn:hover {
+  background: #9f7a46;
+  transform: translateY(-2px);
+}
+
+
+/* ===== Discord 手機版 ===== */
+
+@media (max-width: 700px) {
+
+  .discord-section {
+    padding: 90px 20px;
+  }
+
+  .discord-card {
+    padding: 45px 22px;
+  }
+
+  .discord-section h2 {
+    font-size: 27px;
+  }
+}
+
+
+/* ===== 菜比之家 ===== */
+
+.game-section {
+  padding: 140px 24px;
+  background: #faf6ef;
+  text-align: center;
+}
+
+.game-container {
+  width: min(850px, 100%);
+  margin: 0 auto;
+}
+
+.game-section h2 {
+  margin: 10px 0 18px;
+
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 6px;
+
+  color: #59483a;
+}
+
+.game-subtitle {
+  margin-bottom: 35px;
+
+  font-size: 25px;
+  letter-spacing: 12px;
+}
+
+.game-section h3 {
+  margin-bottom: 25px;
+
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 2px;
+
+  color: #69584a;
+}
+
+.game-text {
+  margin: 0 auto 45px;
+
+  font-size: 15px;
+  line-height: 2.2;
+
+  color: #88786a;
+}
+
+.coming-soon {
+  display: inline-block;
+  min-width: 310px;
+
+  padding: 28px 45px;
+
+  background: rgba(255, 255, 255, 0.7);
+
+  border: 1px solid #dfc9a7;
+  border-radius: 50px;
+}
+
+.coming-soon span {
+  display: block;
+  margin-bottom: 8px;
+
+  font-family: Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 6px;
+
+  color: #b08a55;
+}
+
+.coming-soon p {
+  margin: 0;
+
+  font-size: 13px;
+  letter-spacing: 1px;
+
+  color: #8b7968;
+}
+
+
+/* ===== 菜比之家手機版 ===== */
+
+@media (max-width: 700px) {
+
+  .game-section {
+    padding: 100px 20px;
+  }
+
+  .game-section h2 {
+    font-size: 30px;
+  }
+
+  .game-section h3 {
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .coming-soon {
+    min-width: 0;
+    width: 100%;
+    max-width: 330px;
+
+    padding: 25px 20px;
+  }
+}
