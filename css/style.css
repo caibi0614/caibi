@@ -724,3 +724,94 @@ body {
     padding: 25px 20px;
   }
 }
+/* =========================
+   🏡 菜比之家｜遊戲入口
+========================= */
+
+.game-entry {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.game-enter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 220px;
+  padding: 15px 30px;
+
+  border: 1px solid rgba(171, 132, 86, 0.55);
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fffaf2,
+      #f3dfc1
+    );
+
+  color: #72583e;
+
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+
+  text-decoration: none;
+
+  box-shadow:
+    0 8px 24px rgba(101, 73, 42, 0.12);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.game-enter-btn:hover {
+  transform: translateY(-3px);
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff,
+      #f6e6ce
+    );
+
+  box-shadow:
+    0 12px 28px rgba(101, 73, 42, 0.18);
+}
+
+.game-entry-note {
+  margin-top: 13px;
+
+  color: #9b846d;
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* =========================
+   📱 菜比之家入口｜手機版
+========================= */
+
+@media (max-width: 700px) {
+
+  .game-entry {
+    margin-top: 24px;
+  }
+
+  .game-enter-btn {
+    min-width: 200px;
+
+    padding: 13px 24px;
+
+    font-size: 14px;
+  }
+
+  .game-entry-note {
+    margin-top: 11px;
+    font-size: 12px;
+  }
+}

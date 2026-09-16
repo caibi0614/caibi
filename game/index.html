@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>菜比之家｜CAIBI HOME</title>
+
+  <link rel="stylesheet" href="css/game.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       菜比之家｜會員登入
+       預設隱藏，點小屋後才出現
+  ========================== -->
+
+  <div class="login-screen hidden" id="loginScreen">
+
+    <div class="login-card">
+
+      <button
+        type="button"
+        class="dialog-close"
+        id="loginClose"
+        aria-label="關閉登入"
+      >
+        ×
+      </button>
+
+      <div class="login-icon">
+        🏡
+      </div>
+
+      <h1>菜比之家</h1>
+
+      <p class="login-subtitle">
+        歡迎回家，小可愛 ✨
+      </p>
+
+      <form class="login-form" id="loginForm">
+
+        <label class="login-field">
+
+          <span class="login-field-icon">👤</span>
+
+          <input
+            type="text"
+            id="loginAccount"
+            placeholder="請輸入菜比帳號"
+            autocomplete="username"
+            required
+          >
+
+        </label>
+
+        <label class="login-field">
+
+          <span class="login-field-icon">🔑</span>
+
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="請輸入密碼"
+            autocomplete="current-password"
+            required
+          >
+
+        </label>
+
+        <button
+          type="submit"
+          class="login-button"
+          id="loginButton"
+        >
+          🔐 登入菜比之家
+        </button>
+
+      </form>
+
+      <p
+        class="login-message"
+        id="loginMessage"
+      ></p>
+
+      <div class="login-contact">
+
+        還沒有菜比帳號嗎？
+        <br>
+
+        <a
+          href="https://discord.gg/3unC9aen"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          💬 找菜菜
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================
+       公開戶外小遊戲
+  ========================== -->
+
+  <main class="game-world">
+
+    <div class="world-scene">
+
+      <!-- 主場景背景 -->
+      <img
+        src="assets/images/home-bg.png"
+        alt="菜比之家主場景"
+        class="world-background"
+      >
+
+<!-- 🗺️ 戶外 16:9 地圖互動層 -->
+<div
+  id="outdoorMapLayer"
+  class="outdoor-map-layer"
+>
+
+  <!-- 🌾 農田 -->
+  <button
+    class="farm-spot"
+    id="farmSpot"
+    type="button"
+    aria-label="農田"
+  ></button>
+
+  <!-- 🔥 烤爐 -->
+  <button
+    class="oven-spot"
+    id="ovenSpot"
+    type="button"
+    aria-label="烤爐"
+  ></button>
+
+  <!-- 🐥🐱寵物 -->
+      <div class="pet-layer">
+
+        <img
+          src="assets/images/chick.png"
+          alt="小菜雞"
+          class="pet chick"
+          id="chick"
+        >
+
+        <img
+          src="assets/images/kitten.png"
+          alt="小比乾"
+          class="pet kitten"
+          id="kitten"
+        >
+
+      </div>
+
+</div>
+
+
+<!-- =====================
+     小屋入口
+====================== -->
+
+<button
+  class="house-spot"
+  id="houseSpot"
+  type="button"
+  aria-label="進入菜比之家"
+  title="進入菜比之家"
+></button>
+
+      <!-- 回官網 -->
+      <a href="../index.html" class="back-home">
+        ← 回到菜比官網
+      </a>
+
+
+      <!-- 背包 -->
+      <div class="inventory-bar">
+
+        <div class="inventory-item">
+          🌾 小麥
+          <strong id="wheatCount">0</strong>
+        </div>
+
+        <div class="inventory-item">
+          🍪 餅乾
+          <strong id="cookieCount">3</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         寵物互動視窗
+    ========================== -->
+
+    <div class="pet-dialog" id="petDialog">
+
+      <div class="pet-dialog-box">
+
+        <button
+          class="dialog-close"
+          id="dialogClose"
+          type="button"
+        >
+          ×
+        </button>
+
+        <img
+          id="dialogPetImage"
+          class="dialog-pet-image"
+          src="assets/images/chick.png"
+          alt="寵物"
+        >
+
+        <h2 id="dialogPetName">
+          小菜雞
+        </h2>
+
+        <p id="dialogPetText">
+          啾啾！
+        </p>
+
+        <div class="status-box">
+
+          <div class="status-row">
+            <span>❤️ 親密度</span>
+            <strong id="affectionValue">0</strong>
+          </div>
+
+          <div class="status-row">
+            <span>🍽️ 飽食度</span>
+            <strong id="hungerValue">100</strong>
+          </div>
+
+        </div>
+
+        <div class="dialog-actions">
+
+          <button id="petTouchBtn" type="button">
+            摸摸
+          </button>
+
+          <button id="petFeedBtn" type="button">
+            餵食
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         農田互動視窗
+    ========================== -->
+
+    <div class="farm-dialog" id="farmDialog">
+
+      <div class="farm-dialog-box">
+
+        <button
+          class="dialog-close"
+          id="farmDialogClose"
+          type="button"
+        >
+          ×
+        </button>
+
+        <div class="farm-icon">
+          🌾
+        </div>
+
+        <h2>農田</h2>
+
+        <p id="farmDialogText">
+          目前土地是空的。
+        </p>
+
+        <div class="dialog-actions">
+
+          <button id="plantWheatBtn" type="button">
+            🌱 種植小麥
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         烤爐互動視窗
+    ========================== -->
+
+    <div class="oven-dialog" id="ovenDialog">
+
+      <div class="oven-dialog-box">
+
+        <button
+          class="dialog-close"
+          id="ovenDialogClose"
+          type="button"
+        >
+          ×
+        </button>
+
+        <div class="oven-icon">
+          🍪
+        </div>
+
+        <h2>烤爐</h2>
+
+        <p id="ovenDialogText">
+          把收成的小麥做成香噴噴的餅乾吧！
+        </p>
+
+        <div class="recipe-box">
+          🌾 小麥 ×3
+          <span>→</span>
+          🍪 餅乾 ×1
+        </div>
+
+        <div class="dialog-actions">
+
+          <button id="bakeCookieBtn" type="button">
+            🔥 烘焙餅乾
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       JavaScript
+  ========================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+
+</html>

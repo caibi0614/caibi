@@ -1,0 +1,1129 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  background: #f6efe3;
+}
+
+.game-world {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* =========================
+   主場景
+========================= */
+
+.world-scene {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+
+  background-image: url("../assets/images/home-bg.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.world-scene::before {
+  content: "";
+
+  position: absolute;
+  inset: -30px;
+
+  background-image: url("../assets/images/home-bg.png");
+  background-size: cover;
+  background-position: center;
+
+  filter: blur(25px);
+  opacity: 0.45;
+
+  transform: scale(1.08);
+}
+
+.world-background {
+  position: absolute;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+
+  background: #f3eadb;
+
+  z-index: 1;
+}
+
+/* =========================
+   回官網
+========================= */
+
+.back-home {
+  position: absolute;
+
+  top: 22px;
+  left: 22px;
+
+  z-index: 10;
+
+  padding: 11px 20px;
+
+  border: 1px solid rgba(142, 106, 65, 0.5);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+
+  color: #72583e;
+  text-decoration: none;
+
+  font-size: 14px;
+
+  box-shadow: 0 5px 18px rgba(80, 58, 34, 0.1);
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.back-home:hover {
+  background: white;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   農田互動區
+========================= */
+
+.farm-spot {
+  position: absolute;
+
+  left: 3%;
+  top: 36%;
+  width: 24%;
+  height: 22%;
+
+  z-index: 20;
+
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
+
+  pointer-events: auto;
+}
+
+.farm-spot:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* =========================
+   寵物角色
+========================= */
+
+.pet-layer {
+  position: absolute;
+  inset: 0;
+
+  z-index: 5;
+
+  pointer-events: none;
+}
+
+.pet {
+  position: absolute;
+
+  width: auto;
+
+  transform: translate(-50%, -100%);
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  filter: drop-shadow(
+    0 6px 6px rgba(80, 60, 35, 0.18)
+  );
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.pet:hover {
+  transform: translate(-50%, -100%) scale(1.08);
+
+  filter: drop-shadow(
+    0 8px 10px rgba(80, 60, 35, 0.25)
+  );
+}
+
+/* 小菜雞 */
+
+.chick {
+  left: 46%;
+  top: 74%;
+
+  height: 15%;
+}
+
+/* 小比乾 */
+
+.kitten {
+  left: 56%;
+  top: 75%;
+
+  height: 18%;
+}
+
+/* =========================
+   背包 / 庫存
+========================= */
+
+.inventory-bar {
+  position: absolute;
+
+  top: 22px;
+  right: 22px;
+
+  z-index: 10;
+
+  display: flex;
+  gap: 10px;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 10px 16px;
+
+  border: 1px solid rgba(142, 106, 65, 0.35);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(8px);
+
+  color: #72583e;
+
+  font-size: 14px;
+
+  box-shadow:
+    0 5px 18px rgba(80, 58, 34, 0.1);
+}
+
+.inventory-item strong {
+  min-width: 22px;
+
+  color: #9b7049;
+
+  text-align: center;
+}
+
+/* =========================
+   寵物互動視窗
+========================= */
+
+.pet-dialog {
+  position: fixed;
+  inset: 0;
+
+  z-index: 50;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(70, 55, 40, 0.25);
+  backdrop-filter: blur(5px);
+}
+
+.pet-dialog.show {
+  display: flex;
+}
+
+.pet-dialog-box {
+  position: relative;
+
+  width: min(380px, 100%);
+
+  padding: 32px 28px 28px;
+
+  text-align: center;
+
+  border: 2px solid #ead7b9;
+  border-radius: 28px;
+
+  background: rgba(255, 253, 247, 0.96);
+
+  box-shadow:
+    0 20px 50px rgba(80, 55, 35, 0.18);
+}
+
+.dialog-close {
+  position: absolute;
+
+  top: 12px;
+  right: 16px;
+
+  border: none;
+  background: none;
+
+  font-size: 26px;
+  line-height: 1;
+
+  color: #9b846c;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.dialog-close:hover {
+  color: #6c543f;
+  transform: scale(1.1);
+}
+
+.dialog-pet-image {
+  display: block;
+
+  width: 105px;
+  height: 105px;
+
+  object-fit: contain;
+
+  margin: 0 auto 10px;
+}
+
+.pet-dialog-box h2 {
+  margin-bottom: 10px;
+
+  font-size: 24px;
+  font-weight: 500;
+
+  color: #6c543f;
+}
+
+.pet-dialog-box p {
+  min-height: 52px;
+
+  margin-bottom: 24px;
+
+  color: #8d7560;
+
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* =========================
+   親密度 / 飽食度
+========================= */
+
+.status-box {
+  display: grid;
+  gap: 10px;
+
+  margin: -8px 0 22px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-size: 14px;
+
+  color: #8a6f59;
+}
+
+.status-row strong {
+  min-width: 46px;
+
+  padding: 4px 10px;
+
+  border-radius: 999px;
+
+  background: #fff5ea;
+
+  color: #9a6e4a;
+}
+
+/* =========================
+   寵物互動按鈕
+========================= */
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+
+  justify-content: center;
+}
+
+.dialog-actions button {
+  padding: 11px 22px;
+
+  border: 1px solid #d8b98e;
+  border-radius: 999px;
+
+  background: #fffaf2;
+
+  color: #765b42;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dialog-actions button:hover {
+  transform: translateY(-2px);
+
+  background: #f5e8d6;
+
+  box-shadow:
+    0 5px 12px rgba(100, 75, 45, 0.1);
+}
+
+/* =========================
+   手機版
+========================= */
+
+@media (max-width: 700px) {
+
+  .back-home {
+    top: 14px;
+    left: 14px;
+
+    padding: 9px 15px;
+
+    font-size: 12px;
+  }
+
+  .inventory-bar {
+    top: 58px;
+    right: 14px;
+
+    flex-direction: column;
+
+    gap: 6px;
+  }
+
+  .inventory-item {
+    padding: 8px 12px;
+
+    font-size: 12px;
+  }
+
+  .pet-dialog-box {
+    width: min(340px, 100%);
+
+    padding: 30px 20px 24px;
+  }
+
+  .dialog-pet-image {
+    width: 90px;
+    height: 90px;
+  }
+
+  .pet-dialog-box h2 {
+    font-size: 22px;
+  }
+
+  .dialog-actions button {
+    padding: 10px 20px;
+  }
+}
+/* =========================
+   農田互動視窗
+========================= */
+
+.farm-dialog {
+  position: fixed;
+  inset: 0;
+
+  z-index: 50;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(70, 55, 40, 0.25);
+  backdrop-filter: blur(5px);
+}
+
+.farm-dialog.show {
+  display: flex;
+}
+
+.farm-dialog-box {
+  position: relative;
+
+  width: min(380px, 100%);
+
+  padding: 32px 28px 28px;
+
+  text-align: center;
+
+  border: 2px solid #ead7b9;
+  border-radius: 28px;
+
+  background: rgba(255, 253, 247, 0.96);
+
+  box-shadow:
+    0 20px 50px rgba(80, 55, 35, 0.18);
+}
+
+.farm-icon {
+  margin-bottom: 10px;
+
+  font-size: 52px;
+}
+
+.farm-dialog-box h2 {
+  margin-bottom: 10px;
+
+  font-size: 24px;
+  font-weight: 500;
+
+  color: #6c543f;
+}
+
+.farm-dialog-box p {
+  min-height: 52px;
+
+  margin-bottom: 24px;
+
+  color: #8d7560;
+
+  font-size: 15px;
+  line-height: 1.8;
+}
+/* =========================
+   烤爐互動區
+========================= */
+
+.oven-spot {
+  position: absolute;
+
+  right: 3%;
+  top: 43%;
+
+  width: 5.5%;
+  height: 17%;
+
+  z-index: 20;
+
+  border: none;
+  border-radius: 16px;
+  background: transparent;
+
+  cursor: pointer;
+
+  pointer-events: auto;
+}
+
+.oven-spot:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================
+   烤爐互動視窗
+========================= */
+
+.oven-dialog {
+  position: fixed;
+  inset: 0;
+
+  z-index: 50;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(70, 55, 40, 0.25);
+  backdrop-filter: blur(5px);
+}
+
+.oven-dialog.show {
+  display: flex;
+}
+
+.oven-dialog-box {
+  position: relative;
+
+  width: min(380px, 100%);
+
+  padding: 32px 28px 28px;
+
+  text-align: center;
+
+  border: 2px solid #ead7b9;
+  border-radius: 28px;
+
+  background: rgba(255, 253, 247, 0.96);
+
+  box-shadow:
+    0 20px 50px rgba(80, 55, 35, 0.18);
+}
+
+.oven-icon {
+  margin-bottom: 10px;
+
+  font-size: 52px;
+}
+
+.oven-dialog-box h2 {
+  margin-bottom: 10px;
+
+  font-size: 24px;
+  font-weight: 500;
+
+  color: #6c543f;
+}
+
+.oven-dialog-box p {
+  min-height: 52px;
+
+  margin-bottom: 18px;
+
+  color: #8d7560;
+
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+
+/* =========================
+   烤爐配方
+========================= */
+
+.recipe-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  margin-bottom: 22px;
+
+  padding: 12px 16px;
+
+  border-radius: 18px;
+
+  background: #fff5e8;
+
+  color: #80664e;
+
+  font-size: 14px;
+}
+
+.recipe-box span {
+  color: #b99a76;
+}
+
+
+/* =========================
+   烤爐手機版
+========================= */
+
+@media (max-width: 700px) {
+
+  .oven-dialog-box {
+    width: min(340px, 100%);
+
+    padding: 30px 20px 24px;
+  }
+
+  .oven-icon {
+    font-size: 46px;
+  }
+
+  .oven-dialog-box h2 {
+    font-size: 22px;
+  }
+
+}
+/* =========================
+   菜比之家｜登入介面
+========================= */
+
+.login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+
+  background:
+    linear-gradient(
+      rgba(255, 248, 237, 0.28),
+      rgba(246, 230, 207, 0.4)
+    );
+
+  backdrop-filter: blur(5px);
+}
+
+.login-card {
+  position: relative;
+
+  width: min(430px, 92vw);
+  padding: 38px 38px 34px;
+
+  border: 2px solid rgba(226, 199, 159, 0.8);
+  border-radius: 32px;
+
+  background: rgba(255, 253, 247, 0.95);
+
+  box-shadow:
+    0 25px 60px rgba(92, 67, 40, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  text-align: center;
+}
+
+/* 小屋圖示 */
+
+.login-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 68px;
+  height: 68px;
+
+  margin: 0 auto 16px;
+
+  border-radius: 22px;
+
+  background: #fff3df;
+
+  font-size: 36px;
+
+  box-shadow:
+    0 6px 16px rgba(116, 82, 47, 0.1);
+}
+
+/* 標題 */
+
+.login-card h1 {
+  margin: 0 0 7px;
+
+  color: #684f39;
+
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+/* 歡迎文字 */
+
+.login-subtitle {
+  margin-bottom: 28px;
+
+  color: #9a8068;
+
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* 表單 */
+
+.login-form {
+  display: grid;
+  gap: 15px;
+}
+
+/* 每一格 */
+
+.login-field {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+}
+
+/* 左側圖示 */
+
+.login-field-icon {
+  position: absolute;
+
+  left: 17px;
+
+  z-index: 2;
+
+  font-size: 17px;
+
+  pointer-events: none;
+}
+
+/* 帳號密碼輸入框 */
+
+.login-field input {
+  width: 100%;
+  height: 52px;
+
+  padding: 0 18px 0 48px;
+
+  border: 1px solid #ddc8ab;
+  border-radius: 17px;
+
+  outline: none;
+
+  background: rgba(255, 250, 242, 0.95);
+
+  color: #66503e;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.login-field input::placeholder {
+  color: #b8a38f;
+}
+
+.login-field input:focus {
+  border-color: #c89e6c;
+
+  background: #fffdf9;
+
+  box-shadow:
+    0 0 0 4px rgba(203, 163, 112, 0.12);
+}
+
+/* 登入按鈕 */
+
+.login-button {
+  width: 100%;
+  height: 52px;
+
+  margin-top: 4px;
+
+  border: 1px solid #b98e5e;
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #d9b27e,
+      #bd8e5b
+    );
+
+  color: white;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 18px rgba(143, 99, 54, 0.18);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 11px 22px rgba(143, 99, 54, 0.24);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+/* 登入錯誤訊息 */
+
+.login-message {
+  min-height: 22px;
+
+  margin-top: 13px;
+
+  color: #b36c60;
+
+  font-size: 13px;
+}
+
+/* 找菜菜區域 */
+
+.login-contact {
+  margin-top: 20px;
+  padding-top: 19px;
+
+  border-top: 1px solid #eee0cf;
+
+  color: #9a826b;
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.login-contact a {
+  display: inline-block;
+
+  margin-top: 5px;
+
+  color: #9a704a;
+
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-contact a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================
+   登入後隱藏
+========================= */
+
+.login-screen.hidden {
+  display: none;
+}
+
+
+/* =========================
+   手機版登入
+========================= */
+
+@media (max-width: 600px) {
+
+  .login-screen {
+    padding: 18px;
+  }
+
+  .login-card {
+    width: 100%;
+
+    padding:
+      30px
+      22px
+      26px;
+
+    border-radius: 26px;
+  }
+
+  .login-icon {
+    width: 60px;
+    height: 60px;
+
+    border-radius: 19px;
+
+    font-size: 31px;
+  }
+
+  .login-card h1 {
+    font-size: 26px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 22px;
+  }
+
+}
+/* =========================
+   🏡 小屋入口
+========================= */
+
+.house-spot {
+  position: absolute;
+
+  left: 35%;
+  top: 5%;
+
+  width: 30%;
+  height: 40%;
+
+  z-index: 30;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.house-spot:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+/* =========================
+   📱 菜比之家－手機直向提示
+========================= */
+
+@media (max-width: 700px) and (orientation: portrait) {
+
+  /* 直向時隱藏遊戲內容 */
+  .game-world {
+  display: none;
+}
+
+  body::before {
+    content: "🏡 菜比之家";
+
+    position: fixed;
+    top: 38%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 24px;
+    font-weight: 800;
+
+    color: #5d5145;
+  }
+
+  body::after {
+    content: "📱 請將手機轉為橫向遊玩";
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 80%;
+    max-width: 320px;
+
+    padding: 18px 20px;
+
+    text-align: center;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #66594b;
+
+    background: rgba(255, 253, 247, 0.95);
+
+    border: 1px solid rgba(126, 105, 78, 0.2);
+    border-radius: 18px;
+
+    box-shadow: 0 8px 25px rgba(70, 55, 35, 0.08);
+  }
+}
+/* =========================
+   📱 登入介面－手機橫向矮螢幕
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .login-screen {
+    align-items: flex-start;
+    overflow-y: auto;
+
+    padding: 12px 0;
+  }
+
+  .login-card {
+    width: min(430px, 92vw);
+
+    margin: auto;
+    padding: 22px 32px 20px;
+
+    border-radius: 24px;
+  }
+
+  .login-icon {
+    width: 48px;
+    height: 48px;
+
+    margin-bottom: 8px;
+
+    border-radius: 15px;
+    font-size: 25px;
+  }
+
+  .login-card h1 {
+    margin-bottom: 3px;
+    font-size: 25px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 14px;
+
+    font-size: 12px;
+  }
+
+  .login-form {
+    gap: 10px;
+  }
+
+  .login-field input {
+    height: 46px;
+  }
+
+  .login-button {
+    height: 46px;
+    margin-top: 2px;
+  }
+
+  .login-message {
+    min-height: 16px;
+    margin-top: 7px;
+  }
+
+  .login-contact {
+    margin-top: 10px;
+    padding-top: 10px;
+
+    line-height: 1.5;
+  }
+}
+/* =========================
+   🗺️ 戶外 16:9 地圖互動層
+========================= */
+
+.outdoor-map-layer {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 10;
+
+  pointer-events: none;
+}

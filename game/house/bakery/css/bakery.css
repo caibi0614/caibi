@@ -1,0 +1,211 @@
+/* =========================
+   🍰 菜比之家｜烘焙房
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+body {
+  background: #e7dccb;
+}
+
+
+/* =========================
+   🍰 烘焙房場景
+========================= */
+
+.bakery-room {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  background-image: url("../../../assets/images/bakery-room-bg.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-color: #e7dccb;
+}
+
+
+/* =========================
+   🍰 房間名稱
+========================= */
+
+.room-badge {
+  position: absolute;
+
+  top: 18px;
+  left: 18px;
+
+  z-index: 100;
+
+  padding: 10px 16px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 250, 240, 0.9);
+
+  box-shadow:
+    0 4px 14px rgba(90, 70, 45, 0.12);
+
+  color: #5e5142;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* =========================
+   🚪 返回客廳
+========================= */
+
+.back-button {
+  position: absolute;
+
+  top: 18px;
+  right: 18px;
+
+  z-index: 100;
+
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: rgba(255, 250, 240, 0.9);
+
+  box-shadow:
+    0 4px 14px rgba(90, 70, 45, 0.12);
+
+  color: #5e5142;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(8px);
+}
+
+.back-button:hover {
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   👤 玩家角色
+========================= */
+
+.player-character {
+  position: absolute;
+
+  left: 50%;
+  top: 72%;
+
+  width: clamp(95px, 9.6vw, 155px);
+  height: auto;
+
+  transform: translate(-50%, -100%);
+
+  z-index: 50;
+
+  display: none;
+
+  user-select: none;
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 5px 5px rgba(70, 55, 40, 0.18));
+}
+
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .room-badge,
+  .back-button {
+    top: 10px;
+
+    padding: 7px 12px;
+
+    font-size: 12px;
+  }
+
+  .room-badge {
+    left: 10px;
+  }
+
+  .back-button {
+    right: 10px;
+  }
+
+  .player-character {
+    width: clamp(82px, 10.2vw, 118px);
+  }
+}
+
+
+/* =========================
+   📱 手機直向
+   提示旋轉手機
+========================= */
+
+@media (orientation: portrait) {
+
+  .bakery-room {
+    display: none;
+  }
+
+  body::before {
+    content: "🍰 菜比之家";
+
+    position: fixed;
+
+    top: 42%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: #665747;
+
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  body::after {
+    content: "📱 請將手機轉為橫向遊玩";
+
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 90%;
+
+    color: #8a7966;
+
+    font-size: 15px;
+    text-align: center;
+  }
+}

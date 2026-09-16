@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>菜比之家｜1F 客廳</title>
+
+  <!-- 1F 樣式 -->
+  <link rel="stylesheet" href="css/house.css">
+</head>
+
+<body>
+
+  <!-- =========================
+       🏡 菜比之家 1F
+  ========================== -->
+
+ <main id="houseContent" class="house-content">
+
+  <!-- 1F 遊戲畫面 -->
+  <section class="house-game">
+
+    <!-- 客廳場景 -->
+    <div class="living-room" id="livingRoom">
+    
+   <!-- 🗺️ 跟著 16:9 地圖縮放的互動層 -->
+<div class="map-layer">
+
+  <!-- 🍰 通往烘焙房 -->
+  <button
+    id="bakeryEntrance"
+    class="bakery-entrance"
+    type="button"
+    aria-label="前往烘焙房"
+  ></button>
+
+</div>
+
+<!-- 左上角會員資訊 -->
+<div class="player-info">
+  <span>🏡</span>
+  <span id="welcomeText">正在確認身分……</span>
+</div>
+
+<!-- 右上角登出 -->
+<button id="logoutButton" type="button">
+  🚪 登出
+</button>
+  <!-- =========================
+       👤 玩家角色圖層
+  ========================== -->
+  <div class="player-layer" id="playerLayer">
+
+    <img
+      id="playerCharacter"
+      class="player-character"
+      src=""
+      alt="玩家角色"
+      draggable="false"
+    >
+
+  </div>
+
+</div>
+
+  </section>
+
+</main>
+
+  <!-- =========================
+       Supabase
+  ========================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 注意：Supabase 還是在 game/js 裡 -->
+  <script src="../js/supabase.js"></script>
+
+  <!-- 1F 專用程式 -->
+  <script src="js/house.js"></script>
+
+</body>
+
+</html>

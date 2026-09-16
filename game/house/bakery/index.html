@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>菜比之家｜烘焙房</title>
+
+  <!-- 🍰 烘焙房 CSS -->
+  <link
+    rel="stylesheet"
+    href="css/bakery.css"
+  >
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+  <main
+    id="bakeryRoom"
+    class="bakery-room"
+  >
+
+    <!-- 🍰 左上角房間名稱 -->
+    <div class="room-badge">
+      🍰 烘焙房
+    </div>
+
+
+    <!-- 🚪 返回客廳 -->
+    <button
+      id="backLivingRoom"
+      class="back-button"
+      type="button"
+    >
+      ← 回客廳
+    </button>
+
+
+    <!-- 👤 玩家 -->
+    <img
+      id="playerCharacter"
+      class="player-character"
+      alt="玩家角色"
+    >
+
+  </main>
+
+
+  <!-- Supabase 設定 -->
+  <script src="../../js/supabase.js"></script>
+
+  <!-- 🍰 烘焙房 JS -->
+  <script src="js/bakery.js"></script>
+
+</body>
+
+</html>
