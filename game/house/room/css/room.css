@@ -1,0 +1,656 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family:
+    "Noto Sans TC",
+    sans-serif;
+
+  background: #f5eadb;
+}
+
+/* =========================
+   🏠 私人房間
+========================= */
+
+.private-room {
+  position: relative;
+
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+
+  background-image:
+    url("../../../assets/images/private-room-bg.png");
+
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* =========================
+   🗺️ 16:9 遊戲地圖層
+========================= */
+
+.room-map-layer {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width:
+    min(
+      100vw,
+      calc(100vh * 16 / 9)
+    );
+
+  aspect-ratio: 16 / 9;
+
+  transform:
+    translate(-50%, -50%);
+
+  z-index: 40;
+
+  pointer-events: auto;
+}
+
+/* =========================
+   🪑 房間家具顯示層
+========================= */
+
+.room-furniture-layer {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 48;
+
+  pointer-events: none;
+}
+
+/* =========================
+   🪑 房間家具本體
+========================= */
+
+.room-furniture {
+  position: absolute;
+
+  transform:
+    translate(-50%, -100%);
+
+  object-fit: contain;
+
+  user-select: none;
+
+  pointer-events: auto;
+
+  cursor: grab;
+}
+
+/* 🛏️ 床 */
+.room-furniture-bed {
+  width: 22%;
+  height: auto;
+}
+
+/* =========================
+   🧍 玩家角色
+========================= */
+
+.player-character {
+  position: absolute;
+
+  left: 50%;
+  top: 72%;
+
+  width:
+    clamp(
+      70px,
+      7vw,
+      115px
+    );
+
+  aspect-ratio: 2 / 3;
+
+  transform:
+    translate(-50%, -100%);
+
+  display: none;
+
+  z-index: 50;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================
+   👗 玩家換裝圖層
+========================= */
+
+.player-layer {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.player-base {
+  z-index: 1;
+}
+
+/* 🧦 襪子 */
+.player-socks {
+  z-index: 2;
+}
+
+/* 👟 鞋子 */
+.player-shoes {
+  z-index: 3;
+}
+
+/* 👖 褲子／裙子 */
+.player-bottom {
+  z-index: 4;
+}
+
+/* 👚 上衣、👗 洋裝 */
+.player-top,
+.player-dress {
+  z-index: 5;
+}
+
+/* 🧥 外套 */
+.player-outerwear {
+  z-index: 6;
+}
+
+/* 🎀 頭飾 */
+.player-headwear {
+  z-index: 7;
+}
+
+/* =========================
+   🏷️ 房間名稱
+========================= */
+
+.room-badge {
+  position: absolute;
+
+  left: 18px;
+  top: 18px;
+
+  z-index: 100;
+
+  padding:
+    9px 16px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 250, 241, 0.9);
+
+  box-shadow:
+    0 4px 14px
+    rgba(91, 63, 42, 0.12);
+
+  color: #765b45;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  backdrop-filter:
+    blur(6px);
+}
+
+/* =========================
+   🎒 私人房間功能按鈕
+========================= */
+
+.room-actions {
+  position: absolute;
+
+  right: 18px;
+  top: 18px;
+
+  display: flex;
+  gap: 10px;
+
+  z-index: 120;
+}
+
+.room-action-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 9px 14px;
+
+  border: 1px solid
+    rgba(173, 139, 101, 0.22);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 250, 241, 0.92);
+
+  box-shadow:
+    0 4px 14px
+    rgba(91, 63, 42, 0.12);
+
+  color: #765b45;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(6px);
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.room-action-button:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(255, 255, 255, 0.97);
+}
+
+.room-action-button:active {
+  transform: translateY(0);
+}
+
+.room-action-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* =========================
+   📦 儲物箱視窗
+========================= */
+
+.storage-modal {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background:
+    rgba(83, 59, 41, 0.28);
+
+  backdrop-filter: blur(4px);
+
+  z-index: 500;
+}
+
+.storage-modal.is-open {
+  display: flex;
+}
+
+.storage-panel {
+  width: min(720px, 88vw);
+  max-height: 78vh;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid rgba(173, 139, 101, 0.28);
+
+  border-radius: 24px;
+
+  background:
+    rgba(255, 250, 241, 0.97);
+
+  box-shadow:
+    0 18px 50px
+    rgba(91, 63, 42, 0.22);
+}
+
+.storage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px 20px;
+
+  border-bottom:
+    1px solid rgba(173, 139, 101, 0.18);
+}
+
+.storage-title {
+  color: #765b45;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.storage-close-button {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #f3e7d6;
+
+  color: #765b45;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.storage-furniture-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(140px, 1fr)
+    );
+
+  gap: 14px;
+
+  padding: 18px 20px 22px;
+
+  overflow-y: auto;
+}
+
+/* =========================
+   🛏️ 儲物箱家具卡片
+========================= */
+
+.storage-furniture-card {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 12px;
+
+  border:
+    1px solid rgba(173, 139, 101, 0.2);
+
+  border-radius: 18px;
+
+  background:
+    rgba(255, 255, 255, 0.72);
+
+  box-shadow:
+    0 4px 12px
+    rgba(91, 63, 42, 0.08);
+}
+
+.storage-furniture-image {
+  display: block;
+
+  width: 100%;
+  height: 120px;
+
+  object-fit: contain;
+
+  margin-bottom: 10px;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+.storage-furniture-name {
+  width: 100%;
+
+  color: #6f5540;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storage-furniture-quantity {
+  margin-top: 5px;
+
+  color: #a08368;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.storage-place-button {
+  width: 100%;
+
+  margin-top: 10px;
+  padding: 8px 12px;
+
+  border:
+    1px solid rgba(173, 139, 101, 0.22);
+
+  border-radius: 999px;
+
+  background: #efe0ca;
+
+  color: #765b45;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.storage-place-button:hover {
+  transform: translateY(-1px);
+  background: #e8d4b7;
+}
+
+.storage-place-button:active {
+  transform: translateY(0);
+}
+
+.storage-empty {
+  grid-column: 1 / -1;
+
+  padding: 28px 12px;
+
+  color: #9a806a;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media
+  (orientation: landscape)
+  and (max-height: 600px) {
+
+  .player-character {
+    width:
+      clamp(
+        48px,
+        6vw,
+        72px
+      );
+
+  .storage-modal {
+    padding: 10px;
+  }
+
+  .storage-panel {
+    width: min(620px, 88vw);
+    max-height: 88vh;
+
+    border-radius: 18px;
+  }
+
+  .storage-header {
+    padding: 9px 14px;
+  }
+
+  .storage-title {
+    font-size: 14px;
+  }
+
+  .storage-close-button {
+    width: 28px;
+    height: 28px;
+
+    font-size: 13px;
+  }
+
+  .storage-furniture-grid {
+    grid-template-columns:
+      repeat(
+        auto-fill,
+        minmax(105px, 1fr)
+      );
+
+    gap: 8px;
+
+    padding: 10px 12px 12px;
+  }
+  
+  }
+    .room-actions {
+    right: 10px;
+    top: 10px;
+
+    gap: 6px;
+  }
+
+  .room-action-button {
+    padding: 6px 10px;
+
+    gap: 4px;
+
+    font-size: 11px;
+  }
+
+  .room-action-icon {
+    font-size: 13px;
+  }
+
+  .room-badge {
+    left: 10px;
+    top: 10px;
+
+    padding:
+      6px 11px;
+
+    font-size: 11px;
+  }
+}
+
+/* =========================
+   🔄 手機直向提示
+========================= */
+
+.rotate-message {
+  display: none;
+}
+
+/* =========================
+   🚪 返回 1F 客廳
+========================= */
+
+.living-room-entrance {
+  position: absolute;
+
+  right: 8%;
+  top: 15%;
+
+  width: 10%;
+  height: 31%;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  z-index: 45;
+}
+
+@media
+  (orientation: portrait)
+  and (max-width: 768px) {
+
+  .private-room {
+    display: none;
+  }
+
+  .rotate-message {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background: #f7eddf;
+
+    color: #765b45;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    text-align: center;
+
+    line-height: 1.8;
+  }
+}

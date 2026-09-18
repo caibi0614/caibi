@@ -30,7 +30,7 @@ async function checkHouseAccess() {
   const { data: profile, error: profileError } =
     await caibiSupabase
       .from("profiles")
-      .select("username, display_name, role")
+      .select("username, display_name, role, avatar_path")
       .eq("id", session.user.id)
       .single();
 
@@ -47,47 +47,203 @@ async function checkHouseAccess() {
   ========================= */
 
   /* =========================
-   👤 載入目前穿著的角色圖片
+   👤 載入玩家 Base＋目前穿著
 ========================= */
 
-const { data: equippedOutfit, error: outfitError } =
-  await caibiSupabase
-    .from("player_outfits")
-    .select("outfit_name, image_path")
-    .eq("user_id", session.user.id)
-    .eq("is_equipped", true)
-    .maybeSingle();
+const playerCharacter =
+  document.getElementById("playerCharacter");
 
-if (outfitError) {
-  console.error("讀取玩家服裝失敗：", outfitError);
-  
+const playerBase =
+  document.getElementById("playerBase");
+
+const playerSocks =
+  document.getElementById("playerSocks");
+
+const playerShoes =
+  document.getElementById("playerShoes");
+
+const playerBottom =
+  document.getElementById("playerBottom");
+
+const playerTop =
+  document.getElementById("playerTop");
+
+const playerDress =
+  document.getElementById("playerDress");
+
+const playerOuterwear =
+  document.getElementById("playerOuterwear");
+
+const playerHeadwear =
+  document.getElementById("playerHeadwear");
+
+
+/* 👤 玩家專屬 Base */
+
+if (!profile.avatar_path) {
+
+  console.error(
+    "找不到玩家 avatar_path"
+  );
+
+  return;
 }
 
-console.log("👤 目前登入者 ID：", session.user.id);
-console.log("👕 查到的穿著資料：", equippedOutfit);
+const { data: baseData } =
+  caibiSupabase.storage
+    .from("avatars")
+    .getPublicUrl(
+      profile.avatar_path
+    );
 
-if (equippedOutfit) {
+playerBase.src =
+  baseData.publicUrl;
 
-  /* 取得 avatars Storage 公開網址 */
-  const { data: imageData } =
+
+/* 👗 讀取目前裝備 */
+
+const {
+  data: equipment,
+  error: equipmentError
+} =
+  await caibiSupabase
+    .from("player_equipment")
+    .select(`
+      slot,
+      clothing_item_id,
+      clothing_items (
+        name,
+        category,
+        image_path
+      )
+    `)
+    .eq(
+      "user_id",
+      session.user.id
+    );
+
+if (equipmentError) {
+
+  console.error(
+    "讀取玩家裝備失敗：",
+    equipmentError
+  );
+
+  return;
+}
+
+
+/* 🧹 先清空全部衣服 */
+
+const clothingLayers = [
+  playerSocks,
+  playerShoes,
+  playerBottom,
+  playerTop,
+  playerDress,
+  playerOuterwear,
+  playerHeadwear
+];
+
+for (const layer of clothingLayers) {
+  layer.removeAttribute("src");
+  layer.style.display = "none";
+}
+
+
+/* 👚 把裝備套到對應圖層 */
+
+for (const equippedItem of equipment || []) {
+
+  const item =
+    equippedItem.clothing_items;
+
+  if (
+    !item ||
+    !item.image_path
+  ) {
+    continue;
+  }
+
+  let targetLayer = null;
+
+  switch (item.category) {
+
+    case "socks":
+      targetLayer = playerSocks;
+      break;
+
+    case "shoes":
+      targetLayer = playerShoes;
+      break;
+
+    case "bottom":
+      targetLayer = playerBottom;
+      break;
+
+    case "top":
+      targetLayer = playerTop;
+      break;
+
+    case "dress":
+      targetLayer = playerDress;
+      break;
+
+    case "outerwear":
+      targetLayer = playerOuterwear;
+      break;
+
+    case "headwear":
+      targetLayer = playerHeadwear;
+      break;
+  }
+
+  if (!targetLayer) {
+    continue;
+  }
+
+  const { data: clothingData } =
     caibiSupabase.storage
       .from("avatars")
-      .getPublicUrl(equippedOutfit.image_path);
+      .getPublicUrl(
+        item.image_path
+      );
 
-  const playerCharacter =
-    document.getElementById("playerCharacter");
+  targetLayer.src =
+    clothingData.publicUrl;
 
-  playerCharacter.src =
-    imageData.publicUrl;
-
-  playerCharacter.style.display =
+  targetLayer.style.display =
     "block";
-
-  console.log(
-    "👕 已載入角色服裝：",
-    equippedOutfit.outfit_name
-  );
 }
+
+
+/* 👗 洋裝與上衣＋下身互斥 */
+
+const wearingDress =
+  (equipment || []).some(
+    item =>
+      item.slot === "dress"
+  );
+
+if (wearingDress) {
+
+  playerTop.style.display =
+    "none";
+
+  playerBottom.style.display =
+    "none";
+}
+
+
+/* 🧍 全部載完才顯示 */
+
+playerCharacter.style.display =
+  "block";
+
+console.log(
+  "👗 1F 分層角色載入完成",
+  equipment
+);
 
   console.log("🏡 進入菜比之家：", profile);
 
@@ -106,6 +262,10 @@ if (equippedOutfit) {
 /* 🍰 烘焙房入口 */
 const bakeryEntrance =
   document.getElementById("bakeryEntrance");
+
+/* 🪜 私人房間入口 */
+const privateRoomEntrance =
+  document.getElementById("privateRoomEntrance");
 
 const logoutButton =
   document.getElementById("logoutButton");
@@ -133,6 +293,11 @@ bakeryEntrance.addEventListener("click", () => {
   window.location.href = "bakery/index.html";
 });
 
+/* 🪜 前往 2F 私人房間 */
+privateRoomEntrance.addEventListener("click", () => {
+  window.location.href = "room/index.html";
+});
+
 /* =========================
    🚀 啟動 1F
 ========================= */
@@ -143,9 +308,6 @@ checkHouseAccess();
    🎮 玩家移動
    鍵盤 + 點擊 / 觸控
 ========================= */
-
-const playerCharacter =
-  document.getElementById("playerCharacter");
 
 const livingRoom =
   document.getElementById("livingRoom");

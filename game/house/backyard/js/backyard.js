@@ -1,32 +1,91 @@
 /* =========================
-   🍰 菜比之家｜烘焙房
+   🌾 菜比之家｜後院農場
 ========================= */
 
-const bakeryRoom =
-  document.getElementById("bakeryRoom");
+const backyard =
+  document.getElementById("backyard");
+
+const backyardMapLayer =
+  document.getElementById("backyardMapLayer");
 
 const playerCharacter =
   document.getElementById("playerCharacter");
 
-const livingRoomEntrance =
-  document.getElementById("livingRoomEntrance");
-
-const backyardEntrance =
-  document.getElementById("backyardEntrance");
+const bakeryEntrance =
+  document.getElementById("bakeryEntrance");
 
 /* =========================
    🚶 玩家移動資料
 ========================= */
 
 let playerX = 50;
-let playerY = 78;
-
-let targetX = playerX;
-let targetY = playerY;
+let playerY = 70;
 
 const MOVE_SPEED = 0.6;
 
 const pressedKeys = new Set();
+
+/* =========================
+   🖱️ 點擊／觸控移動資料
+========================= */
+
+let targetX = null;
+let targetY = null;
+
+const CLICK_MOVE_SPEED = 0.8;
+
+/* =========================
+   👆 點擊／觸控設定目的地
+========================= */
+
+backyard.addEventListener(
+  "pointerdown",
+  (event) => {
+
+    /* 點到門時，不觸發人物移動 */
+    if (
+      event.target.closest(
+        ".bakery-entrance"
+      )
+    ) {
+      return;
+    }
+
+    const rect =
+      backyardMapLayer.getBoundingClientRect();
+
+    /* 點在 16:9 地圖外就不處理 */
+    if (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    ) {
+      return;
+    }
+
+    const clickedX =
+      ((event.clientX - rect.left) /
+        rect.width) * 100;
+
+    const clickedY =
+      ((event.clientY - rect.top) /
+        rect.height) * 100;
+
+    /* 只有可走區才能設定目的地 */
+    if (
+      !isBackyardWalkable(
+        clickedX,
+        clickedY
+      )
+    ) {
+      return;
+    }
+
+    targetX = clickedX;
+    targetY = clickedY;
+  }
+);
 
 /* =========================
    🚶 更新玩家位置
@@ -46,73 +105,39 @@ function updatePlayerPosition() {
    ⌨️ 鍵盤控制
 ========================= */
 
-window.addEventListener("keydown", (event) => {
-
-  const key = event.key.toLowerCase();
-
-  if (
-    key === "w" ||
-    key === "a" ||
-    key === "s" ||
-    key === "d" ||
-    key.startsWith("arrow")
-  ) {
-    event.preventDefault();
-    pressedKeys.add(key);
-  }
-
-});
-
-
-window.addEventListener("keyup", (event) => {
-
-  pressedKeys.delete(
-    event.key.toLowerCase()
-  );
-
-});
-
-
-/* =========================
-   🖱️ 滑鼠／📱觸控點地移動
-========================= */
-
-bakeryRoom.addEventListener(
-  "pointerdown",
+window.addEventListener(
+  "keydown",
   (event) => {
 
-    /* 點到按鈕時不要移動 */
+    const key =
+      event.key.toLowerCase();
+
     if (
-      event.target.closest("button")
-    ) {
-      return;
-    }
+      key === "w" ||
+      key === "a" ||
+      key === "s" ||
+      key === "d" ||
+      key.startsWith("arrow")
+    ) 
+    
+    event.preventDefault();
+pressedKeys.add(key);
 
-    const rect =
-      bakeryRoom.getBoundingClientRect();
+/* 手動控制時，取消點擊自動移動 */
+targetX = null;
+targetY = null;
 
-    targetX =
-      ((event.clientX - rect.left) /
-        rect.width) *
-      100;
+  }
+);
 
-    targetY =
-      ((event.clientY - rect.top) /
-        rect.height) *
-      100;
 
-    /* 暫時限制在主要木地板 */
-    targetX =
-      Math.max(
-        10,
-        Math.min(90, targetX)
-      );
+window.addEventListener(
+  "keyup",
+  (event) => {
 
-    targetY =
-      Math.max(
-        45,
-        Math.min(88, targetY)
-      );
+    pressedKeys.delete(
+      event.key.toLowerCase()
+    );
   }
 );
 
@@ -121,10 +146,127 @@ bakeryRoom.addEventListener(
    🎮 移動循環
 ========================= */
 
+/* =========================
+   🌿 後院可行走區域
+========================= */
+
+const backyardWalkAreas = [
+
+  /* 🌱 中央主要草地 */
+  {
+    left: 30,
+    right: 72,
+    top: 24,
+    bottom: 73
+  },
+
+  /* 🚪 上方｜通往烘焙房 */
+  {
+    left: 43,
+    right: 61,
+    top: 19,
+    bottom: 35
+  },
+
+  /* 🌿 左側草地延伸 */
+  {
+    left: 36,
+    right: 42,
+    top: 38,
+    bottom: 62
+  },
+
+  /* 🌼 下方｜花拱門前 */
+  {
+    left: 37,
+    right: 69,
+    top: 61,
+    bottom: 76
+  },
+
+  /* 🪵 左下木平台 */
+  {
+    left: 6,
+    right: 25,
+    top: 60,
+    bottom: 77
+  },
+
+  /* 🪵 木平台連接草地 */
+  {
+    left: 20,
+    right: 38,
+    top: 62,
+    bottom: 72
+  }
+];
+
+
+function isBackyardWalkable(x, y) {
+
+  return backyardWalkAreas.some(
+    (area) => {
+
+      return (
+        x >= area.left &&
+        x <= area.right &&
+        y >= area.top &&
+        y <= area.bottom
+      );
+    }
+  );
+}
+
+/* =========================
+   🎮 玩家移動循環
+========================= */
+
 function movePlayer() {
 
   let dx = 0;
   let dy = 0;
+
+  /* =========================
+   🖱️ 點擊／觸控自動移動
+========================= */
+
+if (
+  targetX !== null &&
+  targetY !== null
+) {
+
+  const distanceX =
+    targetX - playerX;
+
+  const distanceY =
+    targetY - playerY;
+
+  const distance =
+    Math.hypot(
+      distanceX,
+      distanceY
+    );
+
+  /* 已經走到目的地 */
+  if (distance < CLICK_MOVE_SPEED) {
+
+    playerX = targetX;
+    playerY = targetY;
+
+    targetX = null;
+    targetY = null;
+
+  } else {
+
+    dx =
+      (distanceX / distance) *
+      CLICK_MOVE_SPEED;
+
+    dy =
+      (distanceY / distance) *
+      CLICK_MOVE_SPEED;
+  }
+}
 
   if (
     pressedKeys.has("w") ||
@@ -154,161 +296,44 @@ function movePlayer() {
     dx += MOVE_SPEED;
   }
 
+ const nextX = playerX + dx;
+ const nextY = playerY + dy;
 
-  /* 鍵盤優先 */
-if (dx !== 0 || dy !== 0) {
-
-  const nextX = playerX + dx;
-  const nextY = playerY + dy;
-
-  /* X、Y 分開判斷，撞到桌角比較不會卡死 */
-  if (!isBakeryBlocked(nextX, playerY)) {
-    playerX = nextX;
-  }
-
-  if (!isBakeryBlocked(playerX, nextY)) {
-    playerY = nextY;
-  }
-
-  targetX = playerX;
-  targetY = playerY;
-
-  } else {
-
-    /* 點擊／觸控後慢慢走向目標 */
-
-    const distanceX =
-      targetX - playerX;
-
-    const distanceY =
-      targetY - playerY;
-
-    const distance =
-      Math.hypot(
-        distanceX,
-        distanceY
-      );
-
-    if (distance > MOVE_SPEED) {
-
-  const stepX =
-    (distanceX / distance) * MOVE_SPEED;
-
-  const stepY =
-    (distanceY / distance) * MOVE_SPEED;
-
-  const nextX = playerX + stepX;
-  const nextY = playerY + stepY;
-
-  /* X 軸碰撞 */
-  if (!isBakeryBlocked(nextX, playerY)) {
-    playerX = nextX;
-  }
-
-  /* Y 軸碰撞 */
-  if (!isBakeryBlocked(playerX, nextY)) {
-    playerY = nextY;
-  }
-
-  /* 如果完全走不動，就取消這次點地目標 */
-  if (
-    isBakeryBlocked(nextX, playerY) &&
-    isBakeryBlocked(playerX, nextY)
-  ) {
-    targetX = playerX;
-    targetY = playerY;
-  }
-
-} else {
-
-  if (!isBakeryBlocked(targetX, targetY)) {
-    playerX = targetX;
-    playerY = targetY;
-  }
-
-  targetX = playerX;
-  targetY = playerY;
+/* ↔️ 左右移動 */
+if (
+  isBackyardWalkable(nextX, playerY)
+) {
+  playerX = nextX;
 }
-  }
 
-
-  /* 暫時限制可走範圍 */
-
-  playerX =
-    Math.max(
-      10,
-      Math.min(90, playerX)
-    );
-
-  playerY =
-    Math.max(
-      45,
-      Math.min(88, playerY)
-    );
-
+/* ↕️ 上下移動 */
+if (
+  isBackyardWalkable(playerX, nextY)
+) {
+  playerY = nextY;
+}
 
   updatePlayerPosition();
 
-  requestAnimationFrame(
-    movePlayer
-  );
+  requestAnimationFrame(movePlayer);
 }
 
 /* =========================
-   🧱 烘焙房家具碰撞區
+   🚪 返回烘焙房
 ========================= */
 
-const bakeryObstacles = [
-  {
-    name: "中央料理工作台",
-    left: 32,
-    right: 68,
-    top: 43,
-    bottom: 55
-  },
-
-  {
-    name: "左下角櫃子",
-    left: 0,
-    right: 15,
-    top: 64,
-    bottom: 100
-  },
-
-  {
-  name: "右下角櫃子",
-  left: 83,
-  right: 100,
-  top: 64,
-  bottom: 100
+bakeryEntrance.addEventListener(
+  "click",
+  () => {
+    window.location.href = "../bakery/index.html";
   }
-
-];
-
-function isBakeryBlocked(x, y) {
-
-  return bakeryObstacles.some((obstacle) => {
-
-    return (
-      x >= obstacle.left &&
-      x <= obstacle.right &&
-      y >= obstacle.top &&
-      y <= obstacle.bottom
-    );
-
-  });
-}
-
-/* 啟動人物位置與移動 */
-
-updatePlayerPosition();
-movePlayer();
+);
 
 /* =========================
-   🔐 檢查會員身分
+   🔐 檢查會員身分＋載入角色
 ========================= */
 
-async function checkBakeryAccess() {
+async function checkBackyardAccess() {
 
   const {
     data: { session },
@@ -541,42 +566,23 @@ async function checkBakeryAccess() {
   }
 
 
-  /* 🧍 全部載入完成後才顯示 */
+  /* 🧍 全部載完才顯示 */
 
   playerCharacter.style.display =
     "block";
 
 
   console.log(
-    "👗 烘焙房分層角色載入完成",
+    "👗 後院分層角色載入完成",
     equipment
   );
 }
 
 /* =========================
-   🚪 左側拱門 → 客廳
+   🚀 啟動後院農場
 ========================= */
 
-livingRoomEntrance.addEventListener(
-  "click",
-  () => {
-    window.location.href = "../index.html";
-  }
-);
+updatePlayerPosition();
+movePlayer();
 
-/* =========================
-   🌾 右側花園門 → 後院
-========================= */
-
-backyardEntrance.addEventListener(
-  "click",
-  () => {
-    window.location.href = "../backyard/index.html";
-  }
-);
-
-/* =========================
-   🚀 啟動烘焙房
-========================= */
-
-checkBakeryAccess();
+checkBackyardAccess();

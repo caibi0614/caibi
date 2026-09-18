@@ -36,6 +36,14 @@
     aria-label="前往烘焙房"
   ></button>
 
+  <!-- 🪜 通往 2F 私人房間 -->
+<button
+  id="privateRoomEntrance"
+  class="private-room-entrance"
+  type="button"
+  aria-label="前往私人房間"
+></button>
+
 </div>
 
 <!-- 左上角會員資訊 -->
@@ -48,20 +56,83 @@
 <button id="logoutButton" type="button">
   🚪 登出
 </button>
-  <!-- =========================
-       👤 玩家角色圖層
-  ========================== -->
-  <div class="player-layer" id="playerLayer">
+<!-- =========================
+     👤 玩家角色圖層
+========================== -->
+<div class="player-layer" id="playerLayer">
 
+  <div
+    id="playerCharacter"
+    class="player-character"
+  >
+
+    <!-- 👤 玩家專屬 Base -->
     <img
-      id="playerCharacter"
-      class="player-character"
-      src=""
-      alt="玩家角色"
+      id="playerBase"
+      class="player-clothing-layer player-base"
+      alt="玩家 Base"
+      draggable="false"
+    >
+
+    <!-- 🧦 襪子 -->
+    <img
+      id="playerSocks"
+      class="player-clothing-layer player-socks"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 👟 鞋子 -->
+    <img
+      id="playerShoes"
+      class="player-clothing-layer player-shoes"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 👖 下身 -->
+    <img
+      id="playerBottom"
+      class="player-clothing-layer player-bottom"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 👚 上衣 -->
+    <img
+      id="playerTop"
+      class="player-clothing-layer player-top"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 👗 洋裝 -->
+    <img
+      id="playerDress"
+      class="player-clothing-layer player-dress"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 🧥 外套 -->
+    <img
+      id="playerOuterwear"
+      class="player-clothing-layer player-outerwear"
+      alt=""
+      draggable="false"
+    >
+
+    <!-- 🎀 頭飾 -->
+    <img
+      id="playerHeadwear"
+      class="player-clothing-layer player-headwear"
+      alt=""
       draggable="false"
     >
 
   </div>
+
+</div>
 
 </div>
 

@@ -9,53 +9,42 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>菜比之家｜烘焙房</title>
+  <title>菜比之家｜後院農場</title>
 
-  <!-- 🍰 烘焙房 CSS -->
   <link
     rel="stylesheet"
-    href="css/bakery.css"
+    href="css/backyard.css"
   >
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
+  <!-- 🌾 後院農場 -->
   <main
-    id="bakeryRoom"
-    class="bakery-room"
+    id="backyard"
+    class="backyard"
   >
 
-    <!-- 🍰 左上角房間名稱 -->
+    <!-- 場景名稱 -->
     <div class="room-badge">
-      🍰 烘焙房
+      🌾 後院農場
     </div>
 
-<!-- 🗺️ 烘焙房 16:9 遊戲地圖層 -->
+   <!-- 🗺️ 16:9 遊戲地圖層 -->
 <div
-  id="bakeryMapLayer"
-  class="bakery-map-layer"
+  id="backyardMapLayer"
+  class="backyard-map-layer"
 >
 
-  <!-- 🚪 左側拱門｜回客廳 -->
+  <!-- 🚪 返回烘焙房 -->
   <button
-    id="livingRoomEntrance"
-    class="living-room-entrance"
+    id="bakeryEntrance"
+    class="bakery-entrance"
     type="button"
-    aria-label="回到客廳"
+    aria-label="返回烘焙房"
   ></button>
 
-  <!-- 🌾 右側花園門｜前往後院 -->
-  <button
-    id="backyardEntrance"
-    class="backyard-entrance"
-    type="button"
-    aria-label="前往後院農場"
-  ></button>
-
-  <!-- 👤 玩家分層角色 -->
+ <!-- 👤 玩家分層角色 -->
 <div
   id="playerCharacter"
   class="player-character"
@@ -131,12 +120,13 @@
 
   </main>
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Supabase 設定 -->
   <script src="../../js/supabase.js"></script>
 
-  <!-- 🍰 烘焙房 JS -->
-  <script src="js/bakery.js"></script>
+  <!-- 後院程式 -->
+  <script src="js/backyard.js"></script>
 
 </body>
 

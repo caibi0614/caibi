@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <title>菜比之家｜私人房間</title>
+
+  <link
+    rel="stylesheet"
+    href="css/room.css"
+  >
+</head>
+
+<body>
+
+  <main
+    id="privateRoom"
+    class="private-room"
+  >
+
+    <div class="room-badge">
+      🏠 我的房間
+    </div>
+
+    <div
+      id="roomMapLayer"
+      class="room-map-layer"
+    >
+
+      <!-- 🎒 私人房間功能 -->
+<div class="room-actions">
+
+  <button
+    id="storageButton"
+    class="room-action-button"
+    type="button"
+  >
+    <span class="room-action-icon">📦</span>
+    <span>儲物箱</span>
+  </button>
+
+  <button
+    id="wardrobeButton"
+    class="room-action-button"
+    type="button"
+  >
+    <span class="room-action-icon">👗</span>
+    <span>衣櫃</span>
+  </button>
+
+</div>
+
+<!-- =========================
+     🪑 房間家具顯示層
+========================= -->
+<div
+  id="roomFurnitureLayer"
+  class="room-furniture-layer"
+></div>
+
+<!-- =========================
+     🪑 家具編輯操作列
+========================= -->
+<div
+  id="furnitureEditBar"
+  class="furniture-edit-bar"
+  aria-hidden="true"
+>
+
+  <button
+    id="furnitureCancelButton"
+    class="furniture-edit-button"
+    type="button"
+  >
+    ↩ 取消
+  </button>
+
+  <button
+    id="furnitureConfirmButton"
+    class="furniture-edit-button furniture-confirm-button"
+    type="button"
+  >
+    ✓ 確認位置
+  </button>
+
+  <button
+    id="furnitureStoreButton"
+    class="furniture-edit-button furniture-store-button"
+    type="button"
+  >
+    📦 收回
+  </button>
+
+</div>
+
+    <!-- 🚪 返回 1F 客廳 -->
+<button
+  id="livingRoomEntrance"
+  class="living-room-entrance"
+  type="button"
+  aria-label="返回一樓客廳"
+></button>
+
+<!-- 👤 玩家分層角色 -->
+<div
+  id="playerCharacter"
+  class="player-character"
+>
+
+  <!-- 👤 玩家專屬 Base -->
+  <img
+    id="playerBase"
+    class="player-layer player-base"
+    alt="玩家 Base"
+  >
+
+  <!-- 🧦 襪子 -->
+  <img
+    id="playerSocks"
+    class="player-layer player-socks"
+    alt=""
+  >
+
+  <!-- 👟 鞋子 -->
+  <img
+    id="playerShoes"
+    class="player-layer player-shoes"
+    alt=""
+  >
+
+  <!-- 👖 下身 -->
+  <img
+    id="playerBottom"
+    class="player-layer player-bottom"
+    alt=""
+  >
+
+  <!-- 👚 上衣 -->
+  <img
+    id="playerTop"
+    class="player-layer player-top"
+    alt=""
+  >
+
+  <!-- 👗 洋裝 -->
+  <img
+    id="playerDress"
+    class="player-layer player-dress"
+    alt=""
+  >
+
+  <!-- 🧥 外套 -->
+  <img
+    id="playerOuterwear"
+    class="player-layer player-outerwear"
+    alt=""
+  >
+
+  <!-- 🎀 頭飾 -->
+  <img
+    id="playerHeadwear"
+    class="player-layer player-headwear"
+    alt=""
+  >
+
+</div>
+
+    </div>
+
+  </main>
+
+<!-- =========================
+     📦 家具儲物箱
+========================= -->
+<div
+  id="storageModal"
+  class="storage-modal"
+  aria-hidden="true"
+>
+
+  <div class="storage-panel">
+
+    <div class="storage-header">
+
+      <div class="storage-title">
+        📦 儲物箱
+      </div>
+
+      <button
+        id="storageCloseButton"
+        class="storage-close-button"
+        type="button"
+        aria-label="關閉儲物箱"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <div
+      id="storageFurnitureGrid"
+      class="storage-furniture-grid"
+    >
+      <!-- JS 之後自動放入玩家擁有的家具 -->
+    </div>
+
+  </div>
+
+</div>
+
+ <div class="rotate-message">
+
+ </div>
+    <div>
+      📱
+      <br>
+      請將手機轉成橫向遊玩
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../js/supabase.js"></script>
+  <script src="js/room.js"></script>
+
+</body>
+</html>
