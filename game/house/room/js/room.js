@@ -87,6 +87,43 @@ const roomFurnitureLayer =
     "roomFurnitureLayer"
   );
 
+const furnitureEditModeButton =
+  document.getElementById(
+    "furnitureEditModeButton"
+  );
+
+
+let isFurnitureEditMode = false;
+
+const furnitureEditBar =
+  document.getElementById(
+    "furnitureEditBar"
+  );
+
+const furnitureCancelButton =
+  document.getElementById(
+    "furnitureCancelButton"
+  );
+
+const furnitureConfirmButton =
+  document.getElementById(
+    "furnitureConfirmButton"
+  );
+
+const furnitureStoreButton =
+  document.getElementById(
+    "furnitureStoreButton"
+  );
+
+
+let selectedFurniture = null;
+
+let furnitureOriginalX = null;
+let furnitureOriginalY = null;
+
+let furniturePendingX = null;
+let furniturePendingY = null;
+
 /* =========================
    🚶 玩家移動資料
 ========================= */
@@ -729,7 +766,50 @@ async function loadRoomFurniture() {
 }
 
 /* =========================
-   🪑 家具拖曳＋儲存位置
+   🪑 家具編輯模式
+========================= */
+
+function openFurnitureEditBar(
+  furniture
+) {
+
+  selectedFurniture =
+    furniture;
+
+  furnitureEditBar.classList.add(
+    "is-open"
+  );
+
+  furnitureEditBar.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+function closeFurnitureEditBar() {
+
+  furnitureEditBar.classList.remove(
+    "is-open"
+  );
+
+  furnitureEditBar.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  selectedFurniture = null;
+
+  furnitureOriginalX = null;
+  furnitureOriginalY = null;
+
+  furniturePendingX = null;
+  furniturePendingY = null;
+}
+
+
+/* =========================
+   🖱️📱 拖曳家具
 ========================= */
 
 function enableFurnitureDrag(
@@ -742,6 +822,58 @@ function enableFurnitureDrag(
 
       event.preventDefault();
       event.stopPropagation();
+
+      /* 🔒 平常模式禁止移動家具 */
+      if (!isFurnitureEditMode) {
+        return;
+      }
+
+      /* 正在編輯其他家具時，
+         不直接切換 */
+      if (
+        selectedFurniture &&
+        selectedFurniture !== furniture
+      ) {
+        return;
+      }
+
+
+      const currentX =
+        parseFloat(
+          furniture.style.left
+        );
+
+      const currentY =
+        parseFloat(
+          furniture.style.top
+        );
+
+
+      /* 第一次碰這件家具時，
+         記住原本位置 */
+      if (
+        selectedFurniture !== furniture
+      ) {
+
+        furnitureOriginalX =
+          currentX;
+
+        furnitureOriginalY =
+          currentY;
+      }
+
+
+      furniturePendingX =
+        currentX;
+
+      furniturePendingY =
+        currentY;
+
+
+      openFurnitureEditBar(
+        furniture
+      );
+
 
       furniture.setPointerCapture(
         event.pointerId
@@ -758,6 +890,7 @@ function enableFurnitureDrag(
             roomMapLayer
               .getBoundingClientRect();
 
+
           let x =
             (
               (
@@ -766,6 +899,7 @@ function enableFurnitureDrag(
               ) /
               rect.width
             ) * 100;
+
 
           let y =
             (
@@ -783,8 +917,13 @@ function enableFurnitureDrag(
               y
             );
 
+
           x = safePosition.x;
           y = safePosition.y;
+
+
+          furniturePendingX = x;
+          furniturePendingY = y;
 
 
           furniture.style.left =
@@ -796,7 +935,7 @@ function enableFurnitureDrag(
 
 
       const stopDragging =
-        async (upEvent) => {
+        () => {
 
           furniture.removeEventListener(
             "pointermove",
@@ -813,88 +952,14 @@ function enableFurnitureDrag(
             stopDragging
           );
 
+
           furniture.style.cursor =
             "grab";
 
-
-          const rect =
-            roomMapLayer
-              .getBoundingClientRect();
-
-          let x =
-            (
-              (
-                upEvent.clientX -
-                rect.left
-              ) /
-              rect.width
-            ) * 100;
-
-          let y =
-            (
-              (
-                upEvent.clientY -
-                rect.top
-              ) /
-              rect.height
-            ) * 100;
-
-
-          const safePosition =
-            clampToRoomFloor(
-              x,
-              y
-            );
-
-          x = safePosition.x;
-          y = safePosition.y;
-
-
-          furniture.style.left =
-            `${x}%`;
-
-          furniture.style.top =
-            `${y}%`;
-
-
-          const roomFurnitureId =
-            Number(
-              furniture.dataset
-                .roomFurnitureId
-            );
-
-
-          const {
-            error: moveError
-          } =
-            await caibiSupabase.rpc(
-              "move_room_furniture",
-              {
-                p_room_furniture_id:
-                  roomFurnitureId,
-
-                p_position_x:
-                  x,
-
-                p_position_y:
-                  y
-              }
-            );
-
-
-          if (moveError) {
-
-            console.error(
-              "儲存家具位置失敗：",
-              moveError
-            );
-
-            alert(
-              "家具位置儲存失敗 🥲"
-            );
-
-            await loadRoomFurniture();
-          }
+          /*
+            ⚠️ 放手不儲存。
+            等玩家按「確認位置」。
+          */
         };
 
 
@@ -915,6 +980,195 @@ function enableFurnitureDrag(
     }
   );
 }
+
+
+/* =========================
+   ↩ 取消家具編輯
+========================= */
+
+furnitureCancelButton.addEventListener(
+  "click",
+  () => {
+
+    if (!selectedFurniture) {
+      return;
+    }
+
+
+    selectedFurniture.style.left =
+      `${furnitureOriginalX}%`;
+
+    selectedFurniture.style.top =
+      `${furnitureOriginalY}%`;
+
+
+    closeFurnitureEditBar();
+  }
+);
+
+
+/* =========================
+   ✓ 確認家具位置
+========================= */
+
+furnitureConfirmButton.addEventListener(
+  "click",
+  async () => {
+
+    if (
+      !selectedFurniture ||
+      furniturePendingX === null ||
+      furniturePendingY === null
+    ) {
+      return;
+    }
+
+
+    furnitureConfirmButton.disabled =
+      true;
+
+    furnitureConfirmButton.textContent =
+      "儲存中...";
+
+
+    const roomFurnitureId =
+      Number(
+        selectedFurniture.dataset
+          .roomFurnitureId
+      );
+
+
+    const {
+      error: moveError
+    } =
+      await caibiSupabase.rpc(
+        "move_room_furniture",
+        {
+          p_room_furniture_id:
+            roomFurnitureId,
+
+          p_position_x:
+            furniturePendingX,
+
+          p_position_y:
+            furniturePendingY
+        }
+      );
+
+
+    furnitureConfirmButton.disabled =
+      false;
+
+    furnitureConfirmButton.textContent =
+      "✓ 確認位置";
+
+
+    if (moveError) {
+
+      console.error(
+        "儲存家具位置失敗：",
+        moveError
+      );
+
+      alert(
+        "家具位置儲存失敗 🥲"
+      );
+
+
+      selectedFurniture.style.left =
+        `${furnitureOriginalX}%`;
+
+      selectedFurniture.style.top =
+        `${furnitureOriginalY}%`;
+
+
+      closeFurnitureEditBar();
+
+      return;
+    }
+
+
+    console.log(
+      "🪑 家具位置已確認"
+    );
+
+
+    closeFurnitureEditBar();
+  }
+);
+
+
+/* =========================
+   📦 收回儲物箱
+========================= */
+
+furnitureStoreButton.addEventListener(
+  "click",
+  async () => {
+
+    if (!selectedFurniture) {
+      return;
+    }
+
+
+    const roomFurnitureId =
+      Number(
+        selectedFurniture.dataset
+          .roomFurnitureId
+      );
+
+
+    furnitureStoreButton.disabled =
+      true;
+
+    furnitureStoreButton.textContent =
+      "收回中...";
+
+
+    const {
+      error: storeError
+    } =
+      await caibiSupabase.rpc(
+        "store_room_furniture",
+        {
+          p_room_furniture_id:
+            roomFurnitureId
+        }
+      );
+
+
+    furnitureStoreButton.disabled =
+      false;
+
+    furnitureStoreButton.textContent =
+      "📦 收回";
+
+
+    if (storeError) {
+
+      console.error(
+        "收回家具失敗：",
+        storeError
+      );
+
+      alert(
+        "家具收回失敗 🥲"
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "📦 家具已收回儲物箱"
+    );
+
+
+    closeFurnitureEditBar();
+
+    await loadRoomFurniture();
+  }
+);
 
 /* =========================
    🪑 載入玩家家具
@@ -960,6 +1214,35 @@ async function loadStorageFurniture() {
         session.user.id
       );
 
+/* 讀取目前房間裡已擺放的家具 */
+const {
+  data: placedFurniture,
+  error: placedFurnitureError
+} =
+  await caibiSupabase
+    .from("room_furniture")
+    .select("furniture_item_id")
+    .eq(
+      "user_id",
+      session.user.id
+    );
+
+if (placedFurnitureError) {
+
+  console.error(
+    "讀取已擺放家具失敗：",
+    placedFurnitureError
+  );
+
+  storageFurnitureGrid.innerHTML =
+    `
+      <div class="storage-empty">
+        家具讀取失敗 🥲
+      </div>
+    `;
+
+  return;
+}
 
   if (furnitureError) {
 
@@ -1052,31 +1335,64 @@ async function loadStorageFurniture() {
       item.name;
 
 
-    const quantity =
-      document.createElement(
-        "div"
-      );
+    /* 計算這款家具目前已擺放幾個 */
+const placedCount =
+  (placedFurniture || [])
+    .filter(
+      placed =>
+        Number(placed.furniture_item_id) ===
+        Number(item.id)
+    )
+    .length;
 
-    quantity.className =
-      "storage-furniture-quantity";
 
-    quantity.textContent =
-      `持有 ×${owned.quantity}`;
+/* 還可以再擺放幾個 */
+const availableCount =
+  Math.max(
+    0,
+    owned.quantity - placedCount
+  );
+
+
+const quantity =
+  document.createElement(
+    "div"
+  );
+
+quantity.className =
+  "storage-furniture-quantity";
+
+quantity.textContent =
+  `持有 ×${owned.quantity}｜可擺放 ×${availableCount}`;
 
 
     const placeButton =
-      document.createElement(
-        "button"
-      );
+  document.createElement(
+    "button"
+  );
 
-    placeButton.className =
-      "storage-place-button";
+placeButton.className =
+  "storage-place-button";
 
-    placeButton.type =
-      "button";
+placeButton.type =
+  "button";
 
-    placeButton.textContent =
-      "擺放";
+
+/* 沒有剩餘數量 → 禁止再擺 */
+if (availableCount <= 0) {
+
+  placeButton.disabled = true;
+
+  placeButton.textContent =
+    "已擺放";
+
+} else {
+
+  placeButton.disabled = false;
+
+  placeButton.textContent =
+    "擺放";
+}
 
     placeButton.addEventListener(
       "click",
@@ -1148,6 +1464,109 @@ async function loadStorageFurniture() {
 }
 
 /* =========================
+   ✏️ 房間家具編輯模式
+========================= */
+
+function startFurnitureEditMode() {
+
+  isFurnitureEditMode = true;
+
+  closeStorage();
+
+    storageButton.innerHTML =
+    `
+      <span class="room-action-icon">
+        ✓
+      </span>
+      <span>完成編輯</span>
+    `;
+
+  document
+    .querySelectorAll(
+      ".room-furniture"
+    )
+    .forEach(
+      furniture => {
+
+        furniture.style.cursor =
+          "grab";
+      }
+    );
+
+  console.log(
+    "✏️ 已進入家具編輯模式"
+  );
+}
+
+
+function finishFurnitureEditMode() {
+
+  /* 如果還有一件家具尚未確認，
+     先恢復它原本的位置 */
+  if (
+    selectedFurniture &&
+    furnitureOriginalX !== null &&
+    furnitureOriginalY !== null
+  ) {
+
+    selectedFurniture.style.left =
+      `${furnitureOriginalX}%`;
+
+    selectedFurniture.style.top =
+      `${furnitureOriginalY}%`;
+  }
+
+
+  closeFurnitureEditBar();
+
+  isFurnitureEditMode = false;
+
+  storageButton.innerHTML =
+    `
+      <span class="room-action-icon">
+        📦
+      </span>
+      <span>儲物箱</span>
+    `;
+
+  document
+    .querySelectorAll(
+      ".room-furniture"
+    )
+    .forEach(
+      furniture => {
+
+        furniture.style.cursor =
+          "default";
+      }
+    );
+
+
+  console.log(
+    "🔒 已結束家具編輯模式"
+  );
+}
+
+
+furnitureEditModeButton.addEventListener(
+  "click",
+  () => {
+
+    if (isFurnitureEditMode) {
+
+      finishFurnitureEditMode();
+
+      closeStorage();
+
+      return;
+    }
+
+
+    startFurnitureEditMode();
+  }
+);
+
+/* =========================
    📦 儲物箱開關
 ========================= */
 
@@ -1192,6 +1611,17 @@ storageButton.addEventListener(
 
     event.stopPropagation();
 
+
+    /* 編輯模式 → 這顆變成完成 */
+    if (isFurnitureEditMode) {
+
+      finishFurnitureEditMode();
+
+      return;
+    }
+
+
+    /* 平常模式 → 開儲物箱 */
     openStorage();
   }
 );
