@@ -105,6 +105,11 @@ const furnitureCancelButton =
     "furnitureCancelButton"
   );
 
+const furnitureRotateButton =
+  document.getElementById(
+    "furnitureRotateButton"
+  );
+
 const furnitureConfirmButton =
   document.getElementById(
     "furnitureConfirmButton"
@@ -125,6 +130,20 @@ let furniturePendingX = null;
 let furniturePendingY = null;
 
 /* =========================
+   ↻ 家具方向
+========================= */
+
+const FURNITURE_DIRECTIONS = [
+  "front",
+  "right",
+  "back",
+  "left"
+];
+
+let furnitureOriginalDirection = null;
+let furniturePendingDirection = null;
+
+/* =========================
    🚶 玩家移動資料
 ========================= */
 
@@ -138,6 +157,41 @@ const MOVE_SPEED = 0.6;
 
 const pressedKeys = new Set();
 
+/* =========================
+   🛏️ 家具互動狀態
+========================= */
+
+let activeFurnitureInteraction = null;
+
+/* =========================
+   🛏️ 床｜四方向人物互動設定
+========================= */
+
+const BED_INTERACTION = {
+  front: {
+  offsetX: 0,
+  offsetY: -12,
+  rotation: 0
+},
+
+  right: {
+    offsetX: 4,
+    offsetY: -10,
+    rotation: 270
+  },
+
+  back: {
+    offsetX: 0,
+    offsetY: -30,
+    rotation: 180
+  },
+
+  left: {
+    offsetX: -5,
+    offsetY: -10,
+    rotation: 90
+  }
+};
 
 /* =========================
    🚶 更新玩家位置
@@ -163,6 +217,30 @@ window.addEventListener(
 
     const key =
       event.key.toLowerCase();
+
+    /* 🛏️ 正在使用家具 → 按移動鍵先離開家具 */
+if (
+  activeFurnitureInteraction &&
+  (
+    key === "w" ||
+    key === "a" ||
+    key === "s" ||
+    key === "d" ||
+    key.startsWith("arrow")
+  )
+) {
+  activeFurnitureInteraction = null;
+
+  playerCharacter.classList.remove(
+    "is-sleeping"
+  );
+
+  playerCharacter.style.transform =
+    "translate(-50%, -100%)";
+
+  targetX = playerX;
+  targetY = playerY;
+}
 
     if (
       key === "w" ||
@@ -245,17 +323,30 @@ roomMapLayer.addEventListener(
   "pointerdown",
   (event) => {
 
-    /* 點到門時不要觸發移動 */
-   if (
-  event.target.closest("button") ||
-  event.target.closest(".room-furniture")
-) {
-  return;
-}
+    /* 點到門／家具時不要觸發地板移動 */
+    if (
+      event.target.closest("button") ||
+      event.target.closest(".room-furniture")
+    ) {
+      return;
+    }
+
+    /* 🛏️ 真正點到地板 → 離開家具互動 */
+    if (activeFurnitureInteraction) {
+
+      activeFurnitureInteraction = null;
+
+      playerCharacter.classList.remove(
+        "is-sleeping"
+      );
+
+      playerCharacter.style.transform =
+        "translate(-50%, -100%)";
+    }
 
     const rect =
-      roomMapLayer.getBoundingClientRect();
-
+  roomMapLayer.getBoundingClientRect();
+  
     const clickedX =
       ((event.clientX - rect.left) /
         rect.width) *
@@ -686,13 +777,17 @@ async function loadRoomFurniture() {
         id,
         furniture_item_id,
         position_x,
-        position_y,
-        furniture_items (
-          id,
-          name,
-          category,
-          image_path
-        )
+position_y,
+direction,
+furniture_items (
+  id,
+  name,
+  category,
+  image_front,
+  image_back,
+  image_left,
+  image_right
+)
       `)
       .eq(
         "user_id",
@@ -722,12 +817,9 @@ async function loadRoomFurniture() {
     const item =
       placed.furniture_items;
 
-    if (
-      !item ||
-      !item.image_path
-    ) {
-      continue;
-    }
+    if (!item) {
+  continue;
+}
 
 
     const furniture =
@@ -738,16 +830,50 @@ async function loadRoomFurniture() {
     furniture.className =
       `room-furniture room-furniture-${item.category}`;
 
-    furniture.src =
-      getAvatarUrl(
-        item.image_path
-      );
+    const direction =
+  placed.direction || "front";
+
+const directionImageMap = {
+  front: item.image_front,
+  right: item.image_right,
+  back: item.image_back,
+  left: item.image_left
+};
+
+const imagePath =
+  directionImageMap[direction] ||
+  item.image_front;
+
+if (!imagePath) {
+  continue;
+}
+
+furniture.src =
+  getAvatarUrl(imagePath);
 
     furniture.alt =
       item.name;
 
     furniture.dataset.roomFurnitureId =
       placed.id;
+
+    furniture.dataset.category =
+  item.category;
+  
+  furniture.dataset.direction =
+  direction;
+
+furniture.dataset.imageFront =
+  item.image_front || "";
+
+furniture.dataset.imageRight =
+  item.image_right || "";
+
+furniture.dataset.imageBack =
+  item.image_back || "";
+
+furniture.dataset.imageLeft =
+  item.image_left || "";
 
     furniture.style.left =
       `${placed.position_x}%`;
@@ -805,6 +931,9 @@ function closeFurnitureEditBar() {
 
   furniturePendingX = null;
   furniturePendingY = null;
+
+  furnitureOriginalDirection = null;
+  furniturePendingDirection = null;
 }
 
 
@@ -823,10 +952,73 @@ function enableFurnitureDrag(
       event.preventDefault();
       event.stopPropagation();
 
-      /* 🔒 平常模式禁止移動家具 */
-      if (!isFurnitureEditMode) {
-        return;
-      }
+      /* 🖱️ 平常模式 → 家具互動 */
+if (!isFurnitureEditMode) {
+
+  const category =
+    furniture.dataset.category;
+
+  /* 🛏️ 點床 */
+if (category === "bed") {
+
+  activeFurnitureInteraction =
+    "bed";
+
+  /* 讀取床目前方向 */
+  const direction =
+    furniture.dataset.direction ||
+    "front";
+
+  const interaction =
+    BED_INTERACTION[direction] ||
+    BED_INTERACTION.front;
+
+  /* 停止目前走路 */
+  pressedKeys.clear();
+
+  /* 取得床目前的位置 */
+  const bedX =
+    parseFloat(
+      furniture.style.left
+    );
+
+  const bedY =
+    parseFloat(
+      furniture.style.top
+    );
+
+  /* 人物位置跟著床＋該方向偏移 */
+  playerX =
+    bedX +
+    interaction.offsetX;
+
+  playerY =
+    bedY +
+    interaction.offsetY;
+
+  targetX = playerX;
+  targetY = playerY;
+
+  /* 套用睡覺狀態 */
+  playerCharacter.classList.add(
+    "is-sleeping"
+  );
+
+  /* 先由 JS 控制人物角度 */
+  playerCharacter.style.transform =
+    `translate(-50%, -100%) rotate(${interaction.rotation}deg)`;
+
+  updatePlayerPosition();
+
+  console.log(
+    "🛏️ 玩家上床：",
+    direction,
+    interaction
+  );
+}
+
+  return;
+}
 
       /* 正在編輯其他家具時，
          不直接切換 */
@@ -850,17 +1042,21 @@ function enableFurnitureDrag(
 
 
       /* 第一次碰這件家具時，
-         記住原本位置 */
-      if (
-        selectedFurniture !== furniture
-      ) {
+   記住原本位置＋方向 */
+if (
+  selectedFurniture !== furniture
+) {
 
-        furnitureOriginalX =
-          currentX;
+  furnitureOriginalX =
+    currentX;
 
-        furnitureOriginalY =
-          currentY;
-      }
+  furnitureOriginalY =
+    currentY;
+
+  furnitureOriginalDirection =
+    furniture.dataset.direction ||
+    "front";
+}
 
 
       furniturePendingX =
@@ -869,6 +1065,9 @@ function enableFurnitureDrag(
       furniturePendingY =
         currentY;
 
+furniturePendingDirection =
+  furniture.dataset.direction ||
+  "front";
 
       openFurnitureEditBar(
         furniture
@@ -981,6 +1180,75 @@ function enableFurnitureDrag(
   );
 }
 
+/* =========================
+   ↻ 家具轉向
+========================= */
+
+furnitureRotateButton.addEventListener(
+  "click",
+  () => {
+
+    if (!selectedFurniture) {
+      return;
+    }
+
+    const currentDirection =
+      furniturePendingDirection ||
+      selectedFurniture.dataset.direction ||
+      "front";
+
+    const currentIndex =
+      FURNITURE_DIRECTIONS.indexOf(
+        currentDirection
+      );
+
+    const nextIndex =
+      (currentIndex + 1) %
+      FURNITURE_DIRECTIONS.length;
+
+    const nextDirection =
+      FURNITURE_DIRECTIONS[nextIndex];
+
+    const imageKey =
+      `image${
+        nextDirection
+          .charAt(0)
+          .toUpperCase() +
+        nextDirection.slice(1)
+      }`;
+
+    const imagePath =
+      selectedFurniture.dataset[
+        imageKey
+      ];
+
+    if (!imagePath) {
+
+      console.warn(
+        "這個方向沒有家具圖片：",
+        nextDirection
+      );
+
+      return;
+    }
+
+    selectedFurniture.src =
+      getAvatarUrl(
+        imagePath
+      );
+
+    selectedFurniture.dataset.direction =
+      nextDirection;
+
+    furniturePendingDirection =
+      nextDirection;
+
+    console.log(
+      "↻ 家具轉向：",
+      nextDirection
+    );
+  }
+);
 
 /* =========================
    ↩ 取消家具編輯
@@ -1001,6 +1269,35 @@ furnitureCancelButton.addEventListener(
     selectedFurniture.style.top =
       `${furnitureOriginalY}%`;
 
+if (furnitureOriginalDirection) {
+
+  const originalImageKey =
+    `image${
+      furnitureOriginalDirection
+        .charAt(0)
+        .toUpperCase() +
+      furnitureOriginalDirection.slice(1)
+    }`;
+
+  const originalImagePath =
+    selectedFurniture.dataset[
+      originalImageKey
+    ];
+
+  if (originalImagePath) {
+
+    selectedFurniture.src =
+      getAvatarUrl(
+        originalImagePath
+      );
+  }
+
+  selectedFurniture.dataset.direction =
+    furnitureOriginalDirection;
+
+  furniturePendingDirection =
+    furnitureOriginalDirection;
+}
 
     closeFurnitureEditBar();
   }
@@ -1041,19 +1338,24 @@ furnitureConfirmButton.addEventListener(
     const {
       error: moveError
     } =
-      await caibiSupabase.rpc(
-        "move_room_furniture",
-        {
-          p_room_furniture_id:
-            roomFurnitureId,
+     await caibiSupabase.rpc(
+  "move_room_furniture",
+  {
+    p_room_furniture_id:
+      roomFurnitureId,
 
-          p_position_x:
-            furniturePendingX,
+    p_position_x:
+      furniturePendingX,
 
-          p_position_y:
-            furniturePendingY
-        }
-      );
+    p_position_y:
+      furniturePendingY,
+
+    p_direction:
+      furniturePendingDirection ||
+      selectedFurniture.dataset.direction ||
+      "front"
+  }
+);
 
 
     furnitureConfirmButton.disabled =
@@ -1205,7 +1507,7 @@ async function loadStorageFurniture() {
           id,
           name,
           category,
-          image_path,
+          image_front,
           rarity
         )
       `)
@@ -1316,7 +1618,7 @@ if (placedFurnitureError) {
 
     image.src =
       getAvatarUrl(
-        item.image_path
+        item.image_front
       );
 
     image.alt =
