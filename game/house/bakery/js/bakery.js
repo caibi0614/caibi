@@ -840,8 +840,12 @@ async function loadPlayerInventory(userId) {
   }
 
 
-  productInventory.cake = 0;
-
+ for (
+  const product
+  of Object.keys(productInventory)
+) {
+  productInventory[product] = 0;
+}
 
   for (const row of inventoryRows || []) {
 
@@ -863,8 +867,11 @@ async function loadPlayerInventory(userId) {
       ingredientInventory[item.item_key] =
         row.quantity;
 
-    } else if (
-      item.category === "food" &&
+        } else if (
+      (
+        item.category === "food" ||
+        item.category === "material"
+      ) &&
       Object.hasOwn(
         productInventory,
         item.item_key
@@ -960,13 +967,25 @@ async function saveInventoryItem(
 ========================= */
 
 const productInventory = {
-  cake: 0
+  cake: 0,
+  food_waste: 0,
+  fertilizer: 0
 };
 
 const productInfo = {
   cake: {
     name: "蛋糕",
     icon: "🎂"
+  },
+
+  food_waste: {
+    name: "廚餘",
+    icon: "🗑️"
+  },
+
+  fertilizer: {
+    name: "肥料",
+    icon: "🌱"
   }
 };
 
@@ -1047,6 +1066,109 @@ function renderProductList() {
       name,
       count
     );
+
+
+    /* =========================
+       🌱 廚餘 → 肥料按鈕
+    ========================= */
+
+    if (product === "food_waste") {
+
+      const recycleButton =
+        document.createElement("button");
+
+      recycleButton.type = "button";
+
+      recycleButton.className =
+        "recycle-waste-button";
+
+      recycleButton.textContent =
+        "🌱 製成肥料";
+
+      recycleButton.disabled =
+        quantity < 3;
+
+      recycleButton.title =
+        quantity < 3
+          ? "需要 🗑️ 廚餘 ×3"
+          : "消耗 🗑️ 廚餘 ×3，獲得 🌱 肥料 ×1";
+
+            recycleButton.addEventListener(
+        "click",
+        async (event) => {
+
+          event.stopPropagation();
+
+          /* 防止連點 */
+          recycleButton.disabled = true;
+
+          const {
+            data,
+            error
+          } = await caibiSupabase.rpc(
+            "recycle_food_waste"
+          );
+
+
+          /* =========================
+             ❌ 製作肥料失敗
+          ========================= */
+
+          if (error) {
+
+            console.error(
+              "🌱 肥料製作失敗：",
+              error
+            );
+
+            cookingHint.textContent =
+              error.message ||
+              "肥料製作失敗，請再試一次";
+
+            recycleButton.disabled =
+              productInventory.food_waste < 3;
+
+            return;
+          }
+
+
+          /* =========================
+             🎒 重新取得玩家庫存
+          ========================= */
+
+          const {
+            data: { session }
+          } =
+            await caibiSupabase.auth.getSession();
+
+          if (!session) {
+
+            cookingHint.textContent =
+              "登入狀態失效，請重新登入";
+
+            return;
+          }
+
+
+          await loadPlayerInventory(
+            session.user.id
+          );
+
+
+          cookingHint.textContent =
+            "回收成功！獲得 🌱 肥料 ×1";
+
+          console.log(
+            "🌱 廚餘回收成功：",
+            data
+          );
+        }
+      );
+      
+      item.appendChild(
+        recycleButton
+      );
+    }
 
 
     productList.appendChild(
@@ -1397,10 +1519,89 @@ startCookingButton.addEventListener(
       recipeKey = "cake";
     }
 
-    /* 沒有符合食譜 */
+        /* =========================
+       🗑️ 錯誤配方 → 廚餘 ×1
+    ========================= */
+
     if (!recipeKey) {
+
+      startCookingButton.disabled = true;
+
+      const {
+        data: wasteData,
+        error: wasteError
+      } = await caibiSupabase.rpc(
+        "craft_food_waste",
+        {
+          p_wheat: selectedIngredients.wheat,
+          p_milk: selectedIngredients.milk,
+          p_egg: selectedIngredients.egg,
+          p_flour: selectedIngredients.flour,
+          p_butter: selectedIngredients.butter
+        }
+      );
+
+
+      /* 製作廚餘失敗 */
+
+      if (wasteError) {
+
+        console.error(
+          "🗑️ 廚餘製作失敗：",
+          wasteError
+        );
+
+        cookingHint.textContent =
+          wasteError.message ||
+          "製作失敗，請再試一次";
+
+        startCookingButton.disabled = false;
+
+        return;
+      }
+
+
+      /* 清空攪拌盆 */
+
+      for (
+        const ingredient
+        of Object.keys(selectedIngredients)
+      ) {
+        selectedIngredients[ingredient] = 0;
+      }
+
+
+      /* 重新取得登入狀態 */
+
+      const {
+        data: { session }
+      } = await caibiSupabase.auth.getSession();
+
+      if (!session) {
+
+        cookingHint.textContent =
+          "登入狀態失效，請重新登入";
+
+        startCookingButton.disabled = false;
+
+        return;
+      }
+
+
+      /* 重新讀取真實庫存 */
+
+      await loadPlayerInventory(
+        session.user.id
+      );
+
+
       cookingHint.textContent =
-        "這個組合目前還做不出東西";
+        "料理失敗！獲得 🗑️ 廚餘 ×1";
+
+      console.log(
+        "🗑️ 錯誤料理完成：",
+        wasteData
+      );
 
       return;
     }

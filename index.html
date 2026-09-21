@@ -1,357 +1,330 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <title>菜比 CAIBI</title>
 
-  <title>菜比之家｜烘焙房</title>
-
-  <!-- 🍰 烘焙房 CSS -->
-  <link
-    rel="stylesheet"
-    href="css/bakery.css"
-  >
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-  <main
-    id="bakeryRoom"
-    class="bakery-room"
-  >
+  <header class="navbar">
+    <div class="nav-brand">菜比 CAIBI</div>
 
-    <!-- 🍰 左上角房間名稱 -->
-    <div class="room-badge">
-      🍰 烘焙房
-    </div>
+    <nav>
+      <a href="#home">首頁</a>
+      <a href="#about">關於菜比</a>
+      <a href="#creators">創作者</a>
+      <a href="#discord">Discord</a>
+      <a href="#game" class="game-link">菜比之家</a>
+    </nav>
+  </header>
 
-<!-- 🗺️ 烘焙房 16:9 遊戲地圖層 -->
-<div
-  id="bakeryMapLayer"
-  class="bakery-map-layer"
->
 
-  <!-- 🚪 左側拱門｜回客廳 -->
-  <button
-    id="livingRoomEntrance"
-    class="living-room-entrance"
-    type="button"
-    aria-label="回到客廳"
-  ></button>
+  <main>
 
-  <!-- 🌾 右側花園門｜前往後院 -->
-  <button
-    id="backyardEntrance"
-    class="backyard-entrance"
-    type="button"
-    aria-label="前往後院農場"
-  ></button>
+    <!-- 首頁第一屏 -->
+    <section id="home" class="hero">
 
-    <!-- 🍳 中央料理工作台互動區 -->
-  <button
-    id="cookingStation"
-    class="cooking-station"
-    type="button"
-    aria-label="開始料理"
-  ></button>
+      <div class="hero-content">
 
-  <!-- 👤 玩家分層角色 -->
-<div
-  id="playerCharacter"
-  class="player-character"
->
+        <img
+          src="assets/images/caibi-logo.png"
+          alt="菜比 CAIBI"
+          class="hero-logo"
+        >
 
-  <!-- 👤 玩家專屬 Base -->
-  <img
-    id="playerBase"
-    class="player-clothing-layer player-base"
-    alt="玩家 Base"
-    draggable="false"
-  >
+        <p class="hero-subtitle">
+          なな｜菜菜 × 比比
+        </p>
 
-  <!-- 🧦 襪子 -->
-  <img
-    id="playerSocks"
-    class="player-clothing-layer player-socks"
-    alt=""
-    draggable="false"
-  >
+        <h1>
+          一個負責把你虐爛，<br>
+          一個負責把你撿回來。
+        </h1>
 
-  <!-- 👟 鞋子 -->
-  <img
-    id="playerShoes"
-    class="player-clothing-layer player-shoes"
-    alt=""
-    draggable="false"
-  >
+        <p class="hero-description">
+          Touchie Creator Duo
+        </p>
 
-  <!-- 👖 下身 -->
-  <img
-    id="playerBottom"
-    class="player-clothing-layer player-bottom"
-    alt=""
-    draggable="false"
-  >
+        <div class="hero-buttons">
+          <a href="#about" class="primary-btn">關於菜比</a>
+          <a href="#creators" class="secondary-btn">認識我們</a>
+        </div>
 
-  <!-- 👚 上衣 -->
-  <img
-    id="playerTop"
-    class="player-clothing-layer player-top"
-    alt=""
-    draggable="false"
-  >
+      </div>
 
-  <!-- 👗 洋裝 -->
-  <img
-    id="playerDress"
-    class="player-clothing-layer player-dress"
-    alt=""
-    draggable="false"
-  >
+    </section>
 
-  <!-- 🧥 外套 -->
-  <img
-    id="playerOuterwear"
-    class="player-clothing-layer player-outerwear"
-    alt=""
-    draggable="false"
-  >
 
-  <!-- 🎀 頭飾 -->
-  <img
-    id="playerHeadwear"
-    class="player-clothing-layer player-headwear"
-    alt=""
-    draggable="false"
-  >
+    <!-- 關於菜比 -->
+    <section id="about" class="about">
 
-</div>
+      <div class="about-container">
 
-</div>
+        <p class="section-label">ABOUT CAIBI</p>
+        <h2>🥦🍪 關於菜比</h2>
 
-<!-- =========================
-     🍳 料理介面
-========================= -->
-<div
-  id="cookingModal"
-  class="cooking-modal"
-  aria-hidden="true"
->
-  <div class="cooking-panel">
+        <div class="about-text">
 
-<!-- 📖 食譜書 -->
-<button
-  id="recipeBookButton"
-  class="recipe-book-button"
-  type="button"
-  aria-label="打開食譜書"
->
-  <span class="recipe-book-icon">📖</span>
-  <span class="recipe-book-text">食譜</span>
-</button>
+          <p>
+            「🥦菜比🍪」原名「🥦蔬菜比乾🍪」，
+            是由 Touchie 兩位創作者
+            <strong>なな｜菜菜 × 比比</strong>
+            組成的創作搭檔 ✨
+          </p>
 
-    <button
-      id="closeCookingModal"
-      class="cooking-close"
-      type="button"
-      aria-label="關閉料理介面"
-    >
-      ×
-    </button>
+          <p class="about-highlight">
+            一個外向、一個內向；<br>
+            一個愛往外跑、一個默默待在家 🤣
+          </p>
 
-  <div
-  id="cookingPage"
-  class="cooking-page"
->
+          <p>
+            由於比比較內向，加上平時比較忙，因此菜比大大小小的事務——
+            包含宣傳、合輯、活動、社交及合作聯繫等，
+            大多都是由外向的 <strong>なな｜菜菜</strong> 負責處理 😆
+          </p>
 
-    <h2 class="cooking-title">
-      🍰 開始料理
-    </h2>
+          <p>
+            所以大家平常看到的可能都是菜菜在外面趴趴走，
+            但放心！<strong>不是菜菜一個人擅自決定啦 🤣</strong>
+          </p>
 
-    <div class="cooking-bowl-area">
+          <p>
+            內部的重要事項、活動與合作，
+            我們都有一起討論 ฅ՞•ﻌ•՞ฅ♡
+          </p>
 
-  <div class="cooking-bowl-placeholder">
-    🥣
-  </div>
+          <p>
+            而且我們不只個性反差，
+            連創作風格都完全是兩個極端 🫨
+          </p>
 
-  <div
-    id="bowlIngredients"
-    class="bowl-ingredients"
-  ></div>
+        </div>
 
-  <p
-    id="cookingHint"
-    class="cooking-hint"
-  >
-    選擇食材放進攪拌盆
+      </div>
+
+    </section>
+
+
+    <!-- 創作者 -->
+    <section id="creators" class="creators">
+
+      <div class="creators-container">
+
+        <p class="section-label">CREATORS</p>
+        <h2>創作者介紹</h2>
+
+        <div class="creator-grid">
+
+          <!-- 菜菜 -->
+          <article class="creator-card">
+
+            <img
+              src="assets/images/nana.png"
+              alt="なな｜菜菜"
+              class="creator-photo"
+            >
+
+            <div class="creator-info">
+
+              <span class="creator-tag">
+                🥦 なな｜菜菜
+              </span>
+
+              <h3>
+                追妻火葬場・瘋批・黑暗向・虐戀
+              </h3>
+
+              <p>
+                偶爾良心發現，寫一下純愛 😚
+              </p>
+
+              <div class="creator-links">
+
+                <a
+                  href="https://h5.touchieai.com/author?code=6b3de2a2-0a30-4c3c-bffa-565434a07ce5"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Touchie
+                </a>
+
+                <a
+                  href="https://www.instagram.com/tyby_0309?igsh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Instagram
+                </a>
+
+              </div>
+
+            </div>
+
+          </article>
+
+
+          <!-- 比比 -->
+          <article class="creator-card">
+
+            <img
+              src="assets/images/bibi.png"
+              alt="比比"
+              class="creator-photo"
+            >
+
+            <div class="creator-info">
+
+              <span class="creator-tag">
+                🍪 比比
+              </span>
+
+              <h3>
+                純愛・日常・陪伴・溫柔
+              </h3>
+
+              <p>
+                負責撫慰被菜菜家孩子虐完的心靈（？）🤣
+              </p>
+
+              <div class="creator-links">
+
+                <a
+                  href="https://h5.touchieai.com/author?code=a5fe3165-bfc3-4f19-a0bd-d107816307d2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Touchie
+                </a>
+
+                <a
+                  href="https://www.instagram.com/bibi.cookie_?igsh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Instagram
+                </a>
+
+              </div>
+
+            </div>
+
+          </article>
+
+        </div>
+
+
+        <div class="creator-quote">
+
+          <p>
+            一個負責把你虐爛，一個負責把你撿回來。
+          </p>
+
+          <span>
+            這就是寫作風格與本人性格都大大相反的反差組合——🥦菜比🍪
+          </span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Discord 社群 -->
+    <section id="discord" class="discord-section">
+
+      <div class="discord-container">
+
+        <p class="section-label">
+          COMMUNITY
+        </p>
+
+        <h2>🥦蔬菜比乾🍪</h2>
+
+        <p class="discord-subtitle">
+          CAIBI COMMUNITY
+        </p>
+
+        <p class="discord-text">
+          菜比的 Discord 社群 ฅ՞•ﻌ•՞ฅ♡<br>
+          歡迎來聊天、玩遊戲，也可以一起交流創作與角色。
+        </p>
+
+
+        <div class="discord-card">
+
+          <span class="discord-card-label">
+            JOIN OUR COMMUNITY
+          </span>
+
+          <h3>
+            歡迎來到 🥦蔬菜比乾🍪
+          </h3>
+
+          <p>
+            想來找我們玩嗎？<br>
+            點擊下方按鈕，即可前往 Discord 伺服器。
+          </p>
+
+          <a
+            href="https://discord.gg/aS2KmsPfuN"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="discord-btn"
+          >
+            加入 Discord →
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 菜比之家 -->
+    <section id="game" class="game-section">
+
+      <div class="game-container">
+
+        <p class="section-label">CAIBI HOME</p>
+
+        <h2>菜比之家</h2>
+
+        <p class="game-subtitle">
+          🐥 🏡 🐱
+        </p>
+
+        <h3>
+          歡迎來到屬於菜比與小可愛們的小世界。
+        </h3>
+
+        <p class="game-text">
+          種下小麥、做成餅乾，<br>
+          陪小菜雞與小比乾一起生活。<br><br>
+          換裝、農場與更多小遊戲，正在慢慢施工中 ฅ՞•ﻌ•՞ฅ♡
+        </p>
+
+        <div class="game-entry">
+  <a href="game/index.html" class="game-enter-btn">
+    🏡 進入菜比之家
+  </a>
+
+  <p class="game-entry-note">
+    不需登入也可以先在戶外玩 ฅ՞•ﻌ•՞ฅ♡
   </p>
-
 </div>
 
-    <div class="cooking-ingredients">
-      <p class="cooking-section-title">
-        食材
-      </p>
+      </div>
 
-  <div
-  id="ingredientList"
-  class="ingredient-list"
->
-  <button
-    class="ingredient-item"
-    type="button"
-    data-ingredient="wheat"
-  >
-    <span class="ingredient-icon">🌾</span>
-    <span class="ingredient-name">小麥</span>
-  </button>
-
-  <button
-    class="ingredient-item"
-    type="button"
-    data-ingredient="milk"
-  >
-    <span class="ingredient-icon">🥛</span>
-    <span class="ingredient-name">牛奶</span>
-  </button>
-
-  <button
-    class="ingredient-item"
-    type="button"
-    data-ingredient="egg"
-  >
-    <span class="ingredient-icon">🥚</span>
-    <span class="ingredient-name">雞蛋</span>
-  </button>
-</div>
-
-    </div>
-
-        <!-- 🎂 料理成品 -->
-    <div
-      id="productSection"
-      class="cooking-products"
-      hidden
-    >
-      <p class="cooking-section-title">
-        料理成品
-      </p>
-
-      <div
-        id="productList"
-        class="product-list"
-      ></div>
-    </div>
-    
-    <button
-      id="startCookingButton"
-      class="start-cooking-button"
-      type="button"
-      disabled
-    >
-      開始料理
-    </button>
-
-    </div>
-
-  <!-- =========================
-     📖 食譜書頁面
-========================= -->
-<div
-  id="recipeBookPage"
-  class="recipe-book-page"
-  hidden
->
-
-  <h2 class="recipe-page-title">
-    📖 食譜書
-  </h2>
-
-  <section class="recipe-section">
-
-    <h3 class="recipe-section-title">
-      基礎加工
-    </h3>
-
-    <div class="recipe-card">
-      <span class="recipe-result">
-        🥣 麵粉 ×1
-      </span>
-
-      <span class="recipe-arrow">
-        ←
-      </span>
-
-      <span class="recipe-material">
-        🌾 小麥 ×3
-      </span>
-    </div>
-
-    <div class="recipe-card">
-      <span class="recipe-result">
-        🧈 奶油 ×1
-      </span>
-
-      <span class="recipe-arrow">
-        ←
-      </span>
-
-      <span class="recipe-material">
-        🥛 牛奶 ×1
-      </span>
-    </div>
-
-  </section>
-
-
-  <section class="recipe-section">
-
-    <h3 class="recipe-section-title">
-      料理食譜
-    </h3>
-
-  <div class="recipe-card">
-  <span class="recipe-result">
-    🎂 蛋糕 ×1
-  </span>
-
-  <span class="recipe-arrow">
-    ←
-  </span>
-
-  <span class="recipe-material">
-    🥣 麵粉 ×2＋🧈 奶油 ×1＋🥚 雞蛋 ×2
-  </span>
-</div>
-
-    <div class="recipe-empty">
-      還沒有其他食譜 🍪
-    </div>
-
-  </section>
-
-</div>
-
-  </div>
-</div>
+    </section>
 
   </main>
 
-
-  <!-- Supabase 設定 -->
-  <script src="../../js/supabase.js"></script>
-
-  <!-- 🍰 烘焙房 JS -->
-  <script src="js/bakery.js"></script>
-
 </body>
-
 </html>
