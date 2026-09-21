@@ -158,6 +158,27 @@ body {
 }
 
 /* =========================
+   🛁 浴缸互動前景遮罩
+========================= */
+
+.bathtub-interaction-mask {
+  position: absolute;
+
+  width: 18%;
+  height: auto;
+
+  transform:
+    translate(-50%, -100%);
+
+  object-fit: contain;
+
+  z-index: 52;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================
    🪑 家具編輯操作列
 ========================= */
 

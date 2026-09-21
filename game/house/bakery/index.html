@@ -55,6 +55,14 @@
     aria-label="前往後院農場"
   ></button>
 
+    <!-- 🍳 中央料理工作台互動區 -->
+  <button
+    id="cookingStation"
+    class="cooking-station"
+    type="button"
+    aria-label="開始料理"
+  ></button>
+
   <!-- 👤 玩家分層角色 -->
 <div
   id="playerCharacter"
@@ -127,6 +135,212 @@
 
 </div>
 
+</div>
+
+<!-- =========================
+     🍳 料理介面
+========================= -->
+<div
+  id="cookingModal"
+  class="cooking-modal"
+  aria-hidden="true"
+>
+  <div class="cooking-panel">
+
+<!-- 📖 食譜書 -->
+<button
+  id="recipeBookButton"
+  class="recipe-book-button"
+  type="button"
+  aria-label="打開食譜書"
+>
+  <span class="recipe-book-icon">📖</span>
+  <span class="recipe-book-text">食譜</span>
+</button>
+
+    <button
+      id="closeCookingModal"
+      class="cooking-close"
+      type="button"
+      aria-label="關閉料理介面"
+    >
+      ×
+    </button>
+
+  <div
+  id="cookingPage"
+  class="cooking-page"
+>
+
+    <h2 class="cooking-title">
+      🍰 開始料理
+    </h2>
+
+    <div class="cooking-bowl-area">
+
+  <div class="cooking-bowl-placeholder">
+    🥣
+  </div>
+
+  <div
+    id="bowlIngredients"
+    class="bowl-ingredients"
+  ></div>
+
+  <p
+    id="cookingHint"
+    class="cooking-hint"
+  >
+    選擇食材放進攪拌盆
+  </p>
+
+</div>
+
+    <div class="cooking-ingredients">
+      <p class="cooking-section-title">
+        食材
+      </p>
+
+  <div
+  id="ingredientList"
+  class="ingredient-list"
+>
+  <button
+    class="ingredient-item"
+    type="button"
+    data-ingredient="wheat"
+  >
+    <span class="ingredient-icon">🌾</span>
+    <span class="ingredient-name">小麥</span>
+  </button>
+
+  <button
+    class="ingredient-item"
+    type="button"
+    data-ingredient="milk"
+  >
+    <span class="ingredient-icon">🥛</span>
+    <span class="ingredient-name">牛奶</span>
+  </button>
+
+  <button
+    class="ingredient-item"
+    type="button"
+    data-ingredient="egg"
+  >
+    <span class="ingredient-icon">🥚</span>
+    <span class="ingredient-name">雞蛋</span>
+  </button>
+</div>
+
+    </div>
+
+        <!-- 🎂 料理成品 -->
+    <div
+      id="productSection"
+      class="cooking-products"
+      hidden
+    >
+      <p class="cooking-section-title">
+        料理成品
+      </p>
+
+      <div
+        id="productList"
+        class="product-list"
+      ></div>
+    </div>
+    
+    <button
+      id="startCookingButton"
+      class="start-cooking-button"
+      type="button"
+      disabled
+    >
+      開始料理
+    </button>
+
+    </div>
+
+  <!-- =========================
+     📖 食譜書頁面
+========================= -->
+<div
+  id="recipeBookPage"
+  class="recipe-book-page"
+  hidden
+>
+
+  <h2 class="recipe-page-title">
+    📖 食譜書
+  </h2>
+
+  <section class="recipe-section">
+
+    <h3 class="recipe-section-title">
+      基礎加工
+    </h3>
+
+    <div class="recipe-card">
+      <span class="recipe-result">
+        🥣 麵粉 ×1
+      </span>
+
+      <span class="recipe-arrow">
+        ←
+      </span>
+
+      <span class="recipe-material">
+        🌾 小麥 ×3
+      </span>
+    </div>
+
+    <div class="recipe-card">
+      <span class="recipe-result">
+        🧈 奶油 ×1
+      </span>
+
+      <span class="recipe-arrow">
+        ←
+      </span>
+
+      <span class="recipe-material">
+        🥛 牛奶 ×1
+      </span>
+    </div>
+
+  </section>
+
+
+  <section class="recipe-section">
+
+    <h3 class="recipe-section-title">
+      料理食譜
+    </h3>
+
+  <div class="recipe-card">
+  <span class="recipe-result">
+    🎂 蛋糕 ×1
+  </span>
+
+  <span class="recipe-arrow">
+    ←
+  </span>
+
+  <span class="recipe-material">
+    🥣 麵粉 ×2＋🧈 奶油 ×1＋🥚 雞蛋 ×2
+  </span>
+</div>
+
+    <div class="recipe-empty">
+      還沒有其他食譜 🍪
+    </div>
+
+  </section>
+
+</div>
+
+  </div>
 </div>
 
   </main>

@@ -14,6 +14,66 @@ const livingRoomEntrance =
 const backyardEntrance =
   document.getElementById("backyardEntrance");
 
+const cookingStation =
+  document.getElementById("cookingStation");
+
+const cookingModal =
+  document.getElementById("cookingModal");
+
+const closeCookingModal =
+  document.getElementById("closeCookingModal");
+
+const startCookingButton =
+  document.getElementById("startCookingButton");
+
+const ingredientList =
+  document.getElementById("ingredientList");
+
+const bowlIngredients =
+  document.getElementById(
+    "bowlIngredients"
+  );
+
+const cookingHint =
+  document.getElementById(
+    "cookingHint"
+  );
+
+const recipeBookButton =
+  document.getElementById(
+    "recipeBookButton"
+  );
+
+const productSection =
+  document.getElementById(
+    "productSection"
+  );
+
+const productList =
+  document.getElementById(
+    "productList"
+  );
+
+const cookingPage =
+  document.getElementById(
+    "cookingPage"
+  );
+
+const recipeBookPage =
+  document.getElementById(
+    "recipeBookPage"
+  );
+
+const recipeBookText =
+  recipeBookButton.querySelector(
+    ".recipe-book-text"
+  );
+
+const recipeBookIcon =
+  recipeBookButton.querySelector(
+    ".recipe-book-icon"
+  );
+
 /* =========================
    🚶 玩家移動資料
 ========================= */
@@ -325,6 +385,9 @@ async function checkBakeryAccess() {
     return;
   }
 
+await loadPlayerInventory(
+  session.user.id
+);
 
   /* =========================
      👤 讀取玩家 Base
@@ -578,5 +641,903 @@ backyardEntrance.addEventListener(
 /* =========================
    🚀 啟動烘焙房
 ========================= */
+
+/* =========================
+   🍳 中央料理工作台
+========================= */
+
+function openCookingModal() {
+
+  pressedKeys.clear();
+
+  targetX = playerX;
+  targetY = playerY;
+
+  cookingModal.classList.add(
+    "is-open"
+  );
+
+  cookingModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+function closeCooking() {
+
+  cookingModal.classList.remove(
+    "is-open"
+  );
+
+  cookingModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+cookingStation.addEventListener(
+  "click",
+  (event) => {
+
+    event.stopPropagation();
+
+    openCookingModal();
+  }
+);
+
+
+closeCookingModal.addEventListener(
+  "click",
+  () => {
+
+    closeCooking();
+  }
+);
+
+/* =========================
+   📖 食譜書開關
+========================= */
+
+let recipeBookOpen = false;
+
+
+function updateRecipeBookView() {
+
+  if (recipeBookOpen) {
+
+    cookingPage.hidden = true;
+    recipeBookPage.hidden = false;
+
+    recipeBookIcon.textContent = "←";
+    recipeBookText.textContent =
+      "返回料理";
+
+    recipeBookButton.setAttribute(
+      "aria-label",
+      "返回料理"
+    );
+
+  } else {
+
+    cookingPage.hidden = false;
+    recipeBookPage.hidden = true;
+
+    recipeBookIcon.textContent = "📖";
+    recipeBookText.textContent =
+      "食譜";
+
+    recipeBookButton.setAttribute(
+      "aria-label",
+      "打開食譜書"
+    );
+  }
+}
+
+
+recipeBookButton.addEventListener(
+  "click",
+  () => {
+
+    recipeBookOpen =
+      !recipeBookOpen;
+
+    updateRecipeBookView();
+  }
+);
+
+/* =========================
+   🥣 料理食材與測試庫存
+========================= */
+
+/* 暫時測試庫存
+   之後會改成 Supabase 真實資料 */
+const ingredientInventory = {
+  wheat: 0,
+  milk: 0,
+  egg: 0,
+  flour: 0,
+  butter: 0
+};
+
+
+/* 攪拌盆目前放入的數量 */
+const selectedIngredients = {
+  wheat: 0,
+  milk: 0,
+  egg: 0,
+
+  flour: 0,
+  butter: 0
+};
+
+const ingredientInfo = {
+  wheat: {
+    name: "小麥",
+    icon: "🌾"
+  },
+
+  milk: {
+    name: "牛奶",
+    icon: "🥛"
+  },
+
+  egg: {
+    name: "雞蛋",
+    icon: "🥚"
+  },
+
+  flour: {
+    name: "麵粉",
+    icon: "🥣"
+  },
+
+  butter: {
+    name: "奶油",
+    icon: "🧈"
+  }
+};
+
+/* =========================
+   🎒 從 Supabase 讀取玩家庫存
+========================= */
+
+async function loadPlayerInventory(userId) {
+
+  const {
+    data: inventoryRows,
+    error: inventoryError
+  } = await caibiSupabase
+    .from("player_inventory")
+    .select(`
+      quantity,
+      game_items (
+        item_key,
+        category
+      )
+    `)
+    .eq("user_id", userId);
+
+
+  if (inventoryError) {
+
+    console.error(
+      "讀取玩家庫存失敗：",
+      inventoryError
+    );
+
+    return;
+  }
+
+
+  /* 先歸零，避免重複載入時殘留舊數量 */
+  for (
+    const ingredient
+    of Object.keys(ingredientInventory)
+  ) {
+    ingredientInventory[ingredient] = 0;
+  }
+
+
+  productInventory.cake = 0;
+
+
+  for (const row of inventoryRows || []) {
+
+    const item = row.game_items;
+
+    if (!item) {
+      continue;
+    }
+
+
+    if (
+      item.category === "ingredient" &&
+      Object.hasOwn(
+        ingredientInventory,
+        item.item_key
+      )
+    ) {
+
+      ingredientInventory[item.item_key] =
+        row.quantity;
+
+    } else if (
+      item.category === "food" &&
+      Object.hasOwn(
+        productInventory,
+        item.item_key
+      )
+    ) {
+
+      productInventory[item.item_key] =
+        row.quantity;
+    }
+  }
+
+
+  renderIngredientList();
+  renderProductList();
+  updateBowlDisplay();
+
+
+  console.log(
+    "🎒 玩家真實庫存載入完成",
+    {
+      ingredients: ingredientInventory,
+      products: productInventory
+    }
+  );
+}
+
+/* =========================
+   💾 儲存單一玩家物品數量
+========================= */
+
+async function saveInventoryItem(
+  userId,
+  itemKey,
+  quantity
+) {
+
+  /* 先取得 game_items 的物品 id */
+  const {
+    data: item,
+    error: itemError
+  } = await caibiSupabase
+    .from("game_items")
+    .select("id")
+    .eq("item_key", itemKey)
+    .single();
+
+
+  if (itemError || !item) {
+
+    console.error(
+      "找不到物品：",
+      itemKey,
+      itemError
+    );
+
+    return false;
+  }
+
+
+  /* 有就更新，沒有就新增 */
+  const {
+    error: inventoryError
+  } = await caibiSupabase
+    .from("player_inventory")
+    .upsert(
+      {
+        user_id: userId,
+        item_id: item.id,
+        quantity: quantity
+      },
+      {
+        onConflict: "user_id,item_id"
+      }
+    );
+
+
+  if (inventoryError) {
+
+    console.error(
+      "儲存玩家庫存失敗：",
+      inventoryError
+    );
+
+    return false;
+  }
+
+
+  return true;
+}
+
+/* =========================
+   🎂 料理成品測試庫存
+========================= */
+
+const productInventory = {
+  cake: 0
+};
+
+const productInfo = {
+  cake: {
+    name: "蛋糕",
+    icon: "🎂"
+  }
+};
+
+
+/* =========================
+   🎂 顯示料理成品
+========================= */
+
+function renderProductList() {
+
+  productList.innerHTML = "";
+
+  let hasProduct = false;
+
+
+  for (
+    const [product, quantity]
+    of Object.entries(
+      productInventory
+    )
+  ) {
+
+    if (quantity <= 0) {
+      continue;
+    }
+
+
+    const info =
+      productInfo[product];
+
+    if (!info) {
+      continue;
+    }
+
+
+    hasProduct = true;
+
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "product-item";
+
+
+    const icon =
+      document.createElement("span");
+
+    icon.className =
+      "product-icon";
+
+    icon.textContent =
+      info.icon;
+
+
+    const name =
+      document.createElement("span");
+
+    name.className =
+      "product-name";
+
+    name.textContent =
+      info.name;
+
+
+    const count =
+      document.createElement("span");
+
+    count.className =
+      "product-count";
+
+    count.textContent =
+      `持有 ×${quantity}`;
+
+
+    item.append(
+      icon,
+      name,
+      count
+    );
+
+
+    productList.appendChild(
+      item
+    );
+  }
+
+
+  productSection.hidden =
+    !hasProduct;
+}
+
+/* =========================
+   🧺 依庫存生成食材列表
+========================= */
+
+function renderIngredientList() {
+
+  ingredientList.innerHTML = "";
+
+
+  for (
+    const [ingredient, info]
+    of Object.entries(
+      ingredientInfo
+    )
+  ) {
+
+    const owned =
+      ingredientInventory[ingredient] || 0;
+
+    const selected =
+      selectedIngredients[ingredient] || 0;
+
+    const remaining =
+      owned - selected;
+
+
+    /* 完全沒有這項食材就不顯示 */
+    if (
+      owned <= 0 &&
+      selected <= 0
+    ) {
+      continue;
+    }
+
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.className =
+      "ingredient-item";
+
+    button.dataset.ingredient =
+      ingredient;
+
+
+    const icon =
+      document.createElement("span");
+
+    icon.className =
+      "ingredient-icon";
+
+    icon.textContent =
+      info.icon;
+
+
+    const name =
+      document.createElement("span");
+
+    name.className =
+      "ingredient-name";
+
+    name.textContent =
+      info.name;
+
+
+    const count =
+      document.createElement("span");
+
+    count.className =
+      "ingredient-count";
+
+    count.textContent =
+      `持有 ×${remaining}`;
+
+
+    button.append(
+      icon,
+      name,
+      count
+    );
+
+
+    if (selected > 0) {
+
+      button.classList.add(
+        "is-selected"
+      );
+    }
+
+
+    button.disabled =
+      remaining <= 0;
+
+
+    ingredientList.appendChild(
+      button
+    );
+  }
+}
+
+/* =========================
+   🥣 更新攪拌盆畫面
+========================= */
+
+function updateBowlDisplay() {
+
+  bowlIngredients.innerHTML = "";
+
+  let totalSelected = 0;
+
+
+  /* =========================
+     🥣 更新盆內食材
+  ========================= */
+
+  for (
+    const [ingredient, quantity]
+    of Object.entries(
+      selectedIngredients
+    )
+  ) {
+
+    if (quantity <= 0) {
+      continue;
+    }
+
+    totalSelected += quantity;
+
+    const info =
+      ingredientInfo[ingredient];
+
+    const item =
+      document.createElement("button");
+
+    item.type = "button";
+
+    item.className =
+      "bowl-ingredient-item";
+
+    item.dataset.ingredient =
+      ingredient;
+
+    item.textContent =
+      `${info.icon} ${info.name} ×${quantity}`;
+
+    item.title =
+      "點擊拿回 1 個";
+
+    bowlIngredients.appendChild(
+      item
+    );
+  }
+
+
+  /* =========================
+     🧺 更新底下持有數量
+  ========================= */
+
+  const ingredientButtons =
+    ingredientList.querySelectorAll(
+      ".ingredient-item"
+    );
+
+  for (
+    const button
+    of ingredientButtons
+  ) {
+
+    const ingredient =
+      button.dataset.ingredient;
+
+    const owned =
+      ingredientInventory[ingredient] || 0;
+
+    const selected =
+      selectedIngredients[ingredient] || 0;
+
+    const remaining =
+      owned - selected;
+
+
+    let count =
+      button.querySelector(
+        ".ingredient-count"
+      );
+
+    if (!count) {
+
+      count =
+        document.createElement("span");
+
+      count.className =
+        "ingredient-count";
+
+      button.appendChild(
+        count
+      );
+    }
+
+
+    count.textContent =
+      `持有 ×${remaining}`;
+
+
+    /* 全部都丟進盆裡時變淡 */
+    button.disabled =
+      remaining <= 0;
+
+
+    button.classList.toggle(
+      "is-selected",
+      selected > 0
+    );
+  }
+
+
+  /* =========================
+     🍳 按鈕與提示
+  ========================= */
+
+  if (totalSelected === 0) {
+
+    cookingHint.textContent =
+      "選擇食材放進攪拌盆";
+
+  } else {
+
+    cookingHint.textContent =
+      "點下方加入｜點盆內食材拿回";
+  }
+
+
+  startCookingButton.disabled =
+    totalSelected === 0;
+}
+
+
+/* =========================
+   🥚 點擊食材
+========================= */
+
+ingredientList.addEventListener(
+  "click",
+  (event) => {
+
+    const ingredientButton =
+      event.target.closest(
+        ".ingredient-item"
+      );
+
+    if (!ingredientButton) {
+      return;
+    }
+
+    const ingredient =
+      ingredientButton.dataset.ingredient;
+
+    const owned =
+      ingredientInventory[ingredient] || 0;
+
+    const selected =
+      selectedIngredients[ingredient] || 0;
+
+
+    /* 已經全部放進去了 */
+    if (selected >= owned) {
+
+      console.log(
+        "🥣 已達持有數量上限"
+      );
+
+      return;
+    }
+
+
+    selectedIngredients[ingredient] =
+  selected + 1;
+
+renderIngredientList();
+updateBowlDisplay();
+
+    console.log(
+      "🥣 目前攪拌盆：",
+      selectedIngredients
+    );
+  }
+);
+
+/* =========================
+   🍳 開始製作
+========================= */
+
+startCookingButton.textContent =
+  "開始製作";
+
+
+startCookingButton.addEventListener(
+  "click",
+  async () => {
+
+    /* 判斷目前是哪一道食譜 */
+    let recipeKey = null;
+
+    /* 🌾 小麥 ×3 → 🥣 麵粉 ×1 */
+    if (
+      selectedIngredients.wheat === 3 &&
+      selectedIngredients.milk === 0 &&
+      selectedIngredients.egg === 0 &&
+      selectedIngredients.flour === 0 &&
+      selectedIngredients.butter === 0
+    ) {
+      recipeKey = "flour";
+    }
+
+    /* 🥛 牛奶 ×1 → 🧈 奶油 ×1 */
+    else if (
+      selectedIngredients.wheat === 0 &&
+      selectedIngredients.milk === 1 &&
+      selectedIngredients.egg === 0 &&
+      selectedIngredients.flour === 0 &&
+      selectedIngredients.butter === 0
+    ) {
+      recipeKey = "butter";
+    }
+
+    /* 🥣 麵粉 ×2＋🧈 奶油 ×1＋🥚 雞蛋 ×2 → 🎂 蛋糕 ×1 */
+    else if (
+      selectedIngredients.wheat === 0 &&
+      selectedIngredients.milk === 0 &&
+      selectedIngredients.egg === 2 &&
+      selectedIngredients.flour === 2 &&
+      selectedIngredients.butter === 1
+    ) {
+      recipeKey = "cake";
+    }
+
+    /* 沒有符合食譜 */
+    if (!recipeKey) {
+      cookingHint.textContent =
+        "這個組合目前還做不出東西";
+
+      return;
+    }
+
+    startCookingButton.disabled = true;
+
+    /* =========================
+       🍳 呼叫 Supabase 原子料理函式
+    ========================= */
+
+    const {
+      data,
+      error
+    } = await caibiSupabase.rpc(
+      "craft_item",
+      {
+        p_recipe_key: recipeKey
+      }
+    );
+
+    if (error) {
+
+      console.error(
+        "🍳 製作失敗：",
+        error
+      );
+
+      cookingHint.textContent =
+        error.message || "製作失敗，請再試一次";
+
+      startCookingButton.disabled = false;
+
+      return;
+    }
+
+    /* =========================
+       🧹 清空攪拌盆
+    ========================= */
+
+    for (
+      const ingredient
+      of Object.keys(selectedIngredients)
+    ) {
+      selectedIngredients[ingredient] = 0;
+    }
+
+    /* =========================
+       🎒 重新讀取資料庫真實庫存
+    ========================= */
+
+    const {
+      data: { session }
+    } = await caibiSupabase.auth.getSession();
+
+    if (!session) {
+
+      cookingHint.textContent =
+        "登入狀態失效，請重新登入";
+
+      return;
+    }
+
+    await loadPlayerInventory(
+      session.user.id
+    );
+
+    /* =========================
+       ✨ 成功訊息
+    ========================= */
+
+    if (recipeKey === "flour") {
+
+      cookingHint.textContent =
+        "製作成功！獲得 🥣 麵粉 ×1";
+
+    } else if (recipeKey === "butter") {
+
+      cookingHint.textContent =
+        "製作成功！獲得 🧈 奶油 ×1";
+
+    } else if (recipeKey === "cake") {
+
+      cookingHint.textContent =
+        "製作成功！獲得 🎂 蛋糕 ×1";
+    }
+
+    console.log(
+      "🍳 Supabase 製作成功：",
+      recipeKey,
+      data
+    );
+  }
+);
+
+/* =========================
+   ↩️ 從攪拌盆拿回食材
+========================= */
+
+bowlIngredients.addEventListener(
+  "click",
+  (event) => {
+
+    const bowlItem =
+      event.target.closest(
+        ".bowl-ingredient-item"
+      );
+
+    if (!bowlItem) {
+      return;
+    }
+
+    const ingredient =
+      bowlItem.dataset.ingredient;
+
+    if (
+      !selectedIngredients[ingredient] ||
+      selectedIngredients[ingredient] <= 0
+    ) {
+      return;
+    }
+
+
+   selectedIngredients[ingredient] -= 1;
+
+renderIngredientList();
+updateBowlDisplay();
+
+    console.log(
+      "↩️ 拿回食材：",
+      ingredient,
+      selectedIngredients[ingredient]
+    );
+  }
+);
+
+renderIngredientList();
+renderProductList();
+updateBowlDisplay();
 
 checkBakeryAccess();

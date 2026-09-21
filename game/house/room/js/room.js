@@ -163,6 +163,16 @@ const pressedKeys = new Set();
 
 let activeFurnitureInteraction = null;
 
+let bathtubMask = null;
+
+function removeBathtubMask() {
+
+  if (bathtubMask) {
+    bathtubMask.remove();
+    bathtubMask = null;
+  }
+}
+
 /* =========================
    🛏️ 床｜四方向人物互動設定
 ========================= */
@@ -190,6 +200,18 @@ const BED_INTERACTION = {
     offsetX: -5,
     offsetY: -10,
     rotation: 90
+  }
+};
+
+/* =========================
+   🛁 浴缸｜四方向人物互動設定
+========================= */
+
+const BATHTUB_INTERACTION = {
+  front: {
+    offsetX: 0,
+    offsetY: -13,
+    rotation: 0
   }
 };
 
@@ -234,6 +256,12 @@ if (
   playerCharacter.classList.remove(
     "is-sleeping"
   );
+
+  playerCharacter.classList.remove(
+  "is-bathing"
+);
+
+removeBathtubMask();
 
   playerCharacter.style.transform =
     "translate(-50%, -100%)";
@@ -340,13 +368,19 @@ roomMapLayer.addEventListener(
         "is-sleeping"
       );
 
+      playerCharacter.classList.remove(
+  "is-bathing"
+);
+
+removeBathtubMask();
+
       playerCharacter.style.transform =
         "translate(-50%, -100%)";
     }
 
     const rect =
   roomMapLayer.getBoundingClientRect();
-  
+
     const clickedX =
       ((event.clientX - rect.left) /
         rect.width) *
@@ -1012,6 +1046,88 @@ if (category === "bed") {
 
   console.log(
     "🛏️ 玩家上床：",
+    direction,
+    interaction
+  );
+}
+
+/* 🛁 點浴缸 */
+if (category === "bathtub") {
+
+  activeFurnitureInteraction =
+    "bathtub";
+
+  playerCharacter.classList.add(
+  "is-bathing"
+);
+
+  const direction =
+    furniture.dataset.direction ||
+    "front";
+
+  removeBathtubMask();
+
+if (direction === "front") {
+
+  bathtubMask =
+    document.createElement("img");
+
+  bathtubMask.className =
+    "bathtub-interaction-mask";
+
+  bathtubMask.src =
+    getAvatarUrl(
+      "furniture/bathtub/starter-bathtub-front-mask.png"
+    );
+
+  bathtubMask.alt = "";
+
+  bathtubMask.style.left =
+    furniture.style.left;
+
+  bathtubMask.style.top =
+    furniture.style.top;
+
+  roomMapLayer.appendChild(
+  bathtubMask
+);
+
+}
+
+  const interaction =
+    BATHTUB_INTERACTION[direction] ||
+    BATHTUB_INTERACTION.front;
+
+  pressedKeys.clear();
+
+  const bathtubX =
+    parseFloat(
+      furniture.style.left
+    );
+
+  const bathtubY =
+    parseFloat(
+      furniture.style.top
+    );
+
+  playerX =
+    bathtubX +
+    interaction.offsetX;
+
+  playerY =
+    bathtubY +
+    interaction.offsetY;
+
+  targetX = playerX;
+  targetY = playerY;
+
+  playerCharacter.style.transform =
+    `translate(-50%, -100%) rotate(${interaction.rotation}deg)`;
+
+  updatePlayerPosition();
+
+  console.log(
+    "🛁 玩家進浴缸：",
     direction,
     interaction
   );
