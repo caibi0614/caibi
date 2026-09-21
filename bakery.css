@@ -1,0 +1,1073 @@
+/* =========================
+   🍰 菜比之家｜烘焙房
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family:
+    "Noto Sans TC",
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+body {
+  background: #e7dccb;
+}
+
+
+/* =========================
+   🍰 烘焙房場景
+========================= */
+
+.bakery-room {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  background-image: url("../../../assets/images/bakery-room-bg.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-color: #e7dccb;
+}
+
+
+/* =========================
+   🍰 房間名稱
+========================= */
+
+.room-badge {
+  position: absolute;
+
+  top: 18px;
+  left: 18px;
+
+  z-index: 100;
+
+  padding: 10px 16px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 250, 240, 0.9);
+
+  box-shadow:
+    0 4px 14px rgba(90, 70, 45, 0.12);
+
+  color: #5e5142;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  backdrop-filter: blur(8px);
+}
+
+
+/* =========================
+   🚪 返回客廳
+========================= */
+
+.back-button {
+  position: absolute;
+
+  top: 18px;
+  right: 18px;
+
+  z-index: 100;
+
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: rgba(255, 250, 240, 0.9);
+
+  box-shadow:
+    0 4px 14px rgba(90, 70, 45, 0.12);
+
+  color: #5e5142;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(8px);
+}
+
+.back-button:hover {
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   👤 玩家角色
+========================= */
+
+.player-character {
+  position: absolute;
+
+  left: 50%;
+  top: 72%;
+
+  width: clamp(95px, 9.6vw, 155px);
+  aspect-ratio: 2 / 3;
+
+  transform: translate(-50%, -100%);
+
+  z-index: 50;
+
+  display: none;
+
+  user-select: none;
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 5px 5px rgba(70, 55, 40, 0.18));
+}
+
+
+/* =========================
+   👗 玩家換裝圖層
+========================= */
+
+.player-clothing-layer {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 👤 Base */
+.player-base {
+  z-index: 1;
+}
+
+/* 🧦 襪子 */
+.player-socks {
+  z-index: 2;
+}
+
+/* 👟 鞋子 */
+.player-shoes {
+  z-index: 3;
+}
+
+/* 👖 下身 */
+.player-bottom {
+  z-index: 4;
+}
+
+/* 👚 上衣 / 👗 洋裝 */
+.player-top,
+.player-dress {
+  z-index: 5;
+}
+
+/* 🧥 外套 */
+.player-outerwear {
+  z-index: 6;
+}
+
+/* 🎀 頭飾 */
+.player-headwear {
+  z-index: 7;
+}
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .room-badge,
+  .back-button {
+    top: 10px;
+
+    padding: 7px 12px;
+
+    font-size: 12px;
+  }
+
+  .room-badge {
+    left: 10px;
+  }
+
+  .back-button {
+    right: 10px;
+  }
+
+  .player-character {
+    width: clamp(82px, 10.2vw, 118px);
+  }
+}
+
+
+/* =========================
+   📱 手機直向
+   提示旋轉手機
+========================= */
+
+@media (orientation: portrait) {
+
+  .bakery-room {
+    display: none;
+  }
+
+  body::before {
+    content: "🍰 菜比之家";
+
+    position: fixed;
+
+    top: 42%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    color: #665747;
+
+    font-size: 24px;
+    font-weight: 800;
+  }
+
+  body::after {
+    content: "📱 請將手機轉為橫向遊玩";
+
+    position: fixed;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 90%;
+
+    color: #8a7966;
+
+    font-size: 15px;
+    text-align: center;
+  }
+}
+/* =========================
+   🚪 左側拱門｜回客廳
+========================= */
+
+.living-room-entrance {
+  position: absolute;
+
+ left: 2%;
+top: 12%;
+width: 11%;
+height: 35%;
+
+ border: none;
+background: transparent;
+
+  cursor: pointer;
+  z-index: 45;
+}
+/* =========================
+   🗺️ 烘焙房 16:9 遊戲地圖層
+   桌機＋手機橫向共用
+========================= */
+
+.bakery-map-layer {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 40;
+  pointer-events: none;
+}
+
+/* 地圖層裡可以互動的門 */
+.bakery-map-layer .living-room-entrance {
+  pointer-events: auto;
+}
+/* =========================
+   🌾 右側花園門｜前往後院
+========================= */
+
+.backyard-entrance {
+  position: absolute;
+
+  right: 1%;
+  top: 10%;
+
+  width: 10%;
+  height: 40%;
+
+  border: none;
+background: transparent;
+
+  cursor: pointer;
+  z-index: 45;
+  pointer-events: auto;
+}
+
+/* =========================
+   🍳 中央料理工作台互動區
+========================= */
+
+.cooking-station {
+  position: absolute;
+
+  left: 32%;
+  top: 31%;
+
+  width: 36%;
+  height: 5%;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  z-index: 45;
+  pointer-events: auto;
+}
+
+/* =========================
+   🍰 料理介面
+========================= */
+
+.cooking-modal {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(75, 58, 40, 0.28);
+  backdrop-filter: blur(4px);
+
+  z-index: 500;
+}
+
+.cooking-modal.is-open {
+  display: flex;
+}
+
+
+/* 🍪 料理主面板 */
+
+.cooking-panel {
+  position: relative;
+
+  width: min(620px, 92vw);
+  max-height: 88vh;
+
+  padding: 28px 30px 26px;
+
+ overflow-y: auto;
+
+  border: 2px solid rgba(185, 154, 112, 0.45);
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf0 0%,
+      #f8eddc 100%
+    );
+
+  box-shadow:
+    0 18px 45px rgba(70, 50, 30, 0.22);
+
+  color: #5d4b38;
+}
+
+
+/* ❌ 關閉 */
+
+.cooking-close {
+  position: absolute;
+
+  top: 14px;
+  right: 16px;
+
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(120, 92, 60, 0.1);
+
+  color: #715c45;
+
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.cooking-close:hover {
+  background: rgba(120, 92, 60, 0.18);
+}
+
+/* =========================
+   📖 食譜書按鈕｜左上角
+========================= */
+
+.recipe-book-button {
+  position: absolute;
+
+  top: 16px;
+  left: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 8px 12px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: rgba(120, 92, 60, 0.1);
+
+  color: #715c45;
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease;
+}
+
+.recipe-book-button:hover {
+  transform: translateY(-1px);
+
+  background: rgba(120, 92, 60, 0.18);
+}
+
+.recipe-book-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.recipe-book-text {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* 🍰 標題 */
+
+.cooking-title {
+  margin: 0 48px 22px;
+
+  font-size: 24px;
+  text-align: center;
+}
+
+
+/* 🥣 攪拌盆區 */
+
+.cooking-bowl-area {
+  min-height: 180px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  border: 2px dashed #d9c3a5;
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.cooking-bowl-placeholder {
+  font-size: 72px;
+  line-height: 1;
+}
+
+.cooking-hint {
+  margin: 14px 0 0;
+
+  color: #8b765f;
+
+  font-size: 14px;
+}
+
+.bowl-ingredients {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin-top: 10px;
+}
+
+.bowl-ingredient-item {
+  padding: 7px 11px;
+
+  border: 1px solid #d4b990;
+  border-radius: 14px;
+
+  background: #fff7e8;
+
+  color: #66533f;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.bowl-ingredient-item:hover {
+  transform: translateY(-1px);
+  background: #f9ecd6;
+}
+
+.ingredient-count {
+  font-size: 11px;
+  font-weight: 600;
+
+  color: #9a856d;
+}
+
+.ingredient-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 🥛 食材區 */
+
+.cooking-ingredients {
+  margin-top: 22px;
+}
+
+.cooking-section-title {
+  margin: 0 0 10px;
+
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ingredient-list {
+  min-height: 86px;
+
+  padding: 12px;
+
+  border-radius: 18px;
+
+  background: rgba(225, 208, 183, 0.32);
+}
+
+.ingredient-list {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.ingredient-item {
+  min-width: 0;
+  padding: 12px 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  border: 2px solid transparent;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.65);
+
+  color: #66533f;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.ingredient-item:hover {
+  transform: translateY(-2px);
+}
+
+.ingredient-item.is-selected {
+  border-color: #b88b59;
+  background: #fff7e8;
+
+  box-shadow:
+    0 4px 10px rgba(100, 70, 40, 0.12);
+}
+
+.ingredient-icon {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.ingredient-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* =========================
+   🎂 料理成品區
+========================= */
+
+.cooking-products {
+  margin-top: 16px;
+}
+
+.product-list {
+  min-height: 86px;
+
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  padding: 12px;
+
+  border-radius: 18px;
+
+  background:
+    rgba(225, 208, 183, 0.32);
+}
+
+.product-item {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 12px 8px;
+
+  border: 2px solid transparent;
+  border-radius: 16px;
+
+  background:
+    rgba(255, 255, 255, 0.65);
+
+  color: #66533f;
+}
+
+.product-icon {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.product-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.product-count {
+  color: #9a856d;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* 🍳 開始料理 */
+
+.start-cooking-button {
+  display: block;
+
+  width: min(260px, 100%);
+
+  margin: 22px auto 0;
+  padding: 13px 20px;
+
+  border: none;
+  border-radius: 18px;
+
+  background: #9d7951;
+
+  color: #fffaf2;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 12px rgba(90, 65, 40, 0.18);
+}
+
+.start-cooking-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.start-cooking-button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* =========================
+   📖 食譜書頁面
+========================= */
+
+.recipe-book-page {
+  min-height: 420px;
+}
+
+.recipe-page-title {
+  margin: 0 48px 24px;
+
+  font-size: 24px;
+  text-align: center;
+}
+
+.recipe-section {
+  margin-top: 20px;
+}
+
+.recipe-section-title {
+  margin: 0 0 10px;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  color: #6b563f;
+}
+
+.recipe-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 10px;
+  padding: 15px 18px;
+
+  border: 1px solid #dfc9a9;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  color: #66533f;
+}
+
+.recipe-result,
+.recipe-material {
+  flex: 1;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.recipe-result {
+  text-align: left;
+}
+
+.recipe-material {
+  text-align: right;
+}
+
+.recipe-arrow {
+  flex: 0 0 auto;
+
+  color: #aa8b66;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.recipe-empty {
+  padding: 24px;
+
+  border: 2px dashed #d9c3a5;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.35);
+
+  color: #9a856d;
+
+  font-size: 14px;
+  text-align: center;
+}
+
+/* =========================
+   📱 料理介面｜手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .cooking-modal {
+    padding: 10px;
+  }
+
+  .cooking-panel {
+    width: min(680px, 94vw);
+    max-height: 94vh;
+
+    padding: 18px 22px;
+  }
+
+  .cooking-title {
+    margin-bottom: 12px;
+    font-size: 19px;
+  }
+
+  .cooking-bowl-area {
+    min-height: 110px;
+    padding: 12px;
+  }
+
+  .cooking-bowl-placeholder {
+    font-size: 50px;
+  }
+
+  .cooking-hint {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .cooking-ingredients {
+    margin-top: 12px;
+  }
+
+  .ingredient-list {
+    min-height: 58px;
+  }
+
+  .start-cooking-button {
+    margin-top: 12px;
+    padding: 10px 18px;
+  }
+}
+
+/* =========================
+   📱 料理介面｜手機橫向完整優化
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  /* 整個料理視窗 */
+  .cooking-modal {
+    padding: 8px;
+  }
+
+  /* 主面板 */
+  .cooking-panel {
+    width: min(760px, 96vw);
+    max-height: 96vh;
+
+    padding: 16px 18px 18px;
+
+    border-radius: 20px;
+
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 左上食譜 */
+  .recipe-book-button {
+    top: 10px;
+    left: 10px;
+
+    padding: 7px 10px;
+  }
+
+  .recipe-book-icon {
+    font-size: 17px;
+  }
+
+  .recipe-book-text {
+    font-size: 12px;
+  }
+
+  /* 右上關閉 */
+  .cooking-close {
+    top: 8px;
+    right: 10px;
+
+    width: 34px;
+    height: 34px;
+
+    font-size: 22px;
+  }
+
+  /* 標題 */
+  .cooking-title,
+  .recipe-page-title {
+    margin: 2px 52px 12px;
+
+    font-size: 19px;
+  }
+
+  /* 攪拌盆 */
+  .cooking-bowl-area {
+    min-height: 100px;
+
+    padding: 10px 12px;
+
+    border-radius: 16px;
+  }
+
+  .cooking-bowl-placeholder {
+    font-size: 44px;
+  }
+
+  .cooking-hint {
+    margin-top: 6px;
+
+    font-size: 12px;
+  }
+
+  .bowl-ingredients {
+    gap: 6px;
+
+    margin-top: 6px;
+  }
+
+  .bowl-ingredient-item {
+    padding: 6px 9px;
+
+    font-size: 12px;
+  }
+
+  /* 食材區 */
+  .cooking-ingredients {
+    margin-top: 10px;
+  }
+
+  .cooking-section-title,
+  .recipe-section-title {
+    margin-bottom: 7px;
+
+    font-size: 14px;
+  }
+
+  .ingredient-list,
+  .product-list {
+    min-height: 0;
+
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+
+    gap: 7px;
+
+    padding: 8px;
+
+    border-radius: 14px;
+  }
+
+  .ingredient-item,
+  .product-item {
+    gap: 4px;
+
+    padding: 8px 5px;
+
+    border-radius: 12px;
+  }
+
+  .ingredient-icon,
+  .product-icon {
+    font-size: 24px;
+  }
+
+  .ingredient-name,
+  .product-name {
+    font-size: 12px;
+  }
+
+  .ingredient-count,
+  .product-count {
+    font-size: 10px;
+  }
+
+  /* 成品 */
+  .cooking-products {
+    margin-top: 10px;
+  }
+
+  /* 開始製作 */
+  .start-cooking-button {
+    width: min(230px, 100%);
+
+    margin-top: 10px;
+
+    padding: 9px 16px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+  }
+
+  /* =========================
+     📖 食譜書手機版
+  ========================= */
+
+  .recipe-book-page {
+    min-height: 0;
+  }
+
+  .recipe-section {
+    margin-top: 12px;
+  }
+
+  .recipe-card {
+    gap: 10px;
+
+    margin-bottom: 7px;
+
+    padding: 10px 12px;
+
+    border-radius: 14px;
+  }
+
+  .recipe-result,
+  .recipe-material {
+    font-size: 12px;
+  }
+
+  .recipe-arrow {
+    font-size: 15px;
+  }
+
+  .recipe-empty {
+    padding: 14px;
+
+    border-radius: 14px;
+
+    font-size: 12px;
+  }
+}
