@@ -56,6 +56,237 @@
 <button id="logoutButton" type="button">
   🚪 登出
 </button>
+
+<!-- =========================
+     📱 菜比手機
+========================== -->
+
+<button
+  id="gamePhoneButton"
+  class="game-phone-button"
+  type="button"
+  aria-label="打開菜比手機"
+>
+  📱
+</button>
+
+<!-- =========================
+     📱 菜比手機主畫面
+========================== -->
+
+<div
+  id="gamePhonePanel"
+  class="game-phone-panel"
+  aria-hidden="true"
+>
+  <div class="game-phone">
+
+    <div class="game-phone-header">
+      <strong>📱 菜比手機</strong>
+
+      <button
+        id="gamePhoneClose"
+        class="game-phone-close"
+        type="button"
+        aria-label="關閉手機"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="game-phone-grid">
+
+      <button type="button" data-phone-app="backpack">
+        <span>🎒</span>
+        <small>背包</small>
+      </button>
+
+      <button type="button" data-phone-app="daily">
+        <span>🎁</span>
+        <small>每日</small>
+      </button>
+
+      <button type="button" data-phone-app="gacha">
+        <span>🎰</span>
+        <small>抽獎</small>
+      </button>
+
+      <button type="button" data-phone-app="mail">
+        <span>📬</span>
+        <small>信箱</small>
+      </button>
+
+      <button type="button" data-phone-app="shop">
+        <span>🛒</span>
+        <small>商店</small>
+      </button>
+
+      <button type="button" data-phone-app="redeem">
+        <span>🎟️</span>
+        <small>兌換碼</small>
+      </button>
+
+    </div>
+
+        <!-- =========================
+         🎒 背包頁
+    ========================== -->
+
+    <div
+      id="backpackPage"
+      class="phone-page backpack-page"
+      hidden
+    >
+
+      <div class="backpack-header">
+
+        <button
+          id="backpackBackButton"
+          class="phone-back-button"
+          type="button"
+        >
+          ← 返回
+        </button>
+
+        <strong>🎒 我的背包</strong>
+
+      </div>
+
+
+      <!-- 💰 玩家貨幣 -->
+
+      <div class="backpack-wallet">
+
+        <div>
+          🫘 金豆
+          <strong id="backpackGoldBeans">0</strong>
+        </div>
+
+        <div>
+          💎 鑽石
+          <strong id="backpackDiamonds">0</strong>
+        </div>
+
+      </div>
+
+
+      <!-- 🗂️ 分類 -->
+
+      <div class="backpack-tabs">
+
+        <button type="button" data-backpack-tab="all">
+          全部
+        </button>
+
+        <button type="button" data-backpack-tab="seed">
+          🌱 種子
+        </button>
+
+        <button type="button" data-backpack-tab="ingredient">
+          🥣 食材
+        </button>
+
+        <button type="button" data-backpack-tab="material">
+          🧺 素材
+        </button>
+
+        <button type="button" data-backpack-tab="clothing">
+          👗 衣服
+        </button>
+
+        <button type="button" data-backpack-tab="furniture">
+          🪑 家具
+        </button>
+
+      </div>
+
+
+      <!-- 🎒 物品區 -->
+
+      <div
+        id="backpackItems"
+        class="backpack-items"
+      >
+      </div>
+
+    </div>
+
+        <!-- =========================
+         🛒 商店頁
+    ========================== -->
+
+    <div
+      id="shopPage"
+      class="phone-page shop-page"
+      hidden
+    >
+
+      <!-- 商店標題 -->
+      <div class="shop-header">
+
+        <button
+          id="shopBackButton"
+          class="phone-back-button"
+          type="button"
+        >
+          ← 返回
+        </button>
+
+        <strong>🛒 菜比商店</strong>
+
+      </div>
+
+
+      <!-- 玩家金豆 -->
+      <div class="shop-wallet">
+        🫘 金豆
+        <strong id="shopGoldBeans">0</strong>
+      </div>
+
+
+      <!-- 商品區 -->
+      <div
+        id="shopItems"
+        class="shop-items"
+      >
+
+        <!-- 🌱 小麥種子 -->
+        <div
+          class="shop-item"
+          data-shop-item="wheat_seed"
+        >
+
+          <div class="shop-item-icon">
+            🌱
+          </div>
+
+          <div class="shop-item-info">
+
+            <strong>小麥種子</strong>
+
+            <small>
+              每次購買 ×1
+            </small>
+
+          </div>
+
+          <button
+            class="shop-buy-button"
+            type="button"
+            data-buy-item="wheat_seed"
+          >
+            🫘 10
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+    
+  </div>
+</div>
+
 <!-- =========================
      👤 玩家角色圖層
 ========================== -->

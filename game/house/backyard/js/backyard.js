@@ -15,6 +15,483 @@ const bakeryEntrance =
   document.getElementById("bakeryEntrance");
 
 /* =========================
+   🌱 六塊農田＋種植選單
+========================= */
+
+const farmPlots =
+  document.querySelectorAll(".farm-plot");
+
+const plantModal =
+  document.getElementById("plantModal");
+
+const plantModalTitle =
+  document.getElementById("plantModalTitle");
+
+const closePlantModal =
+  document.getElementById("closePlantModal");
+
+const cancelPlant =
+  document.getElementById("cancelPlant");
+
+let selectedPlotId = null;
+
+const wheatSeedButton =
+  document.querySelector(
+    '.seed-option[data-seed="wheat"]'
+  );
+
+let currentUserId = null;
+
+let farmStateTimer = null;
+let playerFarmData = [];
+
+/* 🌱 開啟種植選單 */
+
+function openPlantModal(plotId) {
+
+  selectedPlotId = plotId;
+
+  plantModalTitle.textContent =
+    `🌱 第 ${plotId} 塊農田`;
+
+  plantModal.classList.add("is-open");
+
+  plantModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+/* ❌ 關閉種植選單 */
+
+function hidePlantModal() {
+
+  plantModal.classList.remove("is-open");
+
+  plantModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  selectedPlotId = null;
+}
+
+
+/* 🌱 點擊六塊農田 */
+
+farmPlots.forEach((plot) => {
+
+  plot.addEventListener(
+    "pointerdown",
+    (event) => {
+      event.stopPropagation();
+    }
+  );
+
+  plot.addEventListener(
+    "click",
+    async (event) => {
+
+      event.stopPropagation();
+
+      const plotNumber =
+        Number(plot.dataset.plotId);
+
+
+      /* 🌾 已成熟 → 收成 */
+
+      if (
+        plot.classList.contains(
+          "is-ready"
+        )
+      ) {
+
+        await harvestFarmPlot(
+          plotNumber
+        );
+
+        return;
+      }
+
+
+      /* 🌱 生長中 → 不開種植視窗 */
+
+      if (
+        plot.classList.contains(
+          "is-growing"
+        )
+      ) {
+
+        return;
+      }
+
+
+      /* 🟫 空田 → 開啟種植視窗 */
+
+      openPlantModal(
+        plotNumber
+      );
+    }
+  );
+});
+
+/* ❌ 右上角 × */
+
+closePlantModal.addEventListener(
+  "click",
+  hidePlantModal
+);
+
+
+/* ❌ 取消 */
+
+cancelPlant.addEventListener(
+  "click",
+  hidePlantModal
+);
+
+
+/* 🌑 點黑色背景關閉 */
+
+plantModal.addEventListener(
+  "click",
+  (event) => {
+
+    if (event.target === plantModal) {
+      hidePlantModal();
+    }
+  }
+);
+
+/* =========================
+   🌾 種植小麥
+========================= */
+
+async function plantWheat() {
+
+  if (!selectedPlotId || !currentUserId) {
+    return;
+  }
+
+  const plotNumber =
+    Number(selectedPlotId);
+
+
+  /* 🌱 防止連續點擊 */
+  wheatSeedButton.disabled = true;
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "plant_farm_crop",
+      {
+        p_plot_number: plotNumber,
+        p_crop_key: "wheat"
+      }
+    );
+
+
+  wheatSeedButton.disabled = false;
+
+
+  /* ❌ 種植失敗 */
+  if (error) {
+
+    console.error(
+      "🌱 種植失敗：",
+      error
+    );
+
+
+    if (
+      error.message?.includes(
+        "NOT_ENOUGH_SEEDS"
+      )
+    ) {
+
+      alert(
+        "🌱 小麥種子不足！請先到商店購買。"
+      );
+
+    } else if (
+      error.message?.includes(
+        "PLOT_OCCUPIED"
+      )
+    ) {
+
+      alert(
+        "🌱 這塊田已經有作物了！"
+      );
+
+    } else {
+
+      alert(
+        "🌱 種植失敗，請再試一次！"
+      );
+
+    }
+
+    return;
+  }
+
+
+  console.log(
+    "🌾 種植成功：",
+    data
+  );
+
+
+  hidePlantModal();
+
+  await loadFarmState();
+}
+
+
+/* 🌾 點擊小麥 */
+
+wheatSeedButton.addEventListener(
+  "click",
+  plantWheat
+);
+
+/* =========================
+   🌱 農田狀態顯示
+========================= */
+
+async function loadFarmState() {
+
+  if (!currentUserId) {
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase
+      .from("player_farm_plots")
+      .select(`
+        plot_number,
+        crop_id,
+        planted_at,
+        ready_at,
+        crop_items (
+          name,
+          emoji
+        )
+      `)
+      .eq(
+        "owner_user_id",
+        currentUserId
+      );
+
+
+  if (error) {
+
+    console.error(
+      "讀取農田狀態失敗：",
+      error
+    );
+
+    return;
+  }
+
+
+  playerFarmData =
+    data || [];
+
+  renderFarmState();
+
+
+  if (farmStateTimer) {
+    clearInterval(farmStateTimer);
+  }
+
+
+  farmStateTimer =
+    setInterval(
+      renderFarmState,
+      1000
+    );
+}
+
+
+/* 🌾 更新六塊田畫面 */
+
+function renderFarmState() {
+
+  const now =
+    Date.now();
+
+
+  farmPlots.forEach((plot) => {
+
+    const plotNumber =
+      Number(
+        plot.dataset.plotId
+      );
+
+    const status =
+      plot.querySelector(
+        ".farm-status"
+      );
+
+
+    if (!status) {
+      return;
+    }
+
+
+    const farmData =
+      playerFarmData.find(
+        item =>
+          item.plot_number ===
+          plotNumber
+      );
+
+
+    /* 🟫 空田 */
+
+    if (
+      !farmData ||
+      !farmData.crop_id ||
+      !farmData.ready_at
+    ) {
+
+      plot.classList.remove(
+        "is-growing",
+        "is-ready"
+      );
+
+      status.textContent = "";
+
+      return;
+    }
+
+
+    const readyTime =
+      new Date(
+        farmData.ready_at
+      ).getTime();
+
+    const remainingMs =
+      readyTime - now;
+
+
+    /* 🌾 已成熟 */
+
+    if (remainingMs <= 0) {
+
+      plot.classList.remove(
+        "is-growing"
+      );
+
+      plot.classList.add(
+        "is-ready"
+      );
+
+      const emoji =
+        farmData.crop_items?.emoji ||
+        "🌾";
+
+      status.innerHTML =
+        `${emoji}<br>可收成！`;
+
+      return;
+    }
+
+
+    /* 🌱 生長中 */
+
+    plot.classList.remove(
+      "is-ready"
+    );
+
+    plot.classList.add(
+      "is-growing"
+    );
+
+
+    const remainingSeconds =
+      Math.ceil(
+        remainingMs / 1000
+      );
+
+    const minutes =
+      Math.floor(
+        remainingSeconds / 60
+      );
+
+    const seconds =
+      remainingSeconds % 60;
+
+    const timeText =
+      `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+
+    status.innerHTML =
+      `🌱<br>${timeText}`;
+  });
+}
+
+/* =========================
+   🌾 收成農作物
+========================= */
+
+async function harvestFarmPlot(
+  plotNumber
+) {
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "harvest_farm_plot",
+      {
+        p_plot_number:
+          plotNumber
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "收成失敗：",
+      error
+    );
+
+    alert(
+      "🌱 收成失敗，請再試一次！"
+    );
+
+    return;
+  }
+
+
+  const cropName =
+    data?.crop_name ||
+    "農作物";
+
+  const quantity =
+    data?.harvest_quantity ||
+    1;
+
+
+  alert(
+    `🌾 收成 ${cropName} ×${quantity}！`
+  );
+
+
+  await loadFarmState();
+}
+
+/* =========================
    🚶 玩家移動資料
 ========================= */
 
@@ -350,6 +827,10 @@ async function checkBackyardAccess() {
     return;
   }
 
+currentUserId =
+  session.user.id;
+
+await loadFarmState();
 
   /* =========================
      👤 讀取玩家 Base

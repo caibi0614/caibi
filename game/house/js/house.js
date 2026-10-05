@@ -299,6 +299,738 @@ privateRoomEntrance.addEventListener("click", () => {
 });
 
 /* =========================
+   📱 菜比手機
+========================= */
+
+const gamePhoneButton =
+  document.getElementById("gamePhoneButton");
+
+const gamePhonePanel =
+  document.getElementById("gamePhonePanel");
+
+const gamePhoneClose =
+  document.getElementById("gamePhoneClose");
+
+
+/* 📱 打開手機 */
+
+gamePhoneButton.addEventListener("click", () => {
+
+  gamePhonePanel.classList.add("is-open");
+
+  gamePhonePanel.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+});
+
+
+/* ✕ 關閉手機 */
+
+gamePhoneClose.addEventListener("click", () => {
+
+  gamePhonePanel.classList.remove("is-open");
+
+  gamePhonePanel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+});
+
+
+/* 點手機外面的半透明區域也能關閉 */
+
+gamePhonePanel.addEventListener("click", (event) => {
+
+  if (event.target !== gamePhonePanel) {
+    return;
+  }
+
+  gamePhonePanel.classList.remove("is-open");
+
+  gamePhonePanel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+});
+
+/* =========================
+   🎒 菜比手機－背包
+========================= */
+
+const gamePhone =
+  document.querySelector(".game-phone");
+
+const gamePhoneGrid =
+  document.querySelector(".game-phone-grid");
+
+const backpackButton =
+  document.querySelector(
+    '[data-phone-app="backpack"]'
+  );
+
+const backpackPage =
+  document.getElementById("backpackPage");
+
+const backpackBackButton =
+  document.getElementById("backpackBackButton");
+
+const backpackGoldBeans =
+  document.getElementById("backpackGoldBeans");
+
+const backpackDiamonds =
+  document.getElementById("backpackDiamonds");
+
+const backpackItems =
+  document.getElementById("backpackItems");
+
+const backpackTabs =
+  document.querySelectorAll(
+    "[data-backpack-tab]"
+  );
+
+let backpackInventory = [];
+let backpackClothing = [];
+let backpackFurniture = [];
+
+let currentBackpackTab = "all";
+
+/* 💰 讀取玩家錢包 */
+
+async function loadBackpackWallet() {
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await caibiSupabase.auth.getSession();
+
+  if (sessionError || !session) {
+    console.error(
+      "🎒 背包：找不到登入狀態",
+      sessionError
+    );
+    return;
+  }
+
+
+  const {
+    data: wallet,
+    error: walletError
+  } =
+    await caibiSupabase
+      .from("player_wallet")
+      .select("gold_beans, diamonds")
+      .eq("user_id", session.user.id)
+      .single();
+
+
+  if (walletError || !wallet) {
+
+    console.error(
+      "🎒 背包：讀取錢包失敗",
+      walletError
+    );
+
+    backpackGoldBeans.textContent = "—";
+    backpackDiamonds.textContent = "—";
+
+    return;
+  }
+
+
+  backpackGoldBeans.textContent =
+    wallet.gold_beans ?? 0;
+
+  backpackDiamonds.textContent =
+    wallet.diamonds ?? 0;
+}
+
+/* =========================
+   🎒 讀取一般背包物品
+========================= */
+
+async function loadBackpackInventory() {
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await caibiSupabase.auth.getSession();
+
+  if (sessionError || !session) {
+    console.error(
+      "🎒 背包：找不到登入狀態",
+      sessionError
+    );
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase
+      .from("player_inventory")
+      .select(`
+        quantity,
+        game_items (
+          id,
+          item_key,
+          name,
+          category
+        )
+      `)
+      .eq("user_id", session.user.id)
+      .gt("quantity", 0);
+
+
+  if (error) {
+
+    console.error(
+      "🎒 背包：讀取物品失敗",
+      error
+    );
+
+    backpackInventory = [];
+
+    renderBackpackItems();
+
+    return;
+  }
+
+
+  backpackInventory =
+    data || [];
+
+  renderBackpackItems();
+}
+
+/* =========================
+   👗 讀取玩家衣服
+========================= */
+
+async function loadBackpackClothing() {
+
+  const {
+    data: { session }
+  } = await caibiSupabase.auth.getSession();
+
+  if (!session) return;
+
+
+  const {
+    data,
+    error
+  } = await caibiSupabase
+    .from("player_clothing")
+    .select(`
+      quantity,
+      clothing_items (
+        id,
+        name,
+        category,
+        image_path
+      )
+    `)
+    .eq("user_id", session.user.id)
+    .gt("quantity", 0);
+
+
+  if (error) {
+    console.error(
+      "🎒 背包：讀取衣服失敗",
+      error
+    );
+
+    backpackClothing = [];
+    return;
+  }
+
+
+  backpackClothing = data || [];
+}
+
+
+/* =========================
+   🪑 讀取玩家家具
+========================= */
+
+async function loadBackpackFurniture() {
+
+  const {
+    data: { session }
+  } = await caibiSupabase.auth.getSession();
+
+  if (!session) return;
+
+
+  const {
+    data,
+    error
+  } = await caibiSupabase
+    .from("player_furniture")
+    .select(`
+      quantity,
+      furniture_items (
+        id,
+        name,
+        category,
+        image_front
+      )
+    `)
+    .eq("user_id", session.user.id)
+    .gt("quantity", 0);
+
+
+  if (error) {
+    console.error(
+      "🎒 背包：讀取家具失敗",
+      error
+    );
+
+    backpackFurniture = [];
+    return;
+  }
+
+
+  backpackFurniture = data || [];
+}
+
+/* =========================
+   🖼️ 顯示背包物品
+========================= */
+
+function renderBackpackItems() {
+
+  backpackItems.innerHTML = "";
+
+  const displayItems = [];
+
+
+  /* 📦 一般物品 */
+
+  for (const row of backpackInventory) {
+
+    const item = row.game_items;
+
+    if (!item) continue;
+
+    displayItems.push({
+      type: item.category,
+      key: item.item_key,
+      name: item.name,
+      quantity: row.quantity,
+      imagePath: null
+    });
+  }
+
+
+  /* 👗 衣服 */
+
+  for (const row of backpackClothing) {
+
+    const item = row.clothing_items;
+
+    if (!item) continue;
+
+    displayItems.push({
+      type: "clothing",
+      key: null,
+      name: item.name,
+      quantity: row.quantity,
+      imagePath: item.image_path
+    });
+  }
+
+
+  /* 🪑 家具 */
+
+  for (const row of backpackFurniture) {
+
+    const item = row.furniture_items;
+
+    if (!item) continue;
+
+    displayItems.push({
+      type: "furniture",
+      key: null,
+      name: item.name,
+      quantity: row.quantity,
+      imagePath: item.image_front
+    });
+  }
+
+
+  /* 🗂️ 分類 */
+
+  const visibleItems =
+    displayItems.filter((item) => {
+
+      if (currentBackpackTab === "all") {
+        return true;
+      }
+
+      return (
+        item.type === currentBackpackTab
+      );
+
+    });
+
+
+  if (visibleItems.length === 0) {
+
+    backpackItems.innerHTML = `
+      <div class="backpack-empty">
+        這裡目前沒有東西～
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const itemIcons = {
+
+    wheat: "🌾",
+    milk: "🥛",
+    egg: "🥚",
+    flour: "🥣",
+    butter: "🧈",
+    cake: "🎂",
+
+    food_waste: "🗑️",
+    fertilizer: "🌱",
+
+    wheat_seed: "🌱"
+
+  };
+
+
+  for (const item of visibleItems) {
+
+    const itemElement =
+      document.createElement("div");
+
+    itemElement.className =
+      "backpack-item";
+
+
+    let visual = "📦";
+
+
+    /* 👗🪑 有圖片就讀 Storage 圖片 */
+
+    if (item.imagePath) {
+
+      const { data } =
+        caibiSupabase.storage
+          .from("avatars")
+          .getPublicUrl(item.imagePath);
+
+      visual = `
+        <img
+          src="${data.publicUrl}"
+          alt="${item.name}"
+          class="backpack-item-image"
+        >
+      `;
+
+    } else {
+
+      visual =
+        itemIcons[item.key] || "📦";
+
+    }
+
+
+    itemElement.innerHTML = `
+      <div class="backpack-item-icon">
+        ${visual}
+      </div>
+
+      <div class="backpack-item-name">
+        ${item.name}
+      </div>
+
+      <div class="backpack-item-quantity">
+        × ${item.quantity}
+      </div>
+    `;
+
+
+    backpackItems.appendChild(
+      itemElement
+    );
+  }
+}
+
+
+/* =========================
+   🗂️ 背包分類
+========================= */
+
+for (const tab of backpackTabs) {
+
+  tab.addEventListener(
+    "click",
+    () => {
+
+      currentBackpackTab =
+        tab.dataset.backpackTab;
+
+
+      for (const otherTab of backpackTabs) {
+
+        otherTab.classList.toggle(
+          "is-active",
+          otherTab === tab
+        );
+
+      }
+
+
+      renderBackpackItems();
+
+    }
+  );
+
+}
+
+/* 🎒 打開背包 */
+
+backpackButton.addEventListener(
+  "click",
+  async () => {
+
+    gamePhone.classList.add(
+      "backpack-open"
+    );
+
+    backpackPage.hidden = false;
+
+    await Promise.all([
+  loadBackpackWallet(),
+  loadBackpackInventory(),
+  loadBackpackClothing(),
+  loadBackpackFurniture()
+]);
+
+renderBackpackItems();
+
+  }
+);
+
+
+/* ← 返回手機首頁 */
+
+backpackBackButton.addEventListener(
+  "click",
+  () => {
+
+    backpackPage.hidden = true;
+
+    gamePhone.classList.remove(
+      "backpack-open"
+    );
+
+  }
+);
+
+/* =========================
+   🛒 菜比手機－商店
+========================= */
+
+const shopButton =
+  document.querySelector(
+    '[data-phone-app="shop"]'
+  );
+
+const shopPage =
+  document.getElementById("shopPage");
+
+const shopBackButton =
+  document.getElementById("shopBackButton");
+
+const shopGoldBeans =
+  document.getElementById("shopGoldBeans");
+
+
+/* 🫘 讀取商店金豆 */
+
+async function loadShopWallet() {
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await caibiSupabase.auth.getSession();
+
+
+  if (sessionError || !session) {
+
+    console.error(
+      "🛒 商店：找不到登入狀態",
+      sessionError
+    );
+
+    shopGoldBeans.textContent = "—";
+
+    return;
+  }
+
+
+  const {
+    data: wallet,
+    error: walletError
+  } =
+    await caibiSupabase
+      .from("player_wallet")
+      .select("gold_beans")
+      .eq("user_id", session.user.id)
+      .single();
+
+
+  if (walletError || !wallet) {
+
+    console.error(
+      "🛒 商店：讀取金豆失敗",
+      walletError
+    );
+
+    shopGoldBeans.textContent = "—";
+
+    return;
+  }
+
+
+  shopGoldBeans.textContent =
+    wallet.gold_beans ?? 0;
+}
+
+
+/* 🛒 打開商店 */
+
+shopButton.addEventListener(
+  "click",
+  async () => {
+
+    gamePhone.classList.add(
+      "shop-open"
+    );
+
+    shopPage.hidden = false;
+
+    await loadShopWallet();
+
+  }
+);
+
+
+/* ← 返回手機首頁 */
+
+shopBackButton.addEventListener(
+  "click",
+  () => {
+
+    shopPage.hidden = true;
+
+    gamePhone.classList.remove(
+      "shop-open"
+    );
+
+  }
+);
+
+/* =========================
+   🛒 商店－購買商品
+========================= */
+
+const shopBuyButtons =
+  document.querySelectorAll(
+    "[data-buy-item]"
+  );
+
+
+for (const button of shopBuyButtons) {
+
+  button.addEventListener(
+    "click",
+    async () => {
+
+      /* 目前小麥種子在 shop_items 的 ID = 1 */
+      const shopItemId = 1;
+
+
+      /* 防止連續狂點 */
+      button.disabled = true;
+
+      const originalText =
+        button.textContent;
+
+      button.textContent =
+        "購買中…";
+
+
+      const {
+        data,
+        error
+      } =
+        await caibiSupabase.rpc(
+          "buy_shop_item",
+          {
+            p_shop_item_id: shopItemId
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "🛒 購買失敗：",
+          error
+        );
+
+        alert(
+          "購買失敗，請稍後再試。"
+        );
+
+        button.disabled = false;
+        button.textContent = originalText;
+
+        return;
+      }
+
+
+      console.log(
+        "🛒 購買成功：",
+        data
+      );
+
+
+      /* 🫘 重新讀取最新金豆 */
+      await loadShopWallet();
+
+
+      /* 🎒 同步背包資料 */
+      await loadBackpackInventory();
+
+
+      alert(
+        "🌱 小麥種子購買成功！"
+      );
+
+
+      button.disabled = false;
+      button.textContent = originalText;
+
+    }
+  );
+
+}
+
+/* =========================
    🚀 啟動 1F
 ========================= */
 

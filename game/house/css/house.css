@@ -360,3 +360,665 @@ body {
 
   z-index: 45;
 }
+
+/* =========================
+   📱 菜比手機按鈕
+========================= */
+
+.game-phone-button {
+  position: absolute;
+
+  right: 16px;
+  bottom: 16px;
+
+  width: 54px;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(126, 105, 78, 0.22);
+  border-radius: 18px;
+
+  background: rgba(255, 253, 247, 0.88);
+  backdrop-filter: blur(6px);
+
+  font-size: 25px;
+
+  cursor: pointer;
+  z-index: 60;
+}
+
+.game-phone-button:hover {
+  background: rgba(255, 250, 241, 0.98);
+  transform: translateY(-2px);
+}
+
+
+/* 📱 手機橫向 */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone-button {
+    right: 8px;
+    bottom: 8px;
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 14px;
+
+    font-size: 21px;
+  }
+
+}
+
+/* =========================
+   📱 菜比手機主畫面
+========================= */
+
+.game-phone-panel {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(55, 46, 36, 0.28);
+  backdrop-filter: blur(3px);
+
+  z-index: 100;
+}
+
+.game-phone-panel.is-open {
+  display: flex;
+}
+
+.game-phone {
+  width: min(360px, 90vw);
+
+  padding: 18px;
+
+  background: #fffaf1;
+
+  border: 2px solid #d7bea0;
+  border-radius: 28px;
+
+  box-shadow:
+    0 18px 50px rgba(72, 54, 35, 0.25);
+
+  color: #51483e;
+}
+
+
+/* 上方標題 */
+
+.game-phone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+
+  font-size: 18px;
+}
+
+
+/* 關閉按鈕 */
+
+.game-phone-close {
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #eee3d2;
+
+  color: #66594b;
+  font-size: 17px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* APP 排列 */
+
+.game-phone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+}
+
+.game-phone-grid button {
+  min-height: 82px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 10px 6px;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 18px;
+
+  background: #fff;
+
+  color: #51483e;
+
+  cursor: pointer;
+}
+
+.game-phone-grid button:hover {
+  background: #f8efe2;
+  transform: translateY(-2px);
+}
+
+.game-phone-grid span {
+  font-size: 27px;
+}
+
+.game-phone-grid small {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* 📱 手機橫向 */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone {
+    width: min(330px, 72vw);
+
+    padding: 14px;
+
+    border-radius: 22px;
+  }
+
+  .game-phone-header {
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+
+  .game-phone-grid {
+    gap: 8px;
+  }
+
+  .game-phone-grid button {
+    min-height: 62px;
+    border-radius: 14px;
+  }
+
+  .game-phone-grid span {
+    font-size: 21px;
+  }
+
+  .game-phone-grid small {
+    font-size: 11px;
+  }
+
+}
+
+/* =========================
+   🎒 手機－背包頁
+========================= */
+
+.phone-page[hidden] {
+  display: none !important;
+}
+
+
+/* 背包開啟時，隱藏手機首頁 */
+
+.game-phone.backpack-open .game-phone-header,
+.game-phone.backpack-open .game-phone-grid {
+  display: none;
+}
+
+
+/* 背包頁 */
+
+.backpack-page {
+  width: 100%;
+}
+
+
+/* 🎒 標題 */
+
+.backpack-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.backpack-header strong {
+  font-size: 17px;
+}
+
+
+/* ← 返回 */
+
+.phone-back-button {
+  padding: 7px 10px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: #eee3d2;
+
+  color: #66594b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================
+   💰 金豆 / 鑽石
+========================= */
+
+.backpack-wallet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-bottom: 14px;
+}
+
+.backpack-wallet > div {
+  padding: 10px 8px;
+
+  text-align: center;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  font-size: 12px;
+}
+
+.backpack-wallet strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 16px;
+}
+
+
+/* =========================
+   🗂️ 背包分類
+========================= */
+
+.backpack-tabs {
+  display: flex;
+
+  gap: 6px;
+
+  margin-bottom: 12px;
+  padding-bottom: 4px;
+
+  overflow-x: auto;
+}
+
+.backpack-tabs button {
+  flex: 0 0 auto;
+
+  padding: 7px 9px;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 10px;
+
+  background: #fff;
+
+  color: #66594b;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.backpack-tabs button.is-active {
+  background: #eee3d2;
+  border-color: #cfb897;
+}
+
+
+/* =========================
+   🎒 物品格
+========================= */
+
+.backpack-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+
+  max-height: 260px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.backpack-item {
+  min-height: 82px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 8px 5px;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  text-align: center;
+}
+
+.backpack-item-icon {
+  font-size: 24px;
+}
+
+.backpack-item-name {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.backpack-item-quantity {
+  font-size: 10px;
+  color: #8b7a67;
+}
+
+/* 👗🪑 衣服 / 家具背包縮圖 */
+
+.backpack-item-image {
+  display: block;
+
+  width: 52px;
+  height: 52px;
+
+  object-fit: contain;
+
+  margin: 0 auto;
+}
+
+/* 沒有物品 */
+
+.backpack-empty {
+  grid-column: 1 / -1;
+
+  padding: 30px 10px;
+
+  text-align: center;
+
+  color: #9b8b79;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.backpack-open {
+    width: min(430px, 78vw);
+  }
+
+  .backpack-header {
+    margin-bottom: 8px;
+  }
+
+  .backpack-wallet {
+    margin-bottom: 8px;
+  }
+
+  .backpack-wallet > div {
+    padding: 6px;
+  }
+
+  .backpack-wallet strong {
+    font-size: 13px;
+  }
+
+  .backpack-tabs {
+    margin-bottom: 7px;
+  }
+
+  .backpack-tabs button {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+
+  .backpack-items {
+    max-height: 145px;
+  }
+
+  .backpack-item {
+    min-height: 60px;
+    padding: 5px;
+  }
+
+  .backpack-item-icon {
+    font-size: 19px;
+  }
+
+    .backpack-item-image {
+    width: 38px;
+    height: 38px;
+  }
+
+}
+
+/* =========================
+   🛒 手機－商店頁
+========================= */
+
+/* 商店開啟時，隱藏手機首頁 */
+.game-phone.shop-open .game-phone-header,
+.game-phone.shop-open .game-phone-grid {
+  display: none;
+}
+
+
+/* 商店頁 */
+.shop-page {
+  width: 100%;
+}
+
+
+/* 🛒 標題 */
+.shop-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.shop-header strong {
+  font-size: 17px;
+}
+
+
+/* 🫘 玩家金豆 */
+.shop-wallet {
+  margin-bottom: 14px;
+  padding: 10px 12px;
+
+  text-align: center;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  font-size: 12px;
+}
+
+.shop-wallet strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 17px;
+}
+
+
+/* =========================
+   🛍️ 商品區
+========================= */
+
+.shop-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+
+  max-height: 260px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+
+/* 單一商品 */
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 12px 8px;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 16px;
+
+  text-align: center;
+}
+
+
+/* 商品圖示 */
+.shop-item-icon {
+  font-size: 30px;
+}
+
+
+/* 商品名稱 / 說明 */
+.shop-item-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.shop-item-info strong {
+  font-size: 13px;
+}
+
+.shop-item-info small {
+  color: #8b7a67;
+
+  font-size: 10px;
+}
+
+
+/* 🫘 購買按鈕 */
+.shop-buy-button {
+  width: 100%;
+
+  margin-top: 3px;
+  padding: 7px 8px;
+
+  border: 1px solid #cfb897;
+  border-radius: 11px;
+
+  background: #f5ead9;
+
+  color: #66594b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.shop-buy-button:hover {
+  background: #eadac3;
+}
+
+
+/* =========================
+   📱 商店－手機橫向
+========================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.shop-open {
+    width: min(430px, 78vw);
+  }
+
+  .shop-header {
+    margin-bottom: 8px;
+  }
+
+  .shop-wallet {
+    margin-bottom: 8px;
+    padding: 6px 10px;
+  }
+
+  .shop-wallet strong {
+    font-size: 13px;
+  }
+
+  .shop-items {
+    max-height: 150px;
+    gap: 7px;
+  }
+
+  .shop-item {
+    padding: 7px 6px;
+    gap: 4px;
+  }
+
+  .shop-item-icon {
+    font-size: 22px;
+  }
+
+  .shop-buy-button {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+
+}

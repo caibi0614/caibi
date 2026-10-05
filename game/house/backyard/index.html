@@ -44,6 +44,65 @@
     aria-label="返回烘焙房"
   ></button>
 
+    <!-- 🌱 農田互動熱區 -->
+  <div id="farmPlots" class="farm-plots">
+
+    <button
+  class="farm-plot"
+  data-plot-id="1"
+  type="button"
+  aria-label="農田 1"
+>
+  <span class="farm-status"></span>
+</button>
+
+    <button
+  class="farm-plot"
+  data-plot-id="2"
+  type="button"
+  aria-label="農田 2"
+>
+  <span class="farm-status"></span>
+</button>
+
+    <button
+  class="farm-plot"
+  data-plot-id="3"
+  type="button"
+  aria-label="農田 3"
+>
+  <span class="farm-status"></span>
+</button>
+
+    <button
+  class="farm-plot"
+  data-plot-id="4"
+  type="button"
+  aria-label="農田 4"
+>
+  <span class="farm-status"></span>
+</button>
+
+    <button
+  class="farm-plot"
+  data-plot-id="5"
+  type="button"
+  aria-label="農田 5"
+>
+  <span class="farm-status"></span>
+</button>
+
+    <button
+  class="farm-plot"
+  data-plot-id="6"
+  type="button"
+  aria-label="農田 6"
+>
+  <span class="farm-status"></span>
+</button>
+
+  </div>
+  
  <!-- 👤 玩家分層角色 -->
 <div
   id="playerCharacter"
@@ -117,6 +176,58 @@
 </div>
 
 </div>
+
+  <!-- 🌱 種植選單 -->
+  <div
+    id="plantModal"
+    class="plant-modal"
+    aria-hidden="true"
+  >
+    <div class="plant-panel">
+
+      <button
+        id="closePlantModal"
+        class="plant-close"
+        type="button"
+        aria-label="關閉種植選單"
+      >
+        ×
+      </button>
+
+      <div
+        id="plantModalTitle"
+        class="plant-title"
+      >
+        🌱 農田
+      </div>
+
+      <div class="plant-subtitle">
+        要種什麼？
+      </div>
+
+      <div class="seed-list">
+
+        <button
+          class="seed-option"
+          data-seed="wheat"
+          type="button"
+        >
+          <span class="seed-icon">🌾</span>
+          <span class="seed-name">小麥</span>
+        </button>
+
+      </div>
+
+      <button
+        id="cancelPlant"
+        class="plant-cancel"
+        type="button"
+      >
+        取消
+      </button>
+
+    </div>
+  </div>
 
   </main>
 
