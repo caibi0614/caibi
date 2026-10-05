@@ -1022,3 +1022,381 @@ body {
   }
 
 }
+
+/* =========================
+   🎁 手機－每日簽到
+========================= */
+
+/* 每日簽到開啟時，隱藏手機首頁 */
+.game-phone.daily-open .game-phone-header,
+.game-phone.daily-open .game-phone-grid {
+  display: none;
+}
+
+
+/* 每日簽到頁 */
+.daily-page {
+  width: 100%;
+}
+
+
+/* 🎁 標題 */
+.daily-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 12px;
+}
+
+.daily-header strong {
+  font-size: 17px;
+}
+
+
+/* =========================
+   🔥 目前簽到天數
+========================= */
+
+.daily-status {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+
+  text-align: center;
+
+  background: #f8efe2;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  color: #66594b;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.daily-status strong {
+  margin: 0 3px;
+
+  font-size: 18px;
+}
+
+
+/* =========================
+   🎁 七日獎勵
+========================= */
+
+.daily-rewards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+
+/* 單日獎勵卡 */
+.daily-reward {
+  min-height: 92px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 9px 5px;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  text-align: center;
+}
+
+.daily-reward strong {
+  font-size: 12px;
+}
+
+.daily-reward-icon {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.daily-reward small {
+  color: #7c6d5d;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   ✨ Day 7 七日大獎
+========================= */
+
+.daily-reward-final {
+  grid-column: 1 / -1;
+
+  min-height: 76px;
+
+  display: grid;
+  grid-template-columns:
+    auto auto 1fr;
+  grid-template-areas:
+    "day icon reward"
+    "bonus bonus bonus";
+
+  column-gap: 10px;
+  row-gap: 5px;
+
+  padding: 10px 16px;
+
+  background: #fff7e8;
+
+  border: 2px solid #d9bd91;
+}
+
+.daily-reward-final strong {
+  grid-area: day;
+
+  align-self: center;
+
+  font-size: 13px;
+}
+
+.daily-reward-final .daily-reward-icon {
+  grid-area: icon;
+
+  align-self: center;
+
+  font-size: 27px;
+}
+
+.daily-reward-final small {
+  grid-area: reward;
+
+  align-self: center;
+  justify-self: start;
+
+  font-size: 12px;
+}
+
+.daily-reward-final em {
+  grid-area: bonus;
+
+  color: #9a7446;
+
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+/* =========================
+   ✨ 今日 / 已簽到狀態
+========================= */
+
+/* ✨ 今天可以領 */
+.daily-reward.is-current {
+  position: relative;
+
+  background: #fff4d9;
+
+  border: 2px solid #e3b96f;
+
+  box-shadow:
+    0 4px 12px rgba(180, 135, 70, 0.18);
+
+  transform: translateY(-2px);
+}
+
+.daily-reward.is-current::after {
+  content: "今日";
+
+  position: absolute;
+  top: -7px;
+  right: -5px;
+
+  padding: 3px 6px;
+
+  background: #e7bd76;
+
+  border-radius: 8px;
+
+  color: #fff;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* ✅ 今天已經領取 */
+.daily-reward.is-claimed {
+  position: relative;
+
+  background: #eef4e8;
+
+  border: 2px solid #a9bf91;
+
+  opacity: 0.88;
+}
+
+.daily-reward.is-claimed::after {
+  content: "✓ 已領";
+
+  position: absolute;
+  top: -7px;
+  right: -5px;
+
+  padding: 3px 6px;
+
+  background: #91a97a;
+
+  border-radius: 8px;
+
+  color: #fff;
+
+  font-size: 8px;
+  font-weight: 800;
+}
+
+
+/* Day 7 被選中時保留大獎版型 */
+.daily-reward-final.is-current,
+.daily-reward-final.is-claimed {
+  transform: none;
+}
+
+/* =========================
+   🎁 今日簽到按鈕
+========================= */
+
+.daily-claim-button {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #cfb897;
+  border-radius: 13px;
+
+  background: #eadac3;
+
+  color: #5d5145;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.daily-claim-button:hover:not(:disabled) {
+  background: #dfc9aa;
+
+  transform: translateY(-1px);
+}
+
+.daily-claim-button:disabled {
+  background: #eee9e1;
+
+  border-color: #ddd2c4;
+
+  color: #9c9184;
+
+  cursor: default;
+}
+
+
+/* =========================
+   📱 每日簽到－手機橫向
+========================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.daily-open {
+    width: min(430px, 78vw);
+
+    padding: 12px 14px;
+  }
+
+  .daily-header {
+    margin-bottom: 7px;
+  }
+
+  .daily-header strong {
+    font-size: 14px;
+  }
+
+  .daily-status {
+    margin-bottom: 7px;
+    padding: 5px 8px;
+
+    font-size: 10px;
+  }
+
+  .daily-status strong {
+    font-size: 13px;
+  }
+
+  .daily-rewards {
+    gap: 6px;
+
+    margin-bottom: 7px;
+  }
+
+  .daily-reward {
+    min-height: 58px;
+
+    gap: 2px;
+
+    padding: 5px 3px;
+
+    border-radius: 11px;
+  }
+
+  .daily-reward strong {
+    font-size: 10px;
+  }
+
+  .daily-reward-icon {
+    font-size: 18px;
+  }
+
+  .daily-reward small {
+    font-size: 9px;
+  }
+
+  .daily-reward-final {
+    min-height: 46px;
+
+    padding: 5px 12px;
+
+    column-gap: 7px;
+    row-gap: 1px;
+  }
+
+  .daily-reward-final strong {
+    font-size: 10px;
+  }
+
+  .daily-reward-final .daily-reward-icon {
+    font-size: 18px;
+  }
+
+  .daily-reward-final small {
+    font-size: 9px;
+  }
+
+  .daily-reward-final em {
+    font-size: 8px;
+  }
+
+  .daily-claim-button {
+    padding: 7px 10px;
+
+    font-size: 11px;
+  }
+
+}

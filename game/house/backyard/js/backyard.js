@@ -45,6 +45,330 @@ let currentUserId = null;
 let farmStateTimer = null;
 let playerFarmData = [];
 
+/* =========================
+   🌱 施肥選單
+========================= */
+
+const fertilizerModal =
+  document.getElementById(
+    "fertilizerModal"
+  );
+
+const fertilizerModalTitle =
+  document.getElementById(
+    "fertilizerModalTitle"
+  );
+
+const fertilizerRemainingTime =
+  document.getElementById(
+    "fertilizerRemainingTime"
+  );
+
+const useFertilizerButton =
+  document.getElementById(
+    "useFertilizerButton"
+  );
+
+const closeFertilizerModal =
+  document.getElementById(
+    "closeFertilizerModal"
+  );
+
+const cancelFertilizer =
+  document.getElementById(
+    "cancelFertilizer"
+  );
+
+let selectedFertilizerPlotId = null;
+
+/* 🌱 打開施肥視窗 */
+
+function openFertilizerModal(
+  plotNumber
+) {
+
+  const farmData =
+    playerFarmData.find(
+      item =>
+        item.plot_number ===
+        plotNumber
+    );
+
+
+  if (
+    !farmData ||
+    !farmData.ready_at
+  ) {
+    return;
+  }
+
+
+  selectedFertilizerPlotId =
+    plotNumber;
+
+
+  fertilizerModalTitle.textContent =
+    `🌱 第 ${plotNumber} 塊農田`;
+
+
+  const readyTime =
+    new Date(
+      farmData.ready_at
+    ).getTime();
+
+  const remainingMs =
+    Math.max(
+      0,
+      readyTime - Date.now()
+    );
+
+  const remainingSeconds =
+    Math.ceil(
+      remainingMs / 1000
+    );
+
+  const minutes =
+    Math.floor(
+      remainingSeconds / 60
+    );
+
+  const seconds =
+    remainingSeconds % 60;
+
+
+  fertilizerRemainingTime.textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  /* 🌱 本輪是否已經施肥 */
+
+  if (farmData.fertilized) {
+
+    useFertilizerButton.disabled =
+      true;
+
+    useFertilizerButton.innerHTML =
+      `
+        <span class="seed-icon">🌱</span>
+        <span class="seed-name">
+          本輪已施肥
+        </span>
+      `;
+
+  } else {
+
+    useFertilizerButton.disabled =
+      false;
+
+    useFertilizerButton.innerHTML =
+      `
+        <span class="seed-icon">🌱</span>
+        <span class="seed-name">
+          使用肥料 ×1
+        </span>
+      `;
+
+  }
+  
+  fertilizerModal.classList.add(
+    "is-open"
+  );
+
+  fertilizerModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+}
+
+
+/* ❌ 關閉施肥視窗 */
+
+function hideFertilizerModal() {
+
+  fertilizerModal.classList.remove(
+    "is-open"
+  );
+
+  fertilizerModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  selectedFertilizerPlotId = null;
+}
+
+
+/* ❌ 右上角 × */
+
+closeFertilizerModal.addEventListener(
+  "click",
+  hideFertilizerModal
+);
+
+
+/* ❌ 取消 */
+
+cancelFertilizer.addEventListener(
+  "click",
+  hideFertilizerModal
+);
+
+
+/* 🌑 點背景關閉 */
+
+fertilizerModal.addEventListener(
+  "click",
+  (event) => {
+
+    if (
+      event.target ===
+      fertilizerModal
+    ) {
+      hideFertilizerModal();
+    }
+
+  }
+);
+
+/* =========================
+   🌱 使用肥料
+========================= */
+
+async function fertilizeFarmPlot() {
+
+  if (
+    !selectedFertilizerPlotId ||
+    !currentUserId
+  ) {
+    return;
+  }
+
+
+  const plotNumber =
+    Number(
+      selectedFertilizerPlotId
+    );
+
+
+  /* 🌱 防止連續點擊 */
+  useFertilizerButton.disabled =
+    true;
+
+  const originalText =
+    useFertilizerButton.textContent;
+
+
+  useFertilizerButton.textContent =
+    "施肥中…";
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "fertilize_farm_plot",
+      {
+        p_plot_number:
+          plotNumber
+      }
+    );
+
+
+  useFertilizerButton.disabled =
+    false;
+
+  useFertilizerButton.textContent =
+    originalText;
+
+
+  /* ❌ 施肥失敗 */
+  if (error) {
+
+    console.error(
+      "🌱 施肥失敗：",
+      error
+    );
+
+
+    if (
+      error.message?.includes(
+        "NOT_ENOUGH_FERTILIZER"
+      )
+    ) {
+
+      alert(
+        "🌱 肥料不足！可至烘焙房使用廚餘製作肥料。"
+      );
+
+    } else if (
+      error.message?.includes(
+        "ALREADY_FERTILIZED"
+      )
+    ) {
+
+      alert(
+        "🌱 這一輪已經施過肥了！"
+      );
+
+    } else if (
+      error.message?.includes(
+        "CROP_ALREADY_READY"
+      )
+    ) {
+
+      alert(
+        "🌾 作物已經成熟，不需要施肥！"
+      );
+
+    } else if (
+      error.message?.includes(
+        "NO_CROP"
+      )
+    ) {
+
+      alert(
+        "🌱 這塊田目前沒有作物！"
+      );
+
+    } else {
+
+      alert(
+        "🌱 施肥失敗，請再試一次！"
+      );
+
+    }
+
+    return;
+  }
+
+
+  console.log(
+    "🌱 施肥成功：",
+    data
+  );
+
+
+  hideFertilizerModal();
+
+
+  /* 🌾 重新取得 ready_at，
+     畫面會立即套用減半後的時間 */
+  await loadFarmState();
+
+
+  alert(
+    "🌱 施肥成功！剩餘生長時間已減半。"
+  );
+}
+
+
+/* 🌱 點擊使用肥料 */
+
+useFertilizerButton.addEventListener(
+  "click",
+  fertilizeFarmPlot
+);
+
 /* 🌱 開啟種植選單 */
 
 function openPlantModal(plotId) {
@@ -115,16 +439,20 @@ farmPlots.forEach((plot) => {
       }
 
 
-      /* 🌱 生長中 → 不開種植視窗 */
+      /* 🌱 生長中 → 開啟施肥視窗 */
 
-      if (
-        plot.classList.contains(
-          "is-growing"
-        )
-      ) {
+if (
+  plot.classList.contains(
+    "is-growing"
+  )
+) {
 
-        return;
-      }
+  openFertilizerModal(
+    plotNumber
+  );
+
+  return;
+}
 
 
       /* 🟫 空田 → 開啟種植視窗 */
@@ -275,15 +603,16 @@ async function loadFarmState() {
     await caibiSupabase
       .from("player_farm_plots")
       .select(`
-        plot_number,
-        crop_id,
-        planted_at,
-        ready_at,
-        crop_items (
-          name,
-          emoji
-        )
-      `)
+  plot_number,
+  crop_id,
+  planted_at,
+  ready_at,
+  fertilized,
+  crop_items (
+    name,
+    emoji
+  )
+`)
       .eq(
         "owner_user_id",
         currentUserId

@@ -284,6 +284,106 @@
 
     </div>
     
+        <!-- =========================
+         🎁 每日簽到頁
+    ========================== -->
+
+    <div
+      id="dailyPage"
+      class="phone-page daily-page"
+      hidden
+    >
+
+      <!-- 🎁 標題 -->
+      <div class="daily-header">
+
+        <button
+          id="dailyBackButton"
+          class="phone-back-button"
+          type="button"
+        >
+          ← 返回
+        </button>
+
+        <strong>🎁 每日簽到</strong>
+
+      </div>
+
+
+      <!-- 📅 目前連續簽到 -->
+      <div class="daily-status">
+        目前第
+        <strong id="dailyCurrentDay">1</strong>
+        天
+      </div>
+
+
+      <!-- 🎁 七日獎勵 -->
+      <div
+        id="dailyRewards"
+        class="daily-rewards"
+      >
+
+                <div class="daily-reward" data-daily-day="1">
+          <strong>Day 1</strong>
+          <span class="daily-reward-icon">🫘</span>
+          <small>金豆 ×500</small>
+        </div>
+
+        <div class="daily-reward" data-daily-day="2">
+          <strong>Day 2</strong>
+          <span class="daily-reward-icon">💎</span>
+          <small>鑽石 ×5</small>
+        </div>
+
+        <div class="daily-reward" data-daily-day="3">
+          <strong>Day 3</strong>
+          <span class="daily-reward-icon">🫘</span>
+          <small>金豆 ×500</small>
+        </div>
+
+        <div class="daily-reward" data-daily-day="4">
+          <strong>Day 4</strong>
+          <span class="daily-reward-icon">🌱</span>
+          <small>肥料 ×10</small>
+        </div>
+
+        <div class="daily-reward" data-daily-day="5">
+          <strong>Day 5</strong>
+          <span class="daily-reward-icon">💎</span>
+          <small>鑽石 ×10</small>
+        </div>
+
+        <div class="daily-reward" data-daily-day="6">
+          <strong>Day 6</strong>
+          <span class="daily-reward-icon">🫘</span>
+          <small>金豆 ×500</small>
+        </div>
+
+        <div
+          class="daily-reward daily-reward-final"
+          data-daily-day="7"
+        >
+          <strong>Day 7</strong>
+          <span class="daily-reward-icon">💎</span>
+          <small>鑽石 ×20</small>
+          <em>✨ 七日大獎 ✨</em>
+        </div>
+
+      </div>
+
+
+      <!-- 🎁 領取 -->
+      <button
+        id="dailyClaimButton"
+        class="daily-claim-button"
+        type="button"
+      >
+        🎁 今日簽到
+      </button>
+
+    </div>
+
   </div>
 </div>
 

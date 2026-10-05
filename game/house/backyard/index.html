@@ -229,6 +229,66 @@
     </div>
   </div>
 
+  <!-- 🌱 施肥選單 -->
+  <div
+    id="fertilizerModal"
+    class="plant-modal"
+    aria-hidden="true"
+  >
+
+    <div class="plant-panel">
+
+      <button
+        id="closeFertilizerModal"
+        class="plant-close"
+        type="button"
+        aria-label="關閉施肥選單"
+      >
+        ×
+      </button>
+
+      <div
+        id="fertilizerModalTitle"
+        class="plant-title"
+      >
+        🌱 農田
+      </div>
+
+      <div class="plant-subtitle">
+        剩餘時間：
+        <strong id="fertilizerRemainingTime">
+          --:--
+        </strong>
+      </div>
+
+      <div class="seed-list">
+
+        <button
+          id="useFertilizerButton"
+          class="seed-option"
+          type="button"
+        >
+          <span class="seed-icon">🌱</span>
+          <span class="seed-name">
+            使用肥料 ×1
+          </span>
+        </button>
+
+      </div>
+
+      <button
+        id="cancelFertilizer"
+        class="plant-cancel"
+        type="button"
+      >
+        取消
+      </button>
+
+    </div>
+
+  </div>
+
+
   </main>
 
   <!-- Supabase -->

@@ -1031,6 +1031,361 @@ for (const button of shopBuyButtons) {
 }
 
 /* =========================
+   🎁 菜比手機－每日簽到
+========================= */
+
+const dailyButton =
+  document.querySelector(
+    '[data-phone-app="daily"]'
+  );
+
+const dailyPage =
+  document.getElementById("dailyPage");
+
+const dailyBackButton =
+  document.getElementById("dailyBackButton");
+
+const dailyCurrentDay =
+  document.getElementById("dailyCurrentDay");
+
+const dailyClaimButton =
+  document.getElementById("dailyClaimButton");
+
+const dailyRewardCards =
+  document.querySelectorAll(
+    "[data-daily-day]"
+  );
+
+
+/* =========================
+   ✨ 更新每日獎勵卡狀態
+========================= */
+
+function renderDailyRewardCards(
+  currentDay,
+  claimedToday
+) {
+
+  for (const card of dailyRewardCards) {
+
+    const cardDay =
+      Number(card.dataset.dailyDay);
+
+    card.classList.remove(
+      "is-current",
+      "is-claimed"
+    );
+
+    if (cardDay === currentDay) {
+
+      card.classList.add(
+        claimedToday
+          ? "is-claimed"
+          : "is-current"
+      );
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   📅 讀取每日簽到狀態
+========================= */
+
+async function loadDailyCheckin() {
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await caibiSupabase.auth.getSession();
+
+
+  if (sessionError || !session) {
+
+    console.error(
+      "🎁 每日簽到：找不到登入狀態",
+      sessionError
+    );
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase
+      .from("player_daily_checkin")
+      .select("streak_day, last_claim_date")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "🎁 每日簽到：讀取失敗",
+      error
+    );
+
+    return;
+  }
+
+
+  /* 第一次簽到，還沒有紀錄 */
+
+  if (!data) {
+
+    dailyCurrentDay.textContent = "1";
+
+    renderDailyRewardCards(
+      1,
+      false
+    );
+
+    dailyClaimButton.disabled = false;
+
+    dailyClaimButton.textContent =
+      "🎁 今日簽到";
+
+    return;
+  }
+
+
+  /* 🇹🇼 取得台灣今天日期 */
+
+  const today =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    ).format(new Date());
+
+
+  /* 今天已經領過 */
+
+  if (data.last_claim_date === today) {
+
+    dailyCurrentDay.textContent =
+      data.streak_day;
+
+    renderDailyRewardCards(
+      data.streak_day,
+      true
+    );
+
+    dailyClaimButton.disabled = true;
+
+    dailyClaimButton.textContent =
+      "✅ 今日已簽到";
+
+    return;
+  }
+
+
+  /* 尚未領取今天獎勵 */
+
+/* 🇹🇼 算出台灣的昨天日期 */
+
+const yesterdayDate =
+  new Date();
+
+yesterdayDate.setDate(
+  yesterdayDate.getDate() - 1
+);
+
+const yesterday =
+  new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }
+  ).format(yesterdayDate);
+
+
+/* 🔥 昨天有簽 → 延續；斷簽 → Day 1 */
+
+let nextDailyDay = 1;
+
+if (data.last_claim_date === yesterday) {
+
+  nextDailyDay =
+    data.streak_day >= 7
+      ? 1
+      : data.streak_day + 1;
+
+}
+
+
+dailyCurrentDay.textContent =
+  nextDailyDay;
+
+renderDailyRewardCards(
+  nextDailyDay,
+  false
+);
+
+  dailyClaimButton.disabled = false;
+
+  dailyClaimButton.textContent =
+    "🎁 今日簽到";
+}
+
+
+/* =========================
+   🎁 領取每日簽到獎勵
+========================= */
+
+dailyClaimButton.addEventListener(
+  "click",
+  async () => {
+
+    /* 防止連續狂點 */
+
+    dailyClaimButton.disabled = true;
+
+    dailyClaimButton.textContent =
+      "領取中…";
+
+
+    const {
+      data,
+      error
+    } =
+      await caibiSupabase.rpc(
+        "claim_daily_reward"
+      );
+
+
+    /* ❌ 領取失敗 */
+
+    if (error) {
+
+      console.error(
+        "🎁 每日簽到失敗：",
+        error
+      );
+
+
+      /* 今天已經領過 */
+
+      if (
+        error.message?.includes(
+          "ALREADY_CLAIMED_TODAY"
+        )
+      ) {
+
+        await loadDailyCheckin();
+
+        alert(
+          "🎁 今天已經簽到過囉！"
+        );
+
+        return;
+      }
+
+
+      dailyClaimButton.disabled = false;
+
+      dailyClaimButton.textContent =
+        "🎁 今日簽到";
+
+      alert(
+        "簽到失敗，請稍後再試。"
+      );
+
+      return;
+    }
+
+
+    console.log(
+      "🎁 每日簽到成功：",
+      data
+    );
+
+
+    /* 🎁 顯示本次獎勵 */
+
+    let rewardText = "";
+
+    if (data.gold_beans > 0) {
+
+      rewardText =
+        `🫘 金豆 ×${data.gold_beans}`;
+
+    } else if (data.diamonds > 0) {
+
+      rewardText =
+        `💎 鑽石 ×${data.diamonds}`;
+
+    } else if (data.fertilizer > 0) {
+
+      rewardText =
+        `🌱 肥料 ×${data.fertilizer}`;
+
+    }
+
+
+    /* 🔄 同步簽到、錢包、背包 */
+
+    await Promise.all([
+      loadDailyCheckin(),
+      loadBackpackWallet(),
+      loadBackpackInventory()
+    ]);
+
+
+    alert(
+      `🎁 Day ${data.day} 簽到成功！\n${rewardText}`
+    );
+
+  }
+);
+
+/* 🎁 打開每日簽到 */
+
+dailyButton.addEventListener(
+  "click",
+  async () => {
+
+    gamePhone.classList.add(
+      "daily-open"
+    );
+
+    dailyPage.hidden = false;
+
+     await loadDailyCheckin();
+  }
+);
+
+
+/* ← 返回手機首頁 */
+
+dailyBackButton.addEventListener(
+  "click",
+  () => {
+
+    dailyPage.hidden = true;
+
+    gamePhone.classList.remove(
+      "daily-open"
+    );
+
+  }
+);
+
+/* =========================
    🚀 啟動 1F
 ========================= */
 
