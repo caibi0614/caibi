@@ -1386,6 +1386,25 @@ dailyBackButton.addEventListener(
 );
 
 /* =========================
+   🎰 前往全畫面抽獎
+========================= */
+
+const gachaButton =
+  document.querySelector(
+    '[data-phone-app="gacha"]'
+  );
+
+gachaButton.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      "../assets/images/gacha/index.html";
+
+  }
+);
+
+/* =========================
    🚀 啟動 1F
 ========================= */
 

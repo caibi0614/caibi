@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>菜比之家｜抽獎</title>
+
+  <link rel="stylesheet" href="gacha.css">
+</head>
+
+<body>
+
+  <main
+    id="gachaScene"
+    class="gacha-scene"
+  >
+
+    <!-- ← 返回 -->
+    <button
+      id="backButton"
+      class="back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+
+    <!-- 💎 鑽石 -->
+    <div class="diamond-wallet">
+      💎
+      <span id="diamondAmount">0</span>
+    </div>
+
+
+    <!-- 👗🪑 卡池 -->
+    <div class="pool-menu">
+
+      <button
+        class="pool-button is-active"
+        type="button"
+        data-pool="clothing-normal"
+      >
+        衣服一般卡池
+      </button>
+
+      <button
+        class="pool-button is-coming-soon"
+        type="button"
+        data-pool="clothing-event"
+      >
+        衣服活動卡池
+      </button>
+
+      <button
+        class="pool-button"
+        type="button"
+        data-pool="furniture-normal"
+      >
+        家具一般卡池
+      </button>
+
+      <button
+        class="pool-button is-coming-soon"
+        type="button"
+        data-pool="furniture-event"
+      >
+        家具活動卡池
+      </button>
+
+    </div>
+
+
+    <!-- 📋 右側 -->
+    <div class="right-menu">
+
+      <button
+        id="poolContentsButton"
+        type="button"
+      >
+        卡池內容
+      </button>
+
+      <button
+        id="drawHistoryButton"
+        type="button"
+      >
+        抽獎結果
+      </button>
+
+    </div>
+
+
+    <!-- 🎰 抽獎 -->
+    <div class="draw-actions">
+
+      <button
+        id="singleDrawButton"
+        class="draw-button"
+        type="button"
+      >
+        1抽　💎5
+      </button>
+
+      <button
+        id="multiDrawButton"
+        class="draw-button"
+        type="button"
+      >
+        10+1抽　💎50
+      </button>
+
+    </div>
+
+
+    <!-- ♻️ 回收 -->
+    <button
+      id="recycleButton"
+      class="recycle-button"
+      type="button"
+    >
+      ♻️ 回收
+    </button>
+
+
+    <!-- 活動池 -->
+    <div
+      id="comingSoonMessage"
+      class="coming-soon-message"
+      hidden
+    >
+      敬請期待
+    </div>
+
+  </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../../js/supabase.js"></script>
+<script src="gacha.js"></script>
+
+</body>
+
+</html>
