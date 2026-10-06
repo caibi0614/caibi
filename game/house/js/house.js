@@ -2016,6 +2016,259 @@ mailBackButton.addEventListener(
 );
 
 /* =========================
+   🎟️ 菜比手機－兌換碼
+========================= */
+
+const redeemButton =
+  document.querySelector(
+    '[data-phone-app="redeem"]'
+  );
+
+const redeemPage =
+  document.getElementById(
+    "redeemPage"
+  );
+
+const redeemBackButton =
+  document.getElementById(
+    "redeemBackButton"
+  );
+
+const redeemCodeInput =
+  document.getElementById(
+    "redeemCodeInput"
+  );
+
+const redeemSubmitButton =
+  document.getElementById(
+    "redeemSubmitButton"
+  );
+
+const redeemMessage =
+  document.getElementById(
+    "redeemMessage"
+  );
+
+
+/* =========================
+   🎟️ 打開兌換碼
+========================= */
+
+redeemButton.addEventListener(
+  "click",
+  () => {
+
+    gamePhone.classList.add(
+      "redeem-open"
+    );
+
+    redeemPage.hidden = false;
+
+    redeemCodeInput.value = "";
+
+    redeemMessage.textContent = "";
+
+    redeemCodeInput.focus();
+
+  }
+);
+
+
+/* =========================
+   ← 返回手機首頁
+========================= */
+
+redeemBackButton.addEventListener(
+  "click",
+  () => {
+
+    redeemPage.hidden = true;
+
+    gamePhone.classList.remove(
+      "redeem-open"
+    );
+
+    redeemCodeInput.value = "";
+
+    redeemMessage.textContent = "";
+
+  }
+);
+
+
+/* =========================
+   🎁 送出兌換碼
+========================= */
+
+async function submitRedeemCode() {
+
+  const code =
+    redeemCodeInput.value.trim();
+
+  if (!code) {
+
+    redeemMessage.textContent =
+      "請先輸入兌換碼。";
+
+    return;
+  }
+
+
+  /* 防止連續狂點 */
+
+  redeemSubmitButton.disabled = true;
+
+  redeemSubmitButton.textContent =
+    "兌換中…";
+
+  redeemMessage.textContent = "";
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "redeem_code",
+      {
+        p_code: code
+      }
+    );
+
+
+  /* ❌ 兌換失敗 */
+
+  if (error) {
+
+    console.error(
+      "🎟️ 兌換碼失敗：",
+      error
+    );
+
+
+    if (
+      error.message?.includes(
+        "已經兌換過"
+      )
+    ) {
+
+      redeemMessage.textContent =
+        "🎟️ 這組兌換碼已經領取過囉！";
+
+    } else if (
+      error.message?.includes(
+        "已達兌換上限"
+      )
+    ) {
+
+      redeemMessage.textContent =
+        "😢 這組兌換碼已經被領完了。";
+
+    } else if (
+      error.message?.includes(
+        "無效或已過期"
+      )
+    ) {
+
+      redeemMessage.textContent =
+        "❌ 兌換碼不存在或已經過期。";
+
+    } else {
+
+      redeemMessage.textContent =
+        "❌ 兌換失敗，請稍後再試。";
+
+    }
+
+
+    redeemSubmitButton.disabled = false;
+
+    redeemSubmitButton.textContent =
+      "🎟️ 立即兌換";
+
+    return;
+  }
+
+
+  /* =========================
+     ✅ 兌換成功
+  ========================= */
+
+  console.log(
+    "🎟️ 兌換成功：",
+    data
+  );
+
+
+  const rewards = [];
+
+  if (data.diamonds > 0) {
+
+    rewards.push(
+      `💎 鑽石 ×${data.diamonds}`
+    );
+
+  }
+
+  if (data.gold_beans > 0) {
+
+    rewards.push(
+      `🫘 金豆 ×${data.gold_beans}`
+    );
+
+  }
+
+
+  redeemMessage.textContent =
+    `🎉 ${data.name}兌換成功！`;
+
+
+  /* 🔄 同步玩家錢包 */
+
+  await loadBackpackWallet();
+
+
+  alert(
+    `🎉 ${data.name}兌換成功！\n\n${rewards.join("\n")}`
+  );
+
+
+  redeemCodeInput.value = "";
+
+  redeemSubmitButton.disabled = false;
+
+  redeemSubmitButton.textContent =
+    "🎟️ 立即兌換";
+
+}
+
+
+/* 🎟️ 點擊兌換 */
+
+redeemSubmitButton.addEventListener(
+  "click",
+  submitRedeemCode
+);
+
+
+/* ⌨️ 輸入框按 Enter 也能兌換 */
+
+redeemCodeInput.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+
+    submitRedeemCode();
+
+  }
+);
+
+/* =========================
    🎰 前往全畫面抽獎
 ========================= */
 
