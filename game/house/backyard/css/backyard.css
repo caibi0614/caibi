@@ -257,10 +257,10 @@ body {
   width: 12.8%;
   height: 8.5%;
 
-  border: 2px dashed rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
+  border: none;
+border-radius: 12px;
 
-  background: rgba(120, 220, 120, 0.18);
+background: transparent;
 
   cursor: pointer;
 
@@ -298,6 +298,108 @@ body {
 .farm-plot[data-plot-id="6"] {
   left: 16%;
   top: 49.7%;
+}
+
+/* =========================
+   🐄🐔 牧場動物
+========================= */
+
+.farm-animals {
+  position: absolute;
+  inset: 0;
+
+  z-index: 48;
+
+  pointer-events: none;
+}
+
+
+/* 動物共用 */
+
+.farm-animal {
+  position: absolute;
+
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+
+  pointer-events: auto;
+
+  transform-origin: center bottom;
+
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
+}
+
+
+/* 圖片 */
+
+.farm-animal img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* 滑鼠移過去微微放大 */
+
+.farm-animal:hover {
+  transform: scale(1.07);
+
+  filter:
+    drop-shadow(
+      0 5px 5px
+      rgba(75, 55, 30, 0.18)
+    );
+}
+
+
+/* 🐄 牛
+   先放右上方牛棚區
+*/
+
+.cow-animal {
+  left: 79%;
+  top: 18%;
+
+  width: 12%;
+  aspect-ratio: 1 / 1;
+}
+
+
+/* 🐔 雞
+   先放右下方雞舍區
+*/
+
+.chicken-animal {
+  left: 78%;
+  top: 49%;
+
+  width: 8%;
+  aspect-ratio: 1 / 1;
+}
+
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .farm-animal:hover {
+    transform: scale(1.06);
+  }
+
 }
 
 /* =========================
@@ -503,5 +605,104 @@ body {
     padding: 3px 6px;
 
     font-size: 10px;
+  }
+}
+
+/* =========================
+   🐄🐔 畜牧互動視窗
+========================= */
+
+.livestock-panel {
+  width: min(380px, 90vw);
+}
+
+
+/* 💬 動物目前狀態 */
+
+.livestock-status {
+  margin: 12px 0 8px;
+
+  padding: 10px 14px;
+
+  border-radius: 14px;
+
+  background: #f7efe1;
+
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+
+/* ⏰ 生產倒數 */
+
+.livestock-timer {
+  margin: 0 0 16px;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.livestock-timer strong {
+  font-size: 18px;
+}
+
+
+/* 🍽️ 餵食／🥛🥚收取按鈕 */
+
+.livestock-action-button {
+  min-height: 54px;
+}
+
+
+/* 生產中不可點 */
+
+.livestock-action-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+
+/* 滑鼠效果 */
+
+.livestock-action-button:not(:disabled):hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px
+    rgba(70, 50, 25, 0.12);
+}
+
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .livestock-panel {
+    width: min(340px, 72vw);
+  }
+
+  .livestock-status {
+    margin: 8px 0 6px;
+
+    padding: 7px 12px;
+
+    font-size: 13px;
+  }
+
+  .livestock-timer {
+    margin-bottom: 10px;
+
+    font-size: 13px;
+  }
+
+  .livestock-timer strong {
+    font-size: 15px;
+  }
+
+  .livestock-action-button {
+    min-height: 42px;
   }
 }

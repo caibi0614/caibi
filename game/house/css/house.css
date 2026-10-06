@@ -978,6 +978,95 @@ body {
   background: #eadac3;
 }
 
+/* =========================
+   🔢 商店－購買數量控制器
+========================= */
+
+.shop-quantity-control {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 30px 1fr 30px;
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px;
+
+  background: #f8f1e7;
+
+  border: 1px solid #e4d4c0;
+  border-radius: 13px;
+}
+
+
+/* − / ＋ */
+.shop-quantity-control button {
+  width: 30px;
+  height: 30px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #d8c3a7;
+  border-radius: 9px;
+
+  background: #fffaf3;
+
+  color: #6b5947;
+
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.shop-quantity-control button:hover {
+  background: #efe1ce;
+  transform: translateY(-1px);
+}
+
+
+/* 中間數量 */
+.shop-quantity-control input {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #51483e;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+
+  text-align: center;
+
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+
+/* 隱藏 number input 原生上下箭頭 */
+.shop-quantity-control input::-webkit-inner-spin-button,
+.shop-quantity-control input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
 
 /* =========================
    📱 商店－手機橫向

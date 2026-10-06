@@ -755,6 +755,7 @@ recipeBookButton.addEventListener(
    之後會改成 Supabase 真實資料 */
 const ingredientInventory = {
   wheat: 0,
+  corn: 0,
   milk: 0,
   egg: 0,
   flour: 0,
@@ -765,9 +766,9 @@ const ingredientInventory = {
 /* 攪拌盆目前放入的數量 */
 const selectedIngredients = {
   wheat: 0,
+  corn: 0,
   milk: 0,
   egg: 0,
-
   flour: 0,
   butter: 0
 };
@@ -777,6 +778,11 @@ const ingredientInfo = {
     name: "小麥",
     icon: "🌾"
   },
+
+  corn: {
+  name: "玉米",
+  icon: "🌽"
+},
 
   milk: {
     name: "牛奶",
@@ -968,6 +974,7 @@ async function saveInventoryItem(
 
 const productInventory = {
   cake: 0,
+  popcorn: 0,
   food_waste: 0,
   fertilizer: 0
 };
@@ -977,6 +984,11 @@ const productInfo = {
     name: "蛋糕",
     icon: "🎂"
   },
+
+  popcorn: {
+  name: "爆米花",
+  icon: "🍿"
+},
 
   food_waste: {
     name: "廚餘",
@@ -1487,37 +1499,52 @@ startCookingButton.addEventListener(
     let recipeKey = null;
 
     /* 🌾 小麥 ×3 → 🥣 麵粉 ×1 */
-    if (
-      selectedIngredients.wheat === 3 &&
-      selectedIngredients.milk === 0 &&
-      selectedIngredients.egg === 0 &&
-      selectedIngredients.flour === 0 &&
-      selectedIngredients.butter === 0
-    ) {
-      recipeKey = "flour";
-    }
+if (
+  selectedIngredients.wheat === 3 &&
+  selectedIngredients.corn === 0 &&
+  selectedIngredients.milk === 0 &&
+  selectedIngredients.egg === 0 &&
+  selectedIngredients.flour === 0 &&
+  selectedIngredients.butter === 0
+) {
+  recipeKey = "flour";
+}
 
-    /* 🥛 牛奶 ×1 → 🧈 奶油 ×1 */
-    else if (
-      selectedIngredients.wheat === 0 &&
-      selectedIngredients.milk === 1 &&
-      selectedIngredients.egg === 0 &&
-      selectedIngredients.flour === 0 &&
-      selectedIngredients.butter === 0
-    ) {
-      recipeKey = "butter";
-    }
+/* 🥛 牛奶 ×1 → 🧈 奶油 ×1 */
+else if (
+  selectedIngredients.wheat === 0 &&
+  selectedIngredients.corn === 0 &&
+  selectedIngredients.milk === 1 &&
+  selectedIngredients.egg === 0 &&
+  selectedIngredients.flour === 0 &&
+  selectedIngredients.butter === 0
+) {
+  recipeKey = "butter";
+}
 
-    /* 🥣 麵粉 ×2＋🧈 奶油 ×1＋🥚 雞蛋 ×2 → 🎂 蛋糕 ×1 */
-    else if (
-      selectedIngredients.wheat === 0 &&
-      selectedIngredients.milk === 0 &&
-      selectedIngredients.egg === 2 &&
-      selectedIngredients.flour === 2 &&
-      selectedIngredients.butter === 1
-    ) {
-      recipeKey = "cake";
-    }
+/* 🥣 麵粉 ×2＋🧈 奶油 ×1＋🥚 雞蛋 ×2 → 🎂 蛋糕 ×1 */
+else if (
+  selectedIngredients.wheat === 0 &&
+  selectedIngredients.corn === 0 &&
+  selectedIngredients.milk === 0 &&
+  selectedIngredients.egg === 2 &&
+  selectedIngredients.flour === 2 &&
+  selectedIngredients.butter === 1
+) {
+  recipeKey = "cake";
+}
+
+/* 🌽 玉米 ×1＋🧈 奶油 ×1 → 🍿 爆米花 ×1 */
+else if (
+  selectedIngredients.wheat === 0 &&
+  selectedIngredients.corn === 1 &&
+  selectedIngredients.milk === 0 &&
+  selectedIngredients.egg === 0 &&
+  selectedIngredients.flour === 0 &&
+  selectedIngredients.butter === 1
+) {
+  recipeKey = "popcorn";
+}
 
         /* =========================
        🗑️ 錯誤配方 → 廚餘 ×1
@@ -1534,10 +1561,11 @@ startCookingButton.addEventListener(
         "craft_food_waste",
         {
           p_wheat: selectedIngredients.wheat,
-          p_milk: selectedIngredients.milk,
-          p_egg: selectedIngredients.egg,
-          p_flour: selectedIngredients.flour,
-          p_butter: selectedIngredients.butter
+p_milk: selectedIngredients.milk,
+p_egg: selectedIngredients.egg,
+p_flour: selectedIngredients.flour,
+p_butter: selectedIngredients.butter,
+p_corn: selectedIngredients.corn
         }
       );
 
@@ -1612,15 +1640,30 @@ startCookingButton.addEventListener(
        🍳 呼叫 Supabase 原子料理函式
     ========================= */
 
-    const {
-      data,
-      error
-    } = await caibiSupabase.rpc(
-      "craft_item",
-      {
-        p_recipe_key: recipeKey
-      }
-    );
+    let data;
+let error;
+
+if (recipeKey === "popcorn") {
+
+  ({
+    data,
+    error
+  } = await caibiSupabase.rpc(
+    "craft_popcorn"
+  ));
+
+} else {
+
+  ({
+    data,
+    error
+  } = await caibiSupabase.rpc(
+    "craft_item",
+    {
+      p_recipe_key: recipeKey
+    }
+  ));
+}
 
     if (error) {
 
@@ -1684,9 +1727,14 @@ startCookingButton.addEventListener(
 
     } else if (recipeKey === "cake") {
 
-      cookingHint.textContent =
-        "製作成功！獲得 🎂 蛋糕 ×1";
-    }
+  cookingHint.textContent =
+    "製作成功！獲得 🎂 蛋糕 ×1";
+
+} else if (recipeKey === "popcorn") {
+
+  cookingHint.textContent =
+    "製作成功！獲得 🍿 爆米花 ×1";
+}
 
     console.log(
       "🍳 Supabase 製作成功：",

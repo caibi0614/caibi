@@ -35,9 +35,9 @@ const cancelPlant =
 
 let selectedPlotId = null;
 
-const wheatSeedButton =
-  document.querySelector(
-    '.seed-option[data-seed="wheat"]'
+const seedButtons =
+  document.querySelectorAll(
+    ".seed-option[data-seed]"
   );
 
 let currentUserId = null;
@@ -80,6 +80,85 @@ const cancelFertilizer =
   );
 
 let selectedFertilizerPlotId = null;
+
+/* =========================
+   🐄🐔 畜牧系統
+========================= */
+
+const cowAnimal =
+  document.getElementById("cowAnimal");
+
+const chickenAnimal =
+  document.getElementById("chickenAnimal");
+
+const livestockModal =
+  document.getElementById("livestockModal");
+
+const livestockTitle =
+  document.getElementById("livestockTitle");
+
+const livestockStatus =
+  document.getElementById("livestockStatus");
+
+const livestockTimer =
+  document.getElementById("livestockTimer");
+
+const livestockRemainingTime =
+  document.getElementById(
+    "livestockRemainingTime"
+  );
+
+const livestockActionButton =
+  document.getElementById(
+    "livestockActionButton"
+  );
+
+const livestockActionIcon =
+  document.getElementById(
+    "livestockActionIcon"
+  );
+
+const livestockActionText =
+  document.getElementById(
+    "livestockActionText"
+  );
+
+const closeLivestockModal =
+  document.getElementById(
+    "closeLivestockModal"
+  );
+
+const cancelLivestock =
+  document.getElementById(
+    "cancelLivestock"
+  );
+
+let selectedAnimalKey = null;
+
+let playerLivestockData = [];
+
+let livestockTimerInterval = null;
+
+
+const livestockConfig = {
+
+  cow: {
+    title: "🐄 牛牛",
+    feedIcon: "🌾",
+    feedText: "餵食小麥 ×2",
+    productIcon: "🥛",
+    productName: "牛奶"
+  },
+
+  chicken: {
+    title: "🐔 雞雞",
+    feedIcon: "🌽",
+    feedText: "餵食玉米 ×1",
+    productIcon: "🥚",
+    productName: "雞蛋"
+  }
+
+};
 
 /* 🌱 打開施肥視窗 */
 
@@ -168,7 +247,7 @@ function openFertilizerModal(
       `;
 
   }
-  
+
   fertilizerModal.classList.add(
     "is-open"
   );
@@ -493,12 +572,18 @@ plantModal.addEventListener(
 );
 
 /* =========================
-   🌾 種植小麥
+   🌱 種植農作物
 ========================= */
 
-async function plantWheat() {
+async function plantCrop(
+  cropKey,
+  seedButton
+) {
 
-  if (!selectedPlotId || !currentUserId) {
+  if (
+    !selectedPlotId ||
+    !currentUserId
+  ) {
     return;
   }
 
@@ -507,7 +592,12 @@ async function plantWheat() {
 
 
   /* 🌱 防止連續點擊 */
-  wheatSeedButton.disabled = true;
+
+  seedButtons.forEach(
+    button => {
+      button.disabled = true;
+    }
+  );
 
 
   const {
@@ -517,16 +607,24 @@ async function plantWheat() {
     await caibiSupabase.rpc(
       "plant_farm_crop",
       {
-        p_plot_number: plotNumber,
-        p_crop_key: "wheat"
+        p_plot_number:
+          plotNumber,
+
+        p_crop_key:
+          cropKey
       }
     );
 
 
-  wheatSeedButton.disabled = false;
+  seedButtons.forEach(
+    button => {
+      button.disabled = false;
+    }
+  );
 
 
   /* ❌ 種植失敗 */
+
   if (error) {
 
     console.error(
@@ -541,8 +639,13 @@ async function plantWheat() {
       )
     ) {
 
+      const cropName =
+        cropKey === "corn"
+          ? "玉米"
+          : "小麥";
+
       alert(
-        "🌱 小麥種子不足！請先到商店購買。"
+        `🌱 ${cropName}種子不足！請先到商店購買。`
       );
 
     } else if (
@@ -560,7 +663,6 @@ async function plantWheat() {
       alert(
         "🌱 種植失敗，請再試一次！"
       );
-
     }
 
     return;
@@ -568,7 +670,7 @@ async function plantWheat() {
 
 
   console.log(
-    "🌾 種植成功：",
+    "🌱 種植成功：",
     data
   );
 
@@ -579,11 +681,25 @@ async function plantWheat() {
 }
 
 
-/* 🌾 點擊小麥 */
+/* 🌾🌽 點擊種子 */
 
-wheatSeedButton.addEventListener(
-  "click",
-  plantWheat
+seedButtons.forEach(
+  (seedButton) => {
+
+    seedButton.addEventListener(
+      "click",
+      () => {
+
+        const cropKey =
+          seedButton.dataset.seed;
+
+        plantCrop(
+          cropKey,
+          seedButton
+        );
+      }
+    );
+  }
 );
 
 /* =========================
@@ -819,6 +935,526 @@ async function harvestFarmPlot(
 
   await loadFarmState();
 }
+
+/* =========================
+   🐄🐔 讀取畜牧狀態
+========================= */
+
+async function loadLivestockState() {
+
+  if (!currentUserId) {
+    return;
+  }
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase
+      .from("player_livestock")
+      .select(`
+        animal_key,
+        status,
+        production_started_at,
+        production_ready_at
+      `)
+      .eq(
+        "user_id",
+        currentUserId
+      );
+
+
+  if (error) {
+
+    console.error(
+      "🐄🐔 讀取畜牧狀態失敗：",
+      error
+    );
+
+    return;
+  }
+
+
+  playerLivestockData =
+    data || [];
+
+
+  if (selectedAnimalKey) {
+    renderLivestockModal();
+  }
+}
+
+
+/* =========================
+   🐄🐔 打開互動視窗
+========================= */
+
+function openLivestockModal(
+  animalKey
+) {
+
+  selectedAnimalKey =
+    animalKey;
+
+  renderLivestockModal();
+
+  livestockModal.classList.add(
+    "is-open"
+  );
+
+  livestockModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  if (livestockTimerInterval) {
+    clearInterval(
+      livestockTimerInterval
+    );
+  }
+
+  livestockTimerInterval =
+    setInterval(
+      renderLivestockModal,
+      1000
+    );
+}
+
+
+/* =========================
+   🐄🐔 關閉互動視窗
+========================= */
+
+function hideLivestockModal() {
+
+  livestockModal.classList.remove(
+    "is-open"
+  );
+
+  livestockModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+  selectedAnimalKey = null;
+
+  if (livestockTimerInterval) {
+
+    clearInterval(
+      livestockTimerInterval
+    );
+
+    livestockTimerInterval = null;
+  }
+}
+
+
+/* =========================
+   🐄🐔 更新視窗內容
+========================= */
+
+function renderLivestockModal() {
+
+  if (!selectedAnimalKey) {
+    return;
+  }
+
+
+  const config =
+    livestockConfig[
+      selectedAnimalKey
+    ];
+
+  if (!config) {
+    return;
+  }
+
+
+  livestockTitle.textContent =
+    config.title;
+
+
+  const livestockData =
+    playerLivestockData.find(
+      item =>
+        item.animal_key ===
+        selectedAnimalKey
+    );
+
+
+  /* 🍽️ 空閒 */
+
+  if (
+    !livestockData ||
+    livestockData.status === "idle" ||
+    !livestockData.production_ready_at
+  ) {
+
+    livestockStatus.textContent =
+      "肚子餓餓～";
+
+    livestockTimer.hidden =
+      true;
+
+    livestockActionButton.disabled =
+      false;
+
+    livestockActionIcon.textContent =
+      config.feedIcon;
+
+    livestockActionText.textContent =
+      config.feedText;
+
+    livestockActionButton.dataset.action =
+      "feed";
+
+    return;
+  }
+
+
+  const readyTime =
+    new Date(
+      livestockData.production_ready_at
+    ).getTime();
+
+  const remainingMs =
+    readyTime - Date.now();
+
+
+  /* 🥛🥚 生產完成 */
+
+  if (remainingMs <= 0) {
+
+    livestockStatus.textContent =
+      `${config.productIcon} ${config.productName}準備好了！`;
+
+    livestockTimer.hidden =
+      true;
+
+    livestockActionButton.disabled =
+      false;
+
+    livestockActionIcon.textContent =
+      config.productIcon;
+
+    livestockActionText.textContent =
+      `收取${config.productName} ×1`;
+
+    livestockActionButton.dataset.action =
+      "collect";
+
+    return;
+  }
+
+
+  /* ⏰ 生產中 */
+
+  const remainingSeconds =
+    Math.ceil(
+      remainingMs / 1000
+    );
+
+  const minutes =
+    Math.floor(
+      remainingSeconds / 60
+    );
+
+  const seconds =
+    remainingSeconds % 60;
+
+
+  livestockStatus.textContent =
+    `${config.productIcon} ${config.productName}生產中～`;
+
+  livestockTimer.hidden =
+    false;
+
+  livestockRemainingTime.textContent =
+    `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
+  livestockActionButton.disabled =
+    true;
+
+  livestockActionIcon.textContent =
+    "⏰";
+
+  livestockActionText.textContent =
+    "努力生產中…";
+
+  livestockActionButton.dataset.action =
+    "producing";
+}
+
+
+/* =========================
+   🍽️ 餵食動物
+========================= */
+
+async function feedLivestock() {
+
+  if (!selectedAnimalKey) {
+    return;
+  }
+
+
+  livestockActionButton.disabled =
+    true;
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "feed_livestock",
+      {
+        p_animal_key:
+          selectedAnimalKey
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "🍽️ 餵食失敗：",
+      error
+    );
+
+
+    if (
+      error.message?.includes(
+        "NOT_ENOUGH_FEED"
+      )
+    ) {
+
+      const config =
+        livestockConfig[
+          selectedAnimalKey
+        ];
+
+      alert(
+        `${config.feedIcon} 飼料不足！`
+      );
+
+    } else if (
+      error.message?.includes(
+        "ANIMAL_BUSY"
+      )
+    ) {
+
+      alert(
+        "🐄🐔 還在生產中，不能重複餵食！"
+      );
+
+    } else {
+
+      alert(
+        "🍽️ 餵食失敗，請再試一次！"
+      );
+    }
+
+
+    livestockActionButton.disabled =
+      false;
+
+    return;
+  }
+
+
+  console.log(
+    "🍽️ 餵食成功：",
+    data
+  );
+
+
+  await loadLivestockState();
+}
+
+
+/* =========================
+   🥛🥚 收取產品
+========================= */
+
+async function collectLivestock() {
+
+  if (!selectedAnimalKey) {
+    return;
+  }
+
+
+  const animalKey =
+    selectedAnimalKey;
+
+  const config =
+    livestockConfig[
+      animalKey
+    ];
+
+
+  livestockActionButton.disabled =
+    true;
+
+
+  const {
+    data,
+    error
+  } =
+    await caibiSupabase.rpc(
+      "collect_livestock",
+      {
+        p_animal_key:
+          animalKey
+      }
+    );
+
+
+  if (error) {
+
+    console.error(
+      "🥛🥚 收取失敗：",
+      error
+    );
+
+
+    if (
+      error.message?.includes(
+        "NOT_READY"
+      )
+    ) {
+
+      alert(
+        "⏰ 還沒生產完成喔！"
+      );
+
+    } else {
+
+      alert(
+        "🥛🥚 收取失敗，請再試一次！"
+      );
+    }
+
+
+    livestockActionButton.disabled =
+      false;
+
+    return;
+  }
+
+
+  console.log(
+    "🥛🥚 收取成功：",
+    data
+  );
+
+
+  await loadLivestockState();
+
+
+  alert(
+    `${config.productIcon} 收取${config.productName} ×1！`
+  );
+}
+
+
+/* =========================
+   🐄🐔 動物點擊
+========================= */
+
+cowAnimal.addEventListener(
+  "pointerdown",
+  event => {
+    event.stopPropagation();
+  }
+);
+
+chickenAnimal.addEventListener(
+  "pointerdown",
+  event => {
+    event.stopPropagation();
+  }
+);
+
+
+cowAnimal.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    openLivestockModal(
+      "cow"
+    );
+  }
+);
+
+
+chickenAnimal.addEventListener(
+  "click",
+  event => {
+
+    event.stopPropagation();
+
+    openLivestockModal(
+      "chicken"
+    );
+  }
+);
+
+
+/* 🍽️ / 🥛🥚 共用按鈕 */
+
+livestockActionButton.addEventListener(
+  "click",
+  async () => {
+
+    const action =
+      livestockActionButton
+        .dataset.action;
+
+
+    if (action === "feed") {
+
+      await feedLivestock();
+
+    } else if (
+      action === "collect"
+    ) {
+
+      await collectLivestock();
+    }
+  }
+);
+
+
+/* ❌ 關閉 */
+
+closeLivestockModal.addEventListener(
+  "click",
+  hideLivestockModal
+);
+
+cancelLivestock.addEventListener(
+  "click",
+  hideLivestockModal
+);
+
+
+/* 🌑 點背景關閉 */
+
+livestockModal.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      livestockModal
+    ) {
+
+      hideLivestockModal();
+    }
+  }
+);
 
 /* =========================
    🚶 玩家移動資料
@@ -1159,7 +1795,10 @@ async function checkBackyardAccess() {
 currentUserId =
   session.user.id;
 
-await loadFarmState();
+await Promise.all([
+  loadFarmState(),
+  loadLivestockState()
+]);
 
   /* =========================
      👤 讀取玩家 Base

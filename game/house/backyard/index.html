@@ -103,6 +103,42 @@
 
   </div>
   
+  <!-- =========================
+     🐄🐔 牧場動物
+========================== -->
+
+<div class="farm-animals">
+
+  <!-- 🐄 牛 -->
+  <button
+    id="cowAnimal"
+    class="farm-animal cow-animal"
+    type="button"
+    aria-label="乳牛"
+  >
+    <img
+      src="assets/cow.png"
+      alt="乳牛"
+      draggable="false"
+    >
+  </button>
+
+  <!-- 🐔 雞 -->
+  <button
+    id="chickenAnimal"
+    class="farm-animal chicken-animal"
+    type="button"
+    aria-label="小雞"
+  >
+    <img
+      src="assets/chicken.png"
+      alt="小雞"
+      draggable="false"
+    >
+  </button>
+
+</div>
+
  <!-- 👤 玩家分層角色 -->
 <div
   id="playerCharacter"
@@ -216,6 +252,15 @@
           <span class="seed-name">小麥</span>
         </button>
 
+                <button
+          class="seed-option"
+          data-seed="corn"
+          type="button"
+        >
+          <span class="seed-icon">🌽</span>
+          <span class="seed-name">玉米</span>
+        </button>
+
       </div>
 
       <button
@@ -288,7 +333,99 @@
 
   </div>
 
+  <!-- =========================
+       🐄🐔 畜牧互動視窗
+  ========================== -->
 
+  <div
+    id="livestockModal"
+    class="plant-modal livestock-modal"
+    aria-hidden="true"
+  >
+
+    <div class="plant-panel livestock-panel">
+
+      <!-- ✕ 關閉 -->
+      <button
+        id="closeLivestockModal"
+        class="plant-close"
+        type="button"
+        aria-label="關閉動物互動視窗"
+      >
+        ×
+      </button>
+
+
+      <!-- 🐄🐔 動物名稱 -->
+      <div
+        id="livestockTitle"
+        class="plant-title"
+      >
+        🐄 牛牛
+      </div>
+
+
+      <!-- 💬 目前狀態 -->
+      <div
+        id="livestockStatus"
+        class="livestock-status"
+      >
+        肚子餓餓～
+      </div>
+
+
+      <!-- ⏰ 生產倒數 -->
+      <div
+        id="livestockTimer"
+        class="livestock-timer"
+        hidden
+      >
+        ⏰
+        <strong id="livestockRemainingTime">
+          01:00
+        </strong>
+      </div>
+
+
+      <!-- 🍽️ 餵食 / 🥛🥚 收取 -->
+      <div class="seed-list">
+
+        <button
+          id="livestockActionButton"
+          class="seed-option livestock-action-button"
+          type="button"
+        >
+          <span
+            id="livestockActionIcon"
+            class="seed-icon"
+          >
+            🌾
+          </span>
+
+          <span
+            id="livestockActionText"
+            class="seed-name"
+          >
+            餵食小麥 ×2
+          </span>
+        </button>
+
+      </div>
+
+
+      <!-- 取消 -->
+      <button
+        id="cancelLivestock"
+        class="plant-cancel"
+        type="button"
+      >
+        取消
+      </button>
+
+    </div>
+
+  </div>
+  
   </main>
 
   <!-- Supabase -->

@@ -704,7 +704,9 @@ function renderBackpackItems() {
     food_waste: "🗑️",
     fertilizer: "🌱",
 
-    wheat_seed: "🌱"
+    wheat_seed: "🌱",
+corn: "🌽",
+corn_seed: "🌽"
 
   };
 
@@ -854,8 +856,8 @@ const shopPage =
 const shopBackButton =
   document.getElementById("shopBackButton");
 
-const shopGoldBeans =
-  document.getElementById("shopGoldBeans");
+const shopItems =
+  document.getElementById("shopItems");
 
 
 /* 🫘 讀取商店金豆 */
@@ -909,6 +911,179 @@ async function loadShopWallet() {
     wallet.gold_beans ?? 0;
 }
 
+/* =========================
+   🛒 讀取商店商品
+========================= */
+
+async function loadShopItems() {
+
+  shopItems.innerHTML = `
+    <div class="shop-empty">
+      🛒 商品讀取中…
+    </div>
+  `;
+
+  const {
+    data: products,
+    error
+  } =
+    await caibiSupabase
+      .from("shop_items")
+      .select(`
+        id,
+        price,
+        quantity,
+        currency_type,
+        is_active,
+        game_items (
+          item_key,
+          name,
+          category
+        )
+      `)
+      .eq("is_active", true)
+      .order("id", {
+        ascending: true
+      });
+
+
+  if (error) {
+
+    console.error(
+      "🛒 商店：讀取商品失敗",
+      error
+    );
+
+    shopItems.innerHTML = `
+      <div class="shop-empty">
+        ⚠️ 商品讀取失敗
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (!products || products.length === 0) {
+
+    shopItems.innerHTML = `
+      <div class="shop-empty">
+        🛒 目前沒有商品～
+      </div>
+    `;
+
+    return;
+  }
+
+
+  shopItems.innerHTML = "";
+
+
+  const itemIcons = {
+    wheat_seed: "🌱",
+    corn_seed: "🌽"
+  };
+
+
+  for (const product of products) {
+
+  const item =
+    product.game_items;
+
+  if (!item) {
+    continue;
+  }
+
+
+  const icon =
+    itemIcons[item.item_key] || "📦";
+
+  const currencyIcon =
+    product.currency_type === "gold_beans"
+      ? "🫘"
+      : product.currency_type === "diamonds"
+        ? "💎"
+        : "💰";
+
+
+  const productElement =
+    document.createElement("div");
+
+  productElement.className =
+    "shop-item";
+
+  productElement.dataset.shopItem =
+    item.item_key;
+
+
+  productElement.innerHTML = `
+    <div class="shop-item-icon">
+      ${icon}
+    </div>
+
+    <div class="shop-item-info">
+
+      <strong>
+        ${item.name}
+      </strong>
+
+      <small>
+        每組 ×${product.quantity}
+      </small>
+
+    </div>
+
+    <div class="shop-quantity-control">
+
+      <button
+        class="shop-quantity-button"
+        type="button"
+        data-shop-quantity-minus
+      >
+        −
+      </button>
+
+      <input
+        class="shop-quantity-input"
+        type="number"
+        min="1"
+        max="99"
+        value="1"
+        inputmode="numeric"
+        aria-label="${item.name}購買數量"
+      >
+
+      <button
+        class="shop-quantity-button"
+        type="button"
+        data-shop-quantity-plus
+      >
+        ＋
+      </button>
+
+    </div>
+
+    <button
+      class="shop-buy-button"
+      type="button"
+      data-shop-item-id="${product.id}"
+      data-shop-item-name="${item.name}"
+      data-shop-item-icon="${icon}"
+      data-shop-item-price="${product.price}"
+      data-shop-item-unit-quantity="${product.quantity}"
+      data-shop-currency-icon="${currencyIcon}"
+    >
+      ${currencyIcon} ${product.price}・購買 ×${product.quantity}
+    </button>
+  `;
+
+
+  shopItems.appendChild(
+    productElement
+  );
+}
+
+}
 
 /* 🛒 打開商店 */
 
@@ -922,7 +1097,10 @@ shopButton.addEventListener(
 
     shopPage.hidden = false;
 
-    await loadShopWallet();
+    await Promise.all([
+      loadShopWallet(),
+      loadShopItems()
+    ]);
 
   }
 );
@@ -944,91 +1122,299 @@ shopBackButton.addEventListener(
 );
 
 /* =========================
-   🛒 商店－購買商品
+   🛒 商店－調整購買數量
 ========================= */
 
-const shopBuyButtons =
-  document.querySelectorAll(
-    "[data-buy-item]"
-  );
+function getShopQuantity(productElement) {
+
+  const input =
+    productElement.querySelector(
+      ".shop-quantity-input"
+    );
+
+  let quantity =
+    Number(input.value);
+
+  if (!Number.isInteger(quantity)) {
+    quantity = 1;
+  }
+
+  quantity =
+    Math.max(
+      1,
+      Math.min(99, quantity)
+    );
+
+  input.value = quantity;
+
+  return quantity;
+}
 
 
-for (const button of shopBuyButtons) {
+function updateShopPurchaseDisplay(
+  productElement
+) {
 
-  button.addEventListener(
-    "click",
-    async () => {
+  const input =
+    productElement.querySelector(
+      ".shop-quantity-input"
+    );
 
-      /* 目前小麥種子在 shop_items 的 ID = 1 */
-      const shopItemId = 1;
+  const buyButton =
+    productElement.querySelector(
+      "[data-shop-item-id]"
+    );
+
+  if (!input || !buyButton) {
+    return;
+  }
+
+  const quantity =
+    getShopQuantity(productElement);
+
+  const unitPrice =
+    Number(
+      buyButton.dataset.shopItemPrice
+    );
+
+  const unitQuantity =
+    Number(
+      buyButton.dataset.shopItemUnitQuantity
+    );
+
+  const currencyIcon =
+    buyButton.dataset.shopCurrencyIcon;
+
+  const totalPrice =
+    unitPrice * quantity;
+
+  const totalItems =
+    unitQuantity * quantity;
+
+  buyButton.textContent =
+    `${currencyIcon} ${totalPrice}・購買 ×${totalItems}`;
+}
 
 
-      /* 防止連續狂點 */
-      button.disabled = true;
+/* ➖➕ 點擊數量按鈕 */
 
-      const originalText =
-        button.textContent;
+shopItems.addEventListener(
+  "click",
+  (event) => {
 
-      button.textContent =
-        "購買中…";
+    const minusButton =
+      event.target.closest(
+        "[data-shop-quantity-minus]"
+      );
+
+    const plusButton =
+      event.target.closest(
+        "[data-shop-quantity-plus]"
+      );
+
+    if (!minusButton && !plusButton) {
+      return;
+    }
+
+    const productElement =
+      event.target.closest(
+        ".shop-item"
+      );
+
+    const input =
+      productElement.querySelector(
+        ".shop-quantity-input"
+      );
+
+    let quantity =
+      getShopQuantity(productElement);
+
+    if (minusButton) {
+      quantity--;
+    }
+
+    if (plusButton) {
+      quantity++;
+    }
+
+    quantity =
+      Math.max(
+        1,
+        Math.min(99, quantity)
+      );
+
+    input.value = quantity;
+
+    updateShopPurchaseDisplay(
+      productElement
+    );
+  }
+);
 
 
-      const {
-        data,
+/* ⌨️ 直接輸入數量 */
+
+shopItems.addEventListener(
+  "input",
+  (event) => {
+
+    if (
+      !event.target.matches(
+        ".shop-quantity-input"
+      )
+    ) {
+      return;
+    }
+
+    const productElement =
+      event.target.closest(
+        ".shop-item"
+      );
+
+    updateShopPurchaseDisplay(
+      productElement
+    );
+  }
+);
+
+
+/* 🛒 購買商品 */
+
+shopItems.addEventListener(
+  "click",
+  async (event) => {
+
+    const button =
+      event.target.closest(
+        "[data-shop-item-id]"
+      );
+
+    if (!button) {
+      return;
+    }
+
+
+    const productElement =
+      button.closest(
+        ".shop-item"
+      );
+
+    const purchaseQuantity =
+      getShopQuantity(
+        productElement
+      );
+
+
+    const shopItemId =
+      Number(
+        button.dataset.shopItemId
+      );
+
+    const itemName =
+      button.dataset.shopItemName;
+
+    const itemIcon =
+      button.dataset.shopItemIcon;
+
+    const unitQuantity =
+      Number(
+        button.dataset.shopItemUnitQuantity
+      );
+
+    const totalItems =
+      unitQuantity * purchaseQuantity;
+
+
+    /* 防止連續狂點 */
+
+    button.disabled = true;
+
+    const originalText =
+      button.textContent;
+
+    button.textContent =
+      "購買中…";
+
+
+    const {
+      data,
+      error
+    } =
+      await caibiSupabase.rpc(
+        "buy_shop_item",
+        {
+          p_shop_item_id:
+            shopItemId,
+
+          p_quantity:
+            purchaseQuantity
+        }
+      );
+
+
+    if (error) {
+
+      console.error(
+        "🛒 購買失敗：",
         error
-      } =
-        await caibiSupabase.rpc(
-          "buy_shop_item",
-          {
-            p_shop_item_id: shopItemId
-          }
+      );
+
+
+      if (
+        error.message?.includes(
+          "INSUFFICIENT_GOLD_BEANS"
+        )
+      ) {
+
+        alert(
+          "🫘 金豆不足！"
         );
 
-
-      if (error) {
-
-        console.error(
-          "🛒 購買失敗：",
-          error
-        );
+      } else {
 
         alert(
           "購買失敗，請稍後再試。"
         );
 
-        button.disabled = false;
-        button.textContent = originalText;
-
-        return;
       }
 
 
-      console.log(
-        "🛒 購買成功：",
-        data
-      );
-
-
-      /* 🫘 重新讀取最新金豆 */
-      await loadShopWallet();
-
-
-      /* 🎒 同步背包資料 */
-      await loadBackpackInventory();
-
-
-      alert(
-        "🌱 小麥種子購買成功！"
-      );
-
-
       button.disabled = false;
-      button.textContent = originalText;
 
+      button.textContent =
+        originalText;
+
+      return;
     }
-  );
 
-}
+
+    console.log(
+      "🛒 批量購買成功：",
+      data
+    );
+
+
+    /* 🫘 更新金豆＋🎒背包 */
+
+    await Promise.all([
+      loadShopWallet(),
+      loadBackpackInventory()
+    ]);
+
+
+    alert(
+      `${itemIcon} ${itemName} ×${totalItems} 購買成功！`
+    );
+
+
+    button.disabled = false;
+
+    updateShopPurchaseDisplay(
+      productElement
+    );
+
+  }
+);
 
 /* =========================
    🎁 菜比手機－每日簽到
