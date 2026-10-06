@@ -1400,3 +1400,819 @@ body {
   }
 
 }
+
+/* =========================
+   📬 手機－信箱
+========================= */
+
+/* 信箱開啟時，隱藏手機首頁 */
+.game-phone.mail-open .game-phone-header,
+.game-phone.mail-open .game-phone-grid {
+  display: none;
+}
+
+/* 信箱開啟後，展開手機面板 */
+.game-phone.mail-open {
+  width: min(720px, 88vw);
+
+  padding: 22px 24px;
+}
+
+/* 📬 信箱頁 */
+.mail-page {
+  width: 100%;
+}
+
+
+/* 📬 標題 */
+.mail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 14px;
+}
+
+.mail-header strong {
+  font-size: 17px;
+}
+
+
+/* =========================
+   📮 信件列表
+========================= */
+
+.mail-list {
+  width: 100%;
+
+  min-height: 360px;
+  max-height: 60vh;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+
+/* 📭 沒有信件 */
+.mail-empty {
+  min-height: 360px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  padding: 20px;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 16px;
+
+  text-align: center;
+
+  color: #8b7a67;
+
+  font-size: 28px;
+}
+
+.mail-empty strong {
+  color: #66594b;
+
+  font-size: 14px;
+}
+
+.mail-empty small {
+  color: #9b8b79;
+
+  font-size: 11px;
+}
+
+
+/* =========================
+   📱 信箱－手機橫向
+========================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.mail-open {
+  width: min(680px, 90vw);
+
+  padding: 14px 18px;
+}
+
+  .mail-header {
+    margin-bottom: 8px;
+  }
+
+  .mail-header strong {
+    font-size: 14px;
+  }
+
+  .mail-list {
+  min-height: 240px;
+  max-height: 68vh;
+}
+
+  .mail-empty {
+    min-height: 240px;
+
+    padding: 12px;
+
+    gap: 4px;
+
+    font-size: 22px;
+  }
+
+  .mail-empty strong {
+    font-size: 12px;
+  }
+
+  .mail-empty small {
+    font-size: 9px;
+  }
+
+}
+
+/* =========================
+   📬 信箱－左右版型
+========================= */
+
+.mail-layout {
+  display: grid;
+  grid-template-columns: 35% 65%;
+
+  width: 100%;
+  min-height: 360px;
+
+  background: #fff;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 16px;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   📮 左側信件列表
+========================= */
+
+.mail-layout .mail-list {
+  min-height: 360px;
+  max-height: 60vh;
+
+  overflow-y: auto;
+
+  border-right: 1px solid #e1d2bd;
+
+  background: #fffaf4;
+}
+
+
+/* 左側沒有信件 */
+
+.mail-layout .mail-list .mail-empty {
+  min-height: 360px;
+
+  border: none;
+  border-radius: 0;
+
+  background: transparent;
+}
+
+
+/* =========================
+   ✉️ 右側信件內容
+========================= */
+
+.mail-detail {
+  min-width: 0;
+  min-height: 360px;
+
+  padding: 22px;
+
+  background: #fff;
+}
+
+
+/* 尚未選擇信件 */
+
+.mail-detail-empty {
+  width: 100%;
+  height: 100%;
+  min-height: 315px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  text-align: center;
+
+  color: #9b8b79;
+
+  font-size: 30px;
+}
+
+.mail-detail-empty strong {
+  color: #66594b;
+
+  font-size: 14px;
+}
+
+.mail-detail-empty small {
+  color: #9b8b79;
+
+  font-size: 11px;
+}
+
+
+/* =========================
+   📱 信箱左右版－手機橫向
+========================= */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .mail-layout {
+    min-height: 240px;
+  }
+
+  .mail-layout .mail-list {
+    min-height: 240px;
+    max-height: 68vh;
+  }
+
+  .mail-layout .mail-list .mail-empty {
+    min-height: 240px;
+  }
+
+  .mail-detail {
+    min-height: 240px;
+
+    padding: 14px;
+  }
+
+  .mail-detail-empty {
+    min-height: 210px;
+
+    gap: 4px;
+
+    font-size: 22px;
+  }
+
+  .mail-detail-empty strong {
+    font-size: 12px;
+  }
+
+  .mail-detail-empty small {
+    font-size: 9px;
+  }
+
+}
+
+/* ==================================================
+   📬 菜比信箱｜最終美化
+================================================== */
+
+/* 整個信箱 */
+.game-phone.mail-open {
+  width: min(760px, 90vw);
+  padding: 22px 24px 24px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf1 0%,
+      #fff7ec 100%
+    );
+
+  border: 2px solid #d9c09e;
+  border-radius: 28px;
+
+  box-shadow:
+    0 22px 60px rgba(79, 59, 38, 0.28);
+}
+
+
+/* =========================
+   📬 上方標題
+========================= */
+
+.mail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.mail-header strong {
+  color: #55483b;
+
+  font-size: 19px;
+  font-weight: 900;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* 返回按鈕 */
+.mail-header .phone-back-button {
+  padding: 8px 13px;
+
+  background: #f1e5d4;
+
+  border: 1px solid #dfccb2;
+  border-radius: 13px;
+
+  color: #6d5b48;
+
+  font-weight: 800;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.mail-header .phone-back-button:hover {
+  background: #e8d7c0;
+  transform: translateX(-2px);
+}
+
+
+/* =========================
+   ✉️ 左右主版面
+========================= */
+
+.mail-layout {
+  grid-template-columns: 34% 66%;
+
+  min-height: 390px;
+
+  background: #fffdf9;
+
+  border: 1px solid #dfccb4;
+  border-radius: 20px;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 8px 24px rgba(104, 79, 50, 0.08);
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   📮 左側信件區
+========================= */
+
+.mail-layout .mail-list {
+  min-height: 390px;
+
+  padding: 12px;
+
+  background: #f8efe3;
+
+  border-right: 1px solid #e2cfb7;
+
+  scrollbar-width: thin;
+  scrollbar-color: #d4bea2 transparent;
+}
+
+
+/* 每一封信 */
+.mail-item {
+  position: relative;
+
+  width: 100%;
+
+  display: block;
+
+  margin: 0 0 9px;
+  padding: 12px 13px;
+
+  border: 1px solid #e4d4c0;
+  border-radius: 15px;
+
+  background: rgba(255, 253, 249, 0.92);
+
+  color: #625446;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 8px rgba(100, 76, 49, 0.05);
+
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.mail-item:last-child {
+  margin-bottom: 0;
+}
+
+.mail-item:hover {
+  transform: translateY(-1px);
+
+  background: #fff;
+
+  border-color: #d5ba98;
+
+  box-shadow:
+    0 5px 12px rgba(100, 76, 49, 0.09);
+}
+
+
+/* 被選中的信 */
+.mail-item.is-selected {
+  background: #f1dfc7;
+
+  border-color: #cda97d;
+
+  box-shadow:
+    0 5px 14px rgba(135, 98, 57, 0.13);
+}
+
+
+/* 信件標題 */
+.mail-item-title {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #55483b;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  line-height: 1.35;
+}
+
+
+/* 寄件者 */
+.mail-item-sender {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #887563;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* 日期 */
+.mail-item-date {
+  display: block;
+
+  color: #a08e7b;
+
+  font-size: 9px;
+}
+
+
+/* =========================
+   🔴 未讀信件
+========================= */
+
+.mail-item:not(.is-read) .mail-item-title {
+  color: #493b2e;
+}
+
+
+/* =========================
+   ✉️ 右側內容
+========================= */
+
+.mail-detail {
+  min-height: 390px;
+
+  padding: 26px 28px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fffefa 0%,
+      #fffaf3 100%
+    );
+
+  color: #5b4d40;
+}
+
+
+/* 信件大標題 */
+.mail-detail-title {
+  margin-bottom: 8px;
+
+  color: #493d32;
+
+  font-size: 21px;
+  font-weight: 900;
+
+  line-height: 1.35;
+}
+
+
+/* 寄件資訊 */
+.mail-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 4px 14px;
+
+  margin-bottom: 20px;
+  padding-bottom: 13px;
+
+  border-bottom: 1px dashed #decbb4;
+
+  color: #927e69;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+
+/* 正文 */
+.mail-detail-content {
+  min-height: 90px;
+
+  margin-bottom: 20px;
+
+  color: #625345;
+
+  font-size: 14px;
+  line-height: 1.8;
+
+  white-space: pre-wrap;
+}
+
+
+/* =========================
+   ⏰ 信件期限
+========================= */
+
+.mail-expiration {
+  color: #9a7748;
+
+  font-weight: 800;
+}
+
+.mail-expired {
+  padding: 2px 7px;
+
+  background: #f4e5df;
+
+  border-radius: 7px;
+
+  color: #a46155;
+
+  font-weight: 900;
+}
+
+
+/* =========================
+   🎁 附件卡
+========================= */
+
+.mail-detail-attachment {
+  margin-top: 12px;
+  padding: 15px 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #fff5dd,
+      #fffaf0
+    );
+
+  border: 1px solid #e6c993;
+  border-radius: 17px;
+
+  box-shadow:
+    0 5px 14px rgba(154, 111, 52, 0.08);
+}
+
+.mail-detail-attachment > strong {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #765a35;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+
+/* 附件獎勵 */
+.mail-attachment-reward {
+  margin-bottom: 12px;
+
+  color: #594a3b;
+
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   🎁 領取附件
+========================= */
+
+.mail-claim-button {
+  min-width: 125px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #cfa76e;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #efd19a,
+      #e4bd7c
+    );
+
+  color: #5e472a;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 9px rgba(132, 91, 40, 0.14);
+
+  transition:
+    transform 0.16s ease,
+    filter 0.16s ease;
+}
+
+.mail-claim-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+
+/* 已領取 / 過期 */
+.mail-claim-button:disabled {
+  background: #e9e5dc;
+
+  border-color: #d9d2c7;
+
+  color: #948b80;
+
+  box-shadow: none;
+
+  cursor: default;
+}
+
+
+/* =========================
+   📭 空信箱 / 未選擇
+========================= */
+
+.mail-empty,
+.mail-detail-empty {
+  color: #a08e7b;
+}
+
+.mail-detail-empty strong,
+.mail-empty strong {
+  color: #665647;
+}
+
+
+/* ==================================================
+   📱 手機橫向
+================================================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.mail-open {
+    width: min(720px, 92vw);
+
+    padding: 13px 16px;
+
+    border-radius: 22px;
+  }
+
+  .mail-header {
+    margin-bottom: 8px;
+  }
+
+  .mail-header strong {
+    font-size: 15px;
+  }
+
+  .mail-header .phone-back-button {
+    padding: 6px 10px;
+
+    font-size: 10px;
+  }
+
+  .mail-layout {
+    min-height: 250px;
+  }
+
+  .mail-layout .mail-list {
+    min-height: 250px;
+
+    padding: 8px;
+  }
+
+  .mail-item {
+    margin-bottom: 6px;
+    padding: 8px 9px;
+
+    border-radius: 11px;
+  }
+
+  .mail-item-title {
+    margin-bottom: 2px;
+
+    font-size: 10px;
+  }
+
+  .mail-item-sender {
+    margin-bottom: 2px;
+
+    font-size: 8px;
+  }
+
+  .mail-item-date {
+    font-size: 8px;
+  }
+
+  .mail-detail {
+    min-height: 250px;
+
+    padding: 15px 18px;
+  }
+
+  .mail-detail-title {
+    margin-bottom: 4px;
+
+    font-size: 16px;
+  }
+
+  .mail-detail-meta {
+    gap: 2px 10px;
+
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+
+    font-size: 8px;
+  }
+
+  .mail-detail-content {
+    min-height: 45px;
+
+    margin-bottom: 10px;
+
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .mail-detail-attachment {
+    margin-top: 7px;
+    padding: 9px 11px;
+
+    border-radius: 12px;
+  }
+
+  .mail-detail-attachment > strong {
+    margin-bottom: 4px;
+
+    font-size: 9px;
+  }
+
+  .mail-attachment-reward {
+    margin-bottom: 6px;
+
+    font-size: 13px;
+  }
+
+  .mail-claim-button {
+    min-width: 100px;
+
+    padding: 6px 10px;
+
+    border-radius: 9px;
+
+    font-size: 9px;
+  }
+
+}

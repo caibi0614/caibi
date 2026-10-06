@@ -1386,6 +1386,636 @@ dailyBackButton.addEventListener(
 );
 
 /* =========================
+   📬 菜比手機－信箱
+========================= */
+
+const mailButton =
+  document.querySelector(
+    '[data-phone-app="mail"]'
+  );
+
+const mailPage =
+  document.getElementById(
+    "mailPage"
+  );
+
+const mailBackButton =
+  document.getElementById(
+    "mailBackButton"
+  );
+
+const mailList =
+  document.getElementById(
+    "mailList"
+  );
+
+const mailDetail =
+  document.getElementById(
+    "mailDetail"
+  );
+
+let playerMails = [];
+let selectedMailId = null;
+
+
+/* =========================
+   📅 格式化信件日期
+========================= */
+
+function formatMailDate(dateString) {
+
+  return new Date(
+    dateString
+  ).toLocaleDateString(
+    "zh-TW",
+    {
+      timeZone: "Asia/Taipei"
+    }
+  );
+
+}
+
+
+/* =========================
+   🎁 取得附件文字
+========================= */
+
+function getMailAttachmentText(mail) {
+
+  if (
+    mail.attachment_type === "currency" &&
+    mail.attachment_key === "diamonds"
+  ) {
+    return `💎 鑽石 ×${mail.attachment_quantity}`;
+  }
+
+  if (
+    mail.attachment_type === "currency" &&
+    mail.attachment_key === "gold_beans"
+  ) {
+    return `🫘 金豆 ×${mail.attachment_quantity}`;
+  }
+
+  return "";
+}
+
+
+/* =========================
+   📮 顯示左側信件列表
+========================= */
+
+function renderMailList() {
+
+  mailList.innerHTML = "";
+
+  if (playerMails.length === 0) {
+
+    mailList.innerHTML = `
+      <div class="mail-empty">
+        📭
+        <strong>目前沒有信件</strong>
+        <small>有新消息時會出現在這裡。</small>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  for (const mail of playerMails) {
+
+    const mailElement =
+      document.createElement("button");
+
+    mailElement.type = "button";
+
+    mailElement.className =
+  mail.is_read
+    ? "mail-item is-read"
+    : "mail-item";
+
+    if (mail.id === selectedMailId) {
+      mailElement.classList.add(
+        "is-selected"
+      );
+    }
+
+
+    mailElement.innerHTML = `
+      <div class="mail-item-title">
+        ${mail.is_read ? "✉️" : "🔴"}
+        <span>${mail.title}</span>
+      </div>
+
+      <div class="mail-item-sender">
+        ${mail.sender_name}
+      </div>
+
+      <div class="mail-item-date">
+        ${formatMailDate(mail.created_at)}
+      </div>
+    `;
+
+
+    mailElement.addEventListener(
+  "click",
+  async () => {
+
+    selectedMailId = mail.id;
+
+
+    /* 📖 第一次打開 → 標記已讀 */
+
+    if (!mail.is_read) {
+
+      const {
+        error
+      } =
+        await caibiSupabase.rpc(
+          "mark_mail_read",
+          {
+            p_mail_id: mail.id
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "📬 信件標記已讀失敗：",
+          error
+        );
+
+      } else {
+
+        mail.is_read = true;
+
+      }
+
+    }
+
+
+    renderMailList();
+    renderMailDetail(mail);
+
+  }
+);
+
+
+    mailList.appendChild(
+      mailElement
+    );
+
+  }
+
+}
+
+
+/* =========================
+   ✉️ 顯示右側信件內容
+========================= */
+
+function renderMailDetail(mail) {
+
+  if (!mail) {
+
+    mailDetail.innerHTML = `
+      <div class="mail-detail-empty">
+        ✉️
+        <strong>選擇一封信件</strong>
+        <small>點擊左側信件即可查看內容。</small>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  /* =========================
+     ⏰ 信件期限
+  ========================= */
+
+  const now =
+    new Date();
+
+  const expiresAt =
+    mail.expires_at
+      ? new Date(mail.expires_at)
+      : null;
+
+  const isExpired =
+    expiresAt &&
+    now > expiresAt;
+
+
+  let expirationHtml = "";
+
+  if (expiresAt) {
+
+    const expirationText =
+      expiresAt.toLocaleString(
+        "zh-TW",
+        {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }
+      );
+
+
+    expirationHtml =
+      isExpired
+        ? `
+          <span class="mail-expired">
+            ⌛ 已過期
+          </span>
+        `
+        : `
+          <span class="mail-expiration">
+            ⏰ 有效期限：${expirationText}
+          </span>
+        `;
+
+  }
+
+
+  /* =========================
+     🎁 附件
+  ========================= */
+
+  const attachmentText =
+    getMailAttachmentText(mail);
+
+
+  let claimButtonText =
+    "🎁 領取附件";
+
+  let claimButtonDisabled =
+    false;
+
+
+  if (mail.is_claimed) {
+
+    claimButtonText =
+      "✅ 已領取";
+
+    claimButtonDisabled =
+      true;
+
+  } else if (isExpired) {
+
+    claimButtonText =
+      "⌛ 已過期";
+
+    claimButtonDisabled =
+      true;
+
+  }
+
+
+  const attachmentHtml =
+    attachmentText
+      ? `
+        <div class="mail-detail-attachment">
+
+          <strong>🎁 附件</strong>
+
+          <div class="mail-attachment-reward">
+            ${attachmentText}
+          </div>
+
+          <button
+            type="button"
+            class="mail-claim-button"
+            ${claimButtonDisabled
+              ? "disabled"
+              : ""}
+          >
+            ${claimButtonText}
+          </button>
+
+        </div>
+      `
+      : "";
+
+
+  /* =========================
+     ✉️ 信件內容
+  ========================= */
+
+  mailDetail.innerHTML = `
+
+    <div class="mail-detail-title">
+      ${mail.title}
+    </div>
+
+    <div class="mail-detail-meta">
+
+      <span>
+        寄件者：${mail.sender_name}
+      </span>
+
+      <span>
+        ${formatMailDate(mail.created_at)}
+      </span>
+
+      ${expirationHtml}
+
+    </div>
+
+    <div class="mail-detail-content">
+      ${mail.content}
+    </div>
+
+    ${attachmentHtml}
+
+  `;
+
+
+  /* =========================
+     🎁 領取信件附件
+  ========================= */
+
+  const claimButton =
+    mailDetail.querySelector(
+      ".mail-claim-button"
+    );
+
+
+  /*
+    沒附件、已領取、已過期
+    都不綁定領取事件
+  */
+
+  if (
+    !claimButton ||
+    mail.is_claimed ||
+    isExpired
+  ) {
+    return;
+  }
+
+
+  claimButton.addEventListener(
+    "click",
+    async () => {
+
+      /* 防止連點 */
+
+      claimButton.disabled = true;
+
+      claimButton.textContent =
+        "領取中…";
+
+
+      const {
+        data,
+        error
+      } =
+        await caibiSupabase.rpc(
+          "claim_mail_attachment",
+          {
+            p_mail_id: mail.id
+          }
+        );
+
+
+      /* ❌ 領取失敗 */
+
+      if (error) {
+
+        console.error(
+          "📬 信件附件領取失敗：",
+          error
+        );
+
+
+        if (
+          error.message?.includes(
+            "MAIL_ALREADY_CLAIMED"
+          )
+        ) {
+
+          await loadPlayerMail();
+
+          alert(
+            "📬 這份附件已經領取過囉！"
+          );
+
+          return;
+        }
+
+
+        if (
+          error.message?.includes(
+            "MAIL_EXPIRED"
+          )
+        ) {
+
+          await loadPlayerMail();
+
+          alert(
+            "📬 這封信的附件已經過期了。"
+          );
+
+          return;
+        }
+
+
+        claimButton.disabled = false;
+
+        claimButton.textContent =
+          "🎁 領取附件";
+
+        alert(
+          "附件領取失敗，請稍後再試。"
+        );
+
+        return;
+      }
+
+
+      console.log(
+        "📬 信件附件領取成功：",
+        data
+      );
+
+
+      /* 本地標記已領取 */
+
+      mail.is_claimed = true;
+
+
+      /* 🔄 同步錢包＋背包 */
+
+      await Promise.all([
+        loadBackpackWallet(),
+        loadBackpackInventory(),
+        loadBackpackClothing(),
+        loadBackpackFurniture()
+      ]);
+
+
+      /* 🔄 更新信件畫面 */
+
+      renderMailList();
+      renderMailDetail(mail);
+
+
+      alert(
+        `🎁 附件領取成功！\n${attachmentText}`
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   📮 讀取玩家信件
+========================= */
+
+async function loadPlayerMail() {
+
+  mailList.innerHTML = `
+    <div class="mail-empty">
+      📬
+      <strong>信件讀取中…</strong>
+    </div>
+  `;
+
+  renderMailDetail(null);
+
+
+  const {
+    data: { session },
+    error: sessionError
+  } =
+    await caibiSupabase.auth.getSession();
+
+
+  if (sessionError || !session) {
+
+    console.error(
+      "📬 信箱：找不到登入狀態",
+      sessionError
+    );
+
+    mailList.innerHTML = `
+      <div class="mail-empty">
+        ⚠️
+        <strong>無法讀取信箱</strong>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const {
+    data: mails,
+    error: mailError
+  } =
+    await caibiSupabase
+      .from("player_mail")
+      .select(`
+        id,
+        title,
+        content,
+        sender_name,
+        is_read,
+        is_claimed,
+        attachment_type,
+        attachment_key,
+        attachment_quantity,
+        expires_at,
+        created_at
+      `)
+      .eq(
+        "user_id",
+        session.user.id
+      )
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (mailError) {
+
+    console.error(
+      "📬 信箱：讀取信件失敗",
+      mailError
+    );
+
+    mailList.innerHTML = `
+      <div class="mail-empty">
+        ⚠️
+        <strong>信件讀取失敗</strong>
+        <small>請稍後再試。</small>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  playerMails =
+    mails || [];
+
+  selectedMailId = null;
+
+  renderMailList();
+  renderMailDetail(null);
+
+}
+
+
+/* =========================
+   📬 打開信箱
+========================= */
+
+mailButton.addEventListener(
+  "click",
+  async () => {
+
+    gamePhone.classList.add(
+      "mail-open"
+    );
+
+    mailPage.hidden = false;
+
+    await loadPlayerMail();
+
+  }
+);
+
+
+/* =========================
+   ← 返回手機首頁
+========================= */
+
+mailBackButton.addEventListener(
+  "click",
+  () => {
+
+    mailPage.hidden = true;
+
+    gamePhone.classList.remove(
+      "mail-open"
+    );
+
+    selectedMailId = null;
+
+  }
+);
+
+/* =========================
    🎰 前往全畫面抽獎
 ========================= */
 
