@@ -706,7 +706,8 @@ function renderBackpackItems() {
 
     wheat_seed: "🌱",
 corn: "🌽",
-corn_seed: "🌽"
+corn_seed: "🌽",
+popcorn: "🍿"
 
   };
 

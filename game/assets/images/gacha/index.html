@@ -137,6 +137,237 @@
       敬請期待
     </div>
 
+        <!-- 📜 抽獎紀錄視窗 -->
+    <div
+      id="drawHistoryModal"
+      class="history-modal"
+      hidden
+    >
+
+      <div class="history-panel">
+
+        <div class="history-header">
+
+          <h2>🎰 抽獎紀錄</h2>
+
+          <button
+            id="closeHistoryButton"
+            class="history-close-button"
+            type="button"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <div
+          id="drawHistoryList"
+          class="history-list"
+        >
+          <div class="history-loading">
+            讀取中…
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+        <!-- 📋 卡池內容視窗 -->
+    <div
+      id="poolContentsModal"
+      class="pool-contents-modal"
+      hidden
+    >
+
+      <div class="pool-contents-panel">
+
+        <div class="pool-contents-header">
+
+          <div>
+            <h2>👗 衣服一般卡池</h2>
+            <p>每次抽獎皆為獨立機率</p>
+          </div>
+
+          <button
+            id="closePoolContentsButton"
+            class="pool-contents-close-button"
+            type="button"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <div
+          id="poolContentsList"
+          class="pool-contents-list"
+        >
+          <div class="pool-contents-loading">
+            讀取卡池內容中…
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+        <!-- ♻️ 服裝回收視窗 -->
+    <div
+      id="recycleModal"
+      class="recycle-modal"
+      hidden
+    >
+
+      <div class="recycle-panel">
+
+        <div class="recycle-header">
+
+          <div>
+            <h2>♻️ 服裝回收</h2>
+            <p>每回收 1 件服裝，可獲得 💎1</p>
+          </div>
+
+          <button
+            id="closeRecycleButton"
+            class="recycle-close-button"
+            type="button"
+          >
+            ✕
+          </button>
+
+        </div>
+
+        <div
+          id="recycleList"
+          class="recycle-list"
+        >
+          <div class="recycle-loading">
+            讀取衣櫃中…
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  
+    <!-- 🎰 菜比抽卡動畫 -->
+    <div
+      id="gachaAnimationModal"
+      class="gacha-animation-modal"
+      hidden
+    >
+
+      <!-- SKIP -->
+      <button
+        id="skipGachaAnimationButton"
+        class="gacha-animation-skip"
+        type="button"
+      >
+        SKIP ≫
+      </button>
+
+
+      <!-- 🥦🍪 惡搞衣櫃動畫區 -->
+      <div
+        id="gachaIntroScene"
+        class="gacha-intro-scene"
+      >
+
+        <div
+          id="gachaWardrobe"
+          class="gacha-wardrobe"
+        >
+        </div>
+
+        <img
+          id="gachaMascot"
+          class="gacha-mascot"
+          src=""
+          alt=""
+        >
+
+        <div
+          id="gachaClothingBurst"
+          class="gacha-clothing-burst"
+        >
+        </div>
+
+      </div>
+
+
+      <!-- ✨ 單張揭曉 -->
+      <div
+        id="gachaRevealScene"
+        class="gacha-reveal-scene"
+        hidden
+      >
+
+        <div
+          id="gachaRewardCard"
+          class="gacha-reward-card"
+        >
+
+          <div
+            id="gachaRewardImageArea"
+            class="gacha-reward-image-area"
+          >
+          </div>
+
+          <div
+            id="gachaRewardName"
+            class="gacha-reward-name"
+          >
+          </div>
+
+          <div
+            id="gachaRewardAmount"
+            class="gacha-reward-amount"
+          >
+          </div>
+
+        </div>
+
+        <div class="gacha-reveal-hint">
+          點擊畫面繼續
+        </div>
+
+      </div>
+
+
+      <!-- 🎁 最終結果總覽 -->
+      <div
+        id="gachaSummaryScene"
+        class="gacha-summary-scene"
+        hidden
+      >
+
+        <div class="gacha-summary-panel">
+
+          <h2>
+            ✨ 本次抽卡結果
+          </h2>
+
+          <div
+            id="gachaSummaryGrid"
+            class="gacha-summary-grid"
+          >
+          </div>
+
+          <button
+            id="closeGachaSummaryButton"
+            class="gacha-summary-close-button"
+            type="button"
+          >
+            收下獎勵
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+    
   </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
