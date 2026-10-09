@@ -126,6 +126,18 @@
         <small>兌換碼</small>
       </button>
 
+      <!-- 📮 官方管理：預設隱藏 -->
+<button
+  type="button"
+  id="adminPhoneButton"
+  data-phone-app="admin"
+  hidden
+  style="display: none;"
+>
+  <span>📮</span>
+  <small>官方管理</small>
+</button>
+
     </div>
 
         <!-- =========================
@@ -488,6 +500,510 @@
       aria-live="polite"
     ></div>
 
+  </div>
+
+</div>
+
+<!-- =========================
+     📮 官方管理中心
+========================= -->
+
+<div
+  id="adminPage"
+  class="phone-page admin-page"
+  hidden
+>
+
+  <div class="admin-header">
+
+    <button
+      id="adminBackButton"
+      class="phone-back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+    <strong>📮 官方管理中心</strong>
+
+  </div>
+
+  <div class="admin-menu">
+
+    <button type="button" id="adminMailButton">
+      <span>💌</span>
+      <strong>官方寄信</strong>
+      <small>指定玩家／全服群發</small>
+    </button>
+
+    <button type="button" id="adminMailLogsButton">
+      <span>📋</span>
+      <strong>寄信紀錄</strong>
+      <small>查詢寄送與領獎紀錄</small>
+    </button>
+
+    <button type="button" id="adminRedeemButton">
+      <span>🎟️</span>
+      <strong>兌換碼管理</strong>
+      <small>建立／查詢／停用</small>
+    </button>
+
+    <button type="button" id="adminRedeemLogsButton">
+      <span>📊</span>
+      <strong>兌換紀錄</strong>
+      <small>查詢玩家領取紀錄</small>
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     💌 官方寄信頁面
+========================= -->
+
+<div
+  id="adminMailPage"
+  class="phone-page admin-mail-page"
+  hidden
+>
+
+  <div class="admin-mail-header">
+
+    <button
+      id="adminMailBackButton"
+      class="phone-back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+    <strong>💌 官方寄信</strong>
+
+  </div>
+
+  <form id="adminMailForm" class="admin-mail-form">
+
+    <!-- =========================
+     👤 官方收件玩家下拉選單
+========================= -->
+
+<div
+  id="adminMailPlayerDropdown"
+  class="admin-mail-player-dropdown"
+>
+
+  <label for="adminMailPlayerToggle">
+    👤 選擇收件玩家
+  </label>
+
+  <!-- 點擊展開／收起 -->
+  <button
+    id="adminMailPlayerToggle"
+    class="admin-mail-player-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="adminMailPlayerDropdownContent"
+  >
+    <span id="adminMailPlayerToggleText">
+      請點擊選擇收件玩家
+    </span>
+    <span aria-hidden="true">⌄</span>
+  </button>
+
+  <!-- 下拉內容：預設隱藏 -->
+  <div
+    id="adminMailPlayerDropdownContent"
+    class="admin-mail-player-dropdown-content"
+    hidden
+  >
+
+    <!-- 🔍 搜尋玩家 -->
+    <input
+      id="adminMailPlayerSearch"
+      type="search"
+      placeholder="🔍 搜尋帳號或中文名稱"
+      autocomplete="off"
+    >
+
+    <!-- 📋 直向玩家列表 -->
+    <div
+      id="adminMailPlayerList"
+      class="admin-mail-player-list"
+      role="group"
+      aria-label="收件玩家列表"
+    >
+      <p>正在讀取玩家列表……</p>
+    </div>
+
+  </div>
+
+  <!-- ✅ 已選擇的收件玩家 -->
+  <div
+    id="adminMailSelectedPlayer"
+    class="admin-mail-selected-player"
+    aria-live="polite"
+  >
+    尚未選擇收件玩家
+  </div>
+
+  <!-- 🔐 實際寄送使用的帳號 -->
+  <input
+    id="adminMailUsername"
+    type="hidden"
+    value=""
+  >
+
+</div>
+
+    <!-- 🏷️ 寄件者顯示名稱 -->
+    <label for="adminMailSender">
+      寄件者名稱
+    </label>
+    <input
+      id="adminMailSender"
+      type="text"
+      value="菜比官方"
+      maxlength="50"
+      required
+    >
+
+    <!-- 📝 寄送原因：僅官方可見 -->
+    <label for="adminMailReason">
+      寄送原因（官方內部紀錄）
+    </label>
+    <input
+      id="adminMailReason"
+      type="text"
+      placeholder="例如：活動第一名獎勵"
+      maxlength="200"
+      required
+    >
+
+    <!-- ✉️ 信件標題 -->
+    <label for="adminMailTitle">
+      信件標題
+    </label>
+    <input
+      id="adminMailTitle"
+      type="text"
+      placeholder="請輸入信件標題"
+      maxlength="100"
+      required
+    >
+
+    <!-- 💬 信件正文 -->
+    <label for="adminMailContent">
+      信件內容
+    </label>
+    <textarea
+      id="adminMailContent"
+      rows="4"
+      placeholder="請輸入給玩家的信件內容"
+    ></textarea>
+
+    <!-- 🎁 附件獎勵 -->
+    <label for="adminMailReward">
+      附件獎勵
+    </label>
+    <select id="adminMailReward">
+      <option value="">不附帶獎勵</option>
+      <option value="diamonds">💎 鑽石</option>
+      <option value="gold_beans">🫘 金豆</option>
+    </select>
+
+    <!-- 🔢 獎勵數量 -->
+    <label for="adminMailQuantity">
+      獎勵數量
+    </label>
+    <input
+      id="adminMailQuantity"
+      type="number"
+      min="1"
+      step="1"
+      placeholder="無獎勵可留空"
+    >
+
+    <!-- ⏰ 領取期限 -->
+    <label for="adminMailExpiry">
+      信件領取期限（選填）
+    </label>
+    <input
+      id="adminMailExpiry"
+      type="datetime-local"
+    >
+
+    <!-- 📮 寄送按鈕 -->
+    <button
+      id="adminMailSubmitButton"
+      type="submit"
+    >
+      📮 確認寄送
+    </button>
+
+    <p
+      id="adminMailMessage"
+      aria-live="polite"
+    ></p>
+
+  </form>
+
+</div>
+
+<!-- =========================
+     📋 官方寄信紀錄頁面
+========================= -->
+
+<div
+  id="adminMailLogsPage"
+  class="phone-page admin-mail-logs-page"
+  hidden
+>
+
+  <!-- 📋 標題 -->
+  <div class="admin-mail-logs-header">
+
+    <button
+      id="adminMailLogsBackButton"
+      class="phone-back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+    <strong>📋 官方寄信紀錄</strong>
+
+  </div>
+
+  <!-- 🔍 搜尋 -->
+  <div class="admin-mail-logs-search">
+
+    <input
+      id="adminMailLogsSearch"
+      type="search"
+      placeholder="🔍 搜尋收件玩家、標題或原因"
+      autocomplete="off"
+    >
+
+  </div>
+
+  <!-- 📊 紀錄數量 -->
+  <p
+    id="adminMailLogsCount"
+    class="admin-mail-logs-count"
+  >
+    共 0 筆寄信紀錄
+  </p>
+
+  <!-- 💌 紀錄列表 -->
+  <div
+    id="adminMailLogsList"
+    class="admin-mail-logs-list"
+  >
+    <p>📭 尚未載入寄信紀錄</p>
+  </div>
+
+</div>
+
+<!-- =========================
+     🎟️ 官方兌換碼管理頁面
+========================= -->
+
+<div
+  id="adminRedeemPage"
+  class="phone-page admin-redeem-page"
+  hidden
+>
+
+  <div class="admin-redeem-header">
+
+    <button
+      id="adminRedeemBackButton"
+      class="phone-back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+    <strong>🎟️ 官方兌換碼管理</strong>
+
+  </div>
+
+  <form id="adminRedeemForm" class="admin-redeem-form">
+
+    <label for="adminRedeemCode">
+      🎟️ 兌換碼
+    </label>
+    <input
+      id="adminRedeemCode"
+      type="text"
+      placeholder="例如：CAIBI100"
+      maxlength="50"
+      autocomplete="off"
+      required
+    >
+
+    <label for="adminRedeemName">
+      📝 禮包名稱
+    </label>
+    <input
+      id="adminRedeemName"
+      type="text"
+      placeholder="例如：菜比開服禮包"
+      maxlength="100"
+      required
+    >
+
+    <label for="adminRedeemReward">
+      🎁 獎勵種類
+    </label>
+    <select id="adminRedeemReward" required>
+      <option value="diamonds">💎 鑽石</option>
+      <option value="gold_beans">🫘 金豆</option>
+    </select>
+
+    <label for="adminRedeemQuantity">
+      🔢 獎勵數量
+    </label>
+    <input
+      id="adminRedeemQuantity"
+      type="number"
+      min="1"
+      step="1"
+      placeholder="例如：100"
+      required
+    >
+
+    <label for="adminRedeemMax">
+      👥 全服兌換次數上限（選填）
+    </label>
+    <input
+      id="adminRedeemMax"
+      type="number"
+      min="1"
+      step="1"
+      placeholder="留空代表不限次數"
+    >
+
+    <label for="adminRedeemStart">
+      📅 開始時間（選填）
+    </label>
+    <input
+      id="adminRedeemStart"
+      type="datetime-local"
+    >
+
+    <label for="adminRedeemExpiry">
+      ⏰ 到期時間（選填）
+    </label>
+    <input
+      id="adminRedeemExpiry"
+      type="datetime-local"
+    >
+
+    <button
+      id="adminRedeemSubmitButton"
+      type="submit"
+    >
+      🎟️ 建立兌換碼
+    </button>
+
+    
+    <p
+      id="adminRedeemMessage"
+      aria-live="polite"
+    ></p>
+
+  </form>
+
+  <!-- 🎟️ 官方已建立兌換碼列表 -->
+  <section class="admin-redeem-records">
+
+    
+<h3>📋 已建立的兌換碼</h3>
+
+<!-- 🔍 搜尋官方兌換碼 -->
+<div class="admin-redeem-search">
+  <input
+    id="adminRedeemSearch"
+    type="search"
+    placeholder="🔍 搜尋兌換碼或禮包名稱"
+    aria-label="搜尋兌換碼或禮包名稱"
+    autocomplete="off"
+  >
+</div>
+
+<p
+  id="adminRedeemListCount"
+  aria-live="polite"
+>
+  尚未載入兌換碼
+</p>
+
+
+    <div
+      id="adminRedeemList"
+      class="admin-redeem-list"
+    >
+      <p>🎟️ 等待讀取兌換碼……</p>
+    </div>
+
+  </section>
+
+</div>
+
+<!-- =========================
+     📊 官方兌換紀錄頁面
+========================= -->
+
+<div
+  id="adminRedeemLogsPage"
+  class="phone-page admin-redeem-logs-page"
+  hidden
+>
+
+  <!-- 📊 標題 -->
+  <div class="admin-redeem-logs-header">
+
+    <button
+      id="adminRedeemLogsBackButton"
+      class="phone-back-button"
+      type="button"
+    >
+      ← 返回
+    </button>
+
+    <strong>📊 官方兌換紀錄</strong>
+
+  </div>
+
+  <!-- 🔍 搜尋 -->
+  <div class="admin-redeem-logs-search">
+
+    <input
+      id="adminRedeemLogsSearch"
+      type="search"
+      placeholder="🔍 搜尋玩家、帳號或兌換碼"
+      autocomplete="off"
+    >
+
+  </div>
+
+  <!-- 📋 紀錄數量 -->
+  <p
+    id="adminRedeemLogsCount"
+    class="admin-redeem-logs-count"
+    aria-live="polite"
+  >
+    共 0 筆兌換紀錄
+  </p>
+
+  <!-- 🎟️ 紀錄列表 -->
+  <div
+    id="adminRedeemLogsList"
+    class="admin-redeem-logs-list"
+  >
+    <p>📭 尚未載入兌換紀錄</p>
   </div>
 
 </div>

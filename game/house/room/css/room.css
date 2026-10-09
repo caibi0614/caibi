@@ -917,3 +917,335 @@ width: 100%;
     line-height: 1.8;
   }
 }
+
+/* =========================
+   👗 菜比之家｜換裝衣櫃
+========================= */
+
+/* 隱藏狀態優先 */
+.wardrobe-page[hidden],
+.private-room[hidden] {
+  display: none !important;
+}
+
+.wardrobe-page {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+
+  background: #f8efe3;
+  color: #765b45;
+}
+
+/* =========================
+   👗 頂部標題
+========================= */
+
+.wardrobe-header {
+  position: relative;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 64px;
+  padding: 12px 24px;
+
+  background: #fffaf2;
+  border-bottom: 1px solid #e8d5be;
+}
+
+.wardrobe-header strong {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.wardrobe-back-button {
+  position: absolute;
+  left: 20px;
+
+  padding: 9px 16px;
+  border: 1px solid #dfc9af;
+  border-radius: 999px;
+
+  background: #f5e8d7;
+  color: #765b45;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.wardrobe-back-button:hover {
+  background: #ecd9c1;
+}
+
+/* =========================
+   👗 確認穿搭按鈕
+========================= */
+
+.wardrobe-confirm-button {
+  position: absolute;
+  right: 20px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #c9a47c;
+  border-radius: 999px;
+
+  background: #e9d2b6;
+  color: #765b45;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  white-space: nowrap;
+  cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.wardrobe-confirm-button:hover {
+  background: #dfbf99;
+}
+
+/* 📱 手機橫向 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .wardrobe-confirm-button {
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+/* 📱 手機直向 */
+@media (orientation: portrait) and (max-width: 768px) {
+  .wardrobe-confirm-button {
+    right: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+}
+
+/* =========================
+   👤 上半部｜換裝舞台
+========================= */
+
+.wardrobe-stage {
+  flex: 1 1 55%;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 85%,
+      #ead5bc 0%,
+      transparent 42%
+    ),
+    linear-gradient(
+      180deg,
+      #fff9ef 0%,
+      #f2e3d1 100%
+    );
+
+  border-bottom: 3px solid #dec3a4;
+}
+
+.wardrobe-character {
+  position: relative;
+
+  height: min(100%, 430px);
+  aspect-ratio: 2 / 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   👗 下半部｜服裝面板
+========================= */
+
+.wardrobe-panel {
+  flex: 1 1 45%;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  padding: 16px 24px 20px;
+
+  background: #fffaf2;
+}
+
+.wardrobe-categories {
+  flex-shrink: 0;
+
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  gap: 10px;
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid #ead8c4;
+}
+
+.wardrobe-categories button {
+  min-width: 0;
+  padding: 12px 6px;
+
+  border: 1px solid #e5d0b8;
+  border-radius: 14px;
+
+  background: #f7ecdf;
+  color: #765b45;
+
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.wardrobe-categories button:hover,
+.wardrobe-categories button.is-active {
+  background: #e9d2b6;
+  border-color: #c9a47c;
+}
+
+.wardrobe-items {
+  flex: 1;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fill, minmax(110px, 1fr));
+
+  align-content: start;
+  gap: 12px;
+
+  padding: 16px 4px;
+  overflow-y: auto;
+}
+
+/* =========================
+   📱 手機橫向
+========================= */
+
+@media (orientation: landscape) and (max-height: 600px) {
+
+  .wardrobe-header {
+    min-height: 42px;
+    padding: 6px 12px;
+  }
+
+  .wardrobe-header strong {
+    font-size: 15px;
+  }
+
+  .wardrobe-back-button {
+    left: 10px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .wardrobe-stage {
+    flex-basis: 50%;
+    padding: 6px;
+  }
+
+  .wardrobe-character {
+    height: 100%;
+  }
+
+  .wardrobe-panel {
+    flex-basis: 50%;
+    padding: 8px 12px;
+  }
+
+  .wardrobe-categories {
+    gap: 6px;
+    padding-bottom: 7px;
+  }
+
+  .wardrobe-categories button {
+    padding: 7px 3px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+
+  .wardrobe-items {
+    grid-template-columns:
+      repeat(auto-fill, minmax(80px, 1fr));
+
+    gap: 8px;
+    padding: 8px 2px;
+  }
+}
+
+/* =========================
+   📱 手機直向｜衣櫃可正常使用
+========================= */
+
+@media (orientation: portrait) and (max-width: 768px) {
+
+  .wardrobe-page:not([hidden]) {
+    display: flex;
+  }
+
+  .wardrobe-header {
+    min-height: 54px;
+  }
+
+  .wardrobe-header strong {
+    font-size: 17px;
+  }
+
+  .wardrobe-back-button {
+    left: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .wardrobe-stage {
+    flex-basis: 58%;
+  }
+
+  .wardrobe-panel {
+    flex-basis: 42%;
+    padding: 10px;
+  }
+
+  .wardrobe-categories {
+    gap: 4px;
+  }
+
+  .wardrobe-categories button {
+    padding: 9px 2px;
+    font-size: 11px;
+  }
+
+  .wardrobe-items {
+    grid-template-columns:
+      repeat(auto-fill, minmax(78px, 1fr));
+    gap: 8px;
+  }
+}

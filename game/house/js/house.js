@@ -245,6 +245,30 @@ console.log(
   equipment
 );
 
+/* =========================
+   📮 官方管理員入口驗證
+========================= */
+
+const adminPhoneButton =
+  document.getElementById("adminPhoneButton");
+
+if (adminPhoneButton) {
+
+  const { data: isAdmin, error: adminError } =
+    await caibiSupabase.rpc("is_caibi_admin");
+
+  if (adminError) {
+    console.error("📮 管理員驗證失敗：", adminError);
+  }
+
+  if (!adminError && isAdmin === true) {
+    adminPhoneButton.hidden = false;
+    adminPhoneButton.style.display = "";
+    console.log("📮 官方管理入口已開放");
+  }
+
+}
+
   console.log("🏡 進入菜比之家：", profile);
 
   document.getElementById("welcomeText").textContent =
@@ -2656,6 +2680,1345 @@ redeemCodeInput.addEventListener(
 );
 
 /* =========================
+   📮 菜比手機－官方管理中心
+========================= */
+
+const adminPage =
+  document.getElementById("adminPage");
+
+const adminBackButton =
+  document.getElementById("adminBackButton");
+
+const adminButton =
+  document.getElementById("adminPhoneButton");
+
+/* 📮 開啟官方管理 */
+
+adminButton?.addEventListener("click", async () => {
+
+  // 每次進入都重新驗證管理員身分
+  const { data: isAdmin, error } =
+    await caibiSupabase.rpc("is_caibi_admin");
+
+  if (error || isAdmin !== true) {
+    alert("⛔ 只有菜比官方管理員可以進入。");
+    return;
+  }
+
+  gamePhone.classList.add("admin-open");
+  adminPage.hidden = false;
+
+});
+
+/* ← 返回手機首頁 */
+
+adminBackButton?.addEventListener("click", () => {
+
+  adminPage.hidden = true;
+  gamePhone.classList.remove("admin-open");
+
+});
+
+/* =========================
+   💌 官方管理－寄信頁面
+========================= */
+
+const adminMailButton =
+  document.getElementById("adminMailButton");
+
+const adminMailPage =
+  document.getElementById("adminMailPage");
+
+const adminMailBackButton =
+  document.getElementById("adminMailBackButton");
+
+/* 💌 開啟寄信表單 */
+
+adminMailButton?.addEventListener("click", async () => {
+
+  adminPage.hidden = true;
+
+  gamePhone.classList.add("admin-mail-open");
+
+  adminMailPage.hidden = false;
+  await loadAdminMailPlayers();
+
+});
+
+/* ← 返回官方管理中心 */
+
+adminMailBackButton?.addEventListener("click", () => {
+
+  adminMailPage.hidden = true;
+
+  gamePhone.classList.remove("admin-mail-open");
+
+  adminPage.hidden = false;
+
+});
+
+/* =========================
+   👤 官方寄信－收件玩家列表
+========================= */
+
+const adminMailPlayerSearch =
+  document.getElementById("adminMailPlayerSearch");
+
+const adminMailPlayerList =
+  document.getElementById("adminMailPlayerList");
+
+const adminMailSelectedPlayer =
+  document.getElementById("adminMailSelectedPlayer");
+
+const adminMailUsername =
+  document.getElementById("adminMailUsername");
+
+let adminMailPlayers = [];
+
+/* 📋 收件玩家下拉選單 */
+
+const adminMailPlayerToggle =
+  document.getElementById("adminMailPlayerToggle");
+
+const adminMailPlayerDropdownContent =
+  document.getElementById("adminMailPlayerDropdownContent");
+
+const adminMailPlayerToggleText =
+  document.getElementById("adminMailPlayerToggleText");
+
+function closeAdminMailPlayerDropdown() {
+  adminMailPlayerDropdownContent.hidden = true;
+  adminMailPlayerToggle.setAttribute("aria-expanded", "false");
+}
+
+adminMailPlayerToggle?.addEventListener("click", () => {
+  const willOpen = adminMailPlayerDropdownContent.hidden;
+
+  adminMailPlayerDropdownContent.hidden = !willOpen;
+  adminMailPlayerToggle.setAttribute(
+    "aria-expanded",
+    String(willOpen)
+  );
+
+  if (willOpen) {
+    adminMailPlayerSearch.focus();
+  }
+});
+
+/* 點擊選單外面，自動收起 */
+document.addEventListener("pointerdown", (event) => {
+  const dropdown =
+    document.getElementById("adminMailPlayerDropdown");
+
+  if (dropdown && !dropdown.contains(event.target)) {
+    closeAdminMailPlayerDropdown();
+  }
+});
+
+/* 📋 顯示玩家列表 */
+
+function renderAdminMailPlayers() {
+
+  if (!adminMailPlayerList) return;
+
+  adminMailPlayerList.replaceChildren();
+
+  const keyword =
+    (adminMailPlayerSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const filteredPlayers =
+    adminMailPlayers.filter(player => {
+
+      const username =
+        (player.username || "").toLowerCase();
+
+      const displayName =
+        (player.display_name || "").toLowerCase();
+
+      return username.includes(keyword) ||
+        displayName.includes(keyword);
+
+    });
+
+  if (filteredPlayers.length === 0) {
+
+    adminMailPlayerList.textContent =
+      "🔍 找不到符合的玩家";
+
+    return;
+  }
+
+  for (const player of filteredPlayers) {
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.className = "admin-mail-player-option";
+
+    button.textContent =
+      `${player.username}｜${player.display_name || "未設定暱稱"}`;
+
+    if (adminMailUsername?.value === player.username) {
+      button.classList.add("is-selected");
+    }
+
+    button.addEventListener("click", () => {
+
+  adminMailUsername.value = player.username;
+
+  const playerLabel =
+    `${player.username}｜${player.display_name || "未設定暱稱"}`;
+
+  adminMailSelectedPlayer.textContent =
+    `✅ 已選擇：${playerLabel}`;
+
+  adminMailPlayerToggleText.textContent =
+    playerLabel;
+
+  closeAdminMailPlayerDropdown();
+
+  renderAdminMailPlayers();
+
+});
+
+    adminMailPlayerList.appendChild(button);
+
+  }
+
+}
+
+
+/* 🔄 從資料庫讀取玩家 */
+
+async function loadAdminMailPlayers() {
+
+  if (!adminMailPlayerList) return;
+
+  adminMailPlayerList.textContent =
+    "📋 正在讀取玩家列表……";
+
+  const { data, error } =
+    await caibiSupabase.rpc("caibi_list_players");
+
+  if (error) {
+
+    console.error("📮 玩家列表讀取失敗：", error);
+
+    adminMailPlayerList.textContent =
+      "⚠️ 玩家列表讀取失敗";
+
+    return;
+  }
+
+  adminMailPlayers = (data || []).filter(
+    player => !["cai", "abc"].includes(player.username)
+  );
+
+  renderAdminMailPlayers();
+
+}
+
+
+/* 🔍 搜尋時即時篩選 */
+
+adminMailPlayerSearch?.addEventListener(
+  "input",
+  renderAdminMailPlayers
+);
+
+/* =========================
+   💌 官方寄信－正式送出
+========================= */
+
+const adminMailForm =
+  document.getElementById("adminMailForm");
+
+const adminMailSubmitButton =
+  document.getElementById("adminMailSubmitButton");
+
+const adminMailMessage =
+  document.getElementById("adminMailMessage");
+
+let adminMailSending = false;
+
+adminMailForm?.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  // 防止重複寄送
+  if (adminMailSending) return;
+
+  const username = adminMailUsername.value.trim();
+
+  const sender =
+    document.getElementById("adminMailSender").value.trim();
+
+  const reason =
+    document.getElementById("adminMailReason").value.trim();
+
+  const title =
+    document.getElementById("adminMailTitle").value.trim();
+
+  const content =
+    document.getElementById("adminMailContent").value.trim();
+
+  const reward =
+    document.getElementById("adminMailReward").value;
+
+  const quantityText =
+    document.getElementById("adminMailQuantity").value.trim();
+
+  const expiry =
+    document.getElementById("adminMailExpiry").value;
+
+  adminMailMessage.textContent = "";
+
+  // 必填欄位
+  if (!username || !sender || !reason || !title) {
+    adminMailMessage.textContent =
+      "⚠️ 請選擇收件玩家，並填寫寄件者、原因與標題。";
+    return;
+  }
+
+  // 附件數量檢查
+  let quantity = null;
+
+  if (reward) {
+    quantity = Number(quantityText);
+
+    if (
+      !Number.isSafeInteger(quantity) ||
+      quantity <= 0
+    ) {
+      adminMailMessage.textContent =
+        "⚠️ 選擇附件後，請填寫正確的獎勵數量。";
+      return;
+    }
+  } else if (quantityText !== "") {
+    adminMailMessage.textContent =
+      "⚠️ 有填寫獎勵數量時，請選擇附件類型。";
+    return;
+  }
+
+  // 有效期限：未填則不限制
+  let expiresAt = null;
+
+  if (expiry) {
+    const expiryDate = new Date(expiry);
+
+    if (
+      Number.isNaN(expiryDate.getTime()) ||
+      expiryDate <= new Date()
+    ) {
+      adminMailMessage.textContent =
+        "⚠️ 有效期限必須是未來的日期時間。";
+      return;
+    }
+
+    expiresAt = expiryDate.toISOString();
+  }
+
+  // 寄送前再次確認
+  const rewardLabel =
+    reward === "diamonds"
+      ? `💎 鑽石 ×${quantity}`
+      : reward === "gold_beans"
+        ? `🫘 金豆 ×${quantity}`
+        : "無附件";
+
+  const confirmed = confirm(
+    `📮 確定寄送官方信件？\n\n` +
+    `收件玩家：${username}\n` +
+    `信件標題：${title}\n` +
+    `附件：${rewardLabel}\n\n` +
+    `寄出後會立即建立玩家信件與寄送紀錄。`
+  );
+
+  if (!confirmed) return;
+
+  adminMailSending = true;
+  adminMailSubmitButton.disabled = true;
+  adminMailSubmitButton.textContent = "📮 寄送中……";
+  adminMailMessage.textContent = "正在寄送官方信件……";
+
+  try {
+
+    const { data, error } =
+      await caibiSupabase.rpc("caibi_send_mail", {
+        p_username: username,
+        p_sender_name: sender,
+        p_title: title,
+        p_content: content,
+        p_reward_key: reward || null,
+        p_quantity: quantity,
+        p_expires_at: expiresAt,
+        p_reason: reason
+      });
+
+    if (error) throw error;
+
+    console.log("💌 官方寄信成功：", data);
+
+    adminMailMessage.textContent =
+      `✅ 已成功寄送給 ${username}！`;
+
+    // 清空已完成的表單
+    adminMailForm.reset();
+
+    adminMailUsername.value = "";
+
+    adminMailSelectedPlayer.textContent =
+      "尚未選擇收件玩家";
+
+    adminMailPlayerToggleText.textContent =
+      "請點擊選擇收件玩家";
+
+    closeAdminMailPlayerDropdown();
+
+    renderAdminMailPlayers();
+
+  } catch (error) {
+
+    console.error("💌 官方寄信失敗：", error);
+
+    adminMailMessage.textContent =
+      "❌ 寄送失敗，請查看瀏覽器 Console 錯誤訊息。";
+
+  } finally {
+
+    adminMailSending = false;
+    adminMailSubmitButton.disabled = false;
+    adminMailSubmitButton.textContent = "📮 確認寄送";
+
+  }
+
+});
+
+/* =========================
+   📋 官方管理－寄信紀錄頁面
+========================= */
+
+const adminMailLogsButton =
+  document.getElementById("adminMailLogsButton");
+
+const adminMailLogsPage =
+  document.getElementById("adminMailLogsPage");
+
+const adminMailLogsBackButton =
+  document.getElementById("adminMailLogsBackButton");
+
+/* 📋 開啟寄信紀錄 */
+
+adminMailLogsButton?.addEventListener("click", async () => {
+
+  adminPage.hidden = true;
+
+  gamePhone.classList.remove("admin-open");
+  gamePhone.classList.add("admin-mail-logs-open");
+
+  if (adminMailLogsPage) {
+    adminMailLogsPage.hidden = false;
+  }
+
+  await loadAdminMailLogs();
+
+});
+
+/* ← 返回官方管理中心 */
+
+adminMailLogsBackButton?.addEventListener("click", () => {
+
+  if (adminMailLogsPage) {
+    adminMailLogsPage.hidden = true;
+  }
+
+  gamePhone.classList.remove("admin-mail-logs-open");
+  gamePhone.classList.add("admin-open");
+
+  adminPage.hidden = false;
+
+});
+
+
+/* =========================
+   📋 官方寄信紀錄－讀取資料
+========================= */
+
+const adminMailLogsSearch =
+  document.getElementById("adminMailLogsSearch");
+
+const adminMailLogsCount =
+  document.getElementById("adminMailLogsCount");
+
+const adminMailLogsList =
+  document.getElementById("adminMailLogsList");
+
+let adminMailLogs = [];
+
+async function loadAdminMailLogs() {
+
+  adminMailLogsList.textContent =
+    "📋 正在讀取寄信紀錄……";
+
+  adminMailLogsCount.textContent =
+    "正在載入……";
+
+  const { data: isAdmin, error: adminError } =
+    await caibiSupabase.rpc("is_caibi_admin");
+
+  if (adminError || isAdmin !== true) {
+    adminMailLogsList.textContent =
+      "⛔ 沒有權限查看寄信紀錄";
+    adminMailLogsCount.textContent = "";
+    return;
+  }
+
+  
+const { data, error } =
+  await caibiSupabase.rpc("caibi_list_mail_logs");
+
+
+  if (error) {
+    console.error("📋 寄信紀錄讀取失敗：", error);
+
+    adminMailLogsList.textContent =
+      "❌ 寄信紀錄讀取失敗";
+
+    adminMailLogsCount.textContent = "";
+    return;
+  }
+
+  adminMailLogs = data || [];
+
+  console.log(
+    "📋 官方寄信紀錄：",
+    adminMailLogs
+  );
+
+    renderAdminMailLogs();
+}
+
+
+/* =========================
+   📋 官方寄信紀錄－顯示卡片
+========================= */
+
+function renderAdminMailLogs() {
+
+  if (!adminMailLogsList) return;
+
+  adminMailLogsList.replaceChildren();
+
+  const keyword =
+    (adminMailLogsSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const filteredLogs = adminMailLogs.filter(log => {
+
+    const searchText = [
+      log.admin_username,
+      log.recipient_username,
+      log.recipient_display_name,
+      log.sender_name,
+      log.title,
+      log.reason
+    ].join(" ").toLowerCase();
+
+    return searchText.includes(keyword);
+  });
+
+  adminMailLogsCount.textContent =
+    keyword
+      ? `找到 ${filteredLogs.length} 筆／共 ${adminMailLogs.length} 筆寄信紀錄`
+      : `共 ${adminMailLogs.length} 筆寄信紀錄`;
+
+  if (filteredLogs.length === 0) {
+    adminMailLogsList.textContent =
+      keyword
+        ? "🔍 找不到符合的寄信紀錄"
+        : "📭 目前沒有寄信紀錄";
+    return;
+  }
+
+  const formatDate = value => {
+
+    if (!value) return "無期限";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "日期資料異常";
+    }
+
+    return date.toLocaleString("zh-TW", {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  };
+
+  for (const log of filteredLogs) {
+
+    const card = document.createElement("article");
+    card.className = "admin-mail-log-card";
+
+    const addLine = (label, value) => {
+
+      const line = document.createElement("div");
+      line.className = "admin-mail-log-line";
+
+      const name = document.createElement("strong");
+      name.textContent = `${label}：`;
+
+      const text = document.createElement("span");
+      text.textContent = value ?? "—";
+
+      line.append(name, text);
+      card.appendChild(line);
+    };
+
+    const reward =
+      log.reward_key === "diamonds"
+        ? `💎 鑽石 ×${log.reward_quantity}`
+        : log.reward_key === "gold_beans"
+          ? `🫘 金豆 ×${log.reward_quantity}`
+          : log.reward_key
+            ? `${log.reward_key} ×${log.reward_quantity ?? 0}`
+            : "無附件";
+
+    const recipient =
+      log.recipient_username
+        ? `${log.recipient_username}（${log.recipient_display_name || "未設定暱稱"}）`
+        : "未知玩家";
+
+    addLine("✉️ 標題", log.title);
+    addLine("📮 寄送管理員", log.admin_username);
+    addLine("👤 收件玩家", recipient);
+    addLine("🏷️ 寄件者名稱", log.sender_name);
+    addLine("📝 寄送原因", log.reason);
+    addLine("💬 信件內容", log.content || "無內容");
+    addLine("🎁 附件", reward);
+    addLine("📅 寄送時間", formatDate(log.sent_at));
+    addLine("⏰ 有效期限", formatDate(log.expires_at));
+
+    adminMailLogsList.appendChild(card);
+  }
+}
+
+/* 🔍 即時搜尋寄信紀錄 */
+
+adminMailLogsSearch?.addEventListener(
+  "input",
+  renderAdminMailLogs
+);
+
+
+/* =========================
+   🎟️ 官方管理－兌換碼管理頁面
+========================= */
+
+const adminRedeemButton =
+  document.getElementById("adminRedeemButton");
+
+const adminRedeemPage =
+  document.getElementById("adminRedeemPage");
+
+const adminRedeemBackButton =
+  document.getElementById("adminRedeemBackButton");
+
+/* 🎟️ 開啟官方兌換碼管理 */
+
+adminRedeemButton?.addEventListener("click", async () => {
+
+  // 再次驗證管理員身分
+  const { data: isAdmin, error } =
+    await caibiSupabase.rpc("is_caibi_admin");
+
+  if (error || isAdmin !== true) {
+    alert("⛔ 只有菜比官方管理員可以使用。");
+    return;
+  }
+
+  if (!adminRedeemPage) {
+    console.error("找不到官方兌換碼管理頁面");
+    return;
+  }
+
+  adminPage.hidden = true;
+
+  gamePhone.classList.remove("admin-open");
+  gamePhone.classList.add("admin-redeem-open");
+
+  
+  adminRedeemPage.hidden = false;
+
+  // 🎟️ 開啟管理頁面時讀取兌換碼
+  await loadAdminRedeemCodes();
+
+});
+
+
+/* ← 返回官方管理中心 */
+
+adminRedeemBackButton?.addEventListener("click", () => {
+
+  if (adminRedeemPage) {
+    adminRedeemPage.hidden = true;
+  }
+
+  gamePhone.classList.remove("admin-redeem-open");
+  gamePhone.classList.add("admin-open");
+
+  adminPage.hidden = false;
+
+});
+
+
+/* =========================
+   🎟️ 官方兌換碼－讀取列表
+========================= */
+
+const adminRedeemList =
+  document.getElementById("adminRedeemList");
+
+
+const adminRedeemListCount =
+  document.getElementById("adminRedeemListCount");
+
+/* 🔍 官方兌換碼搜尋 */
+const adminRedeemSearch =
+  document.getElementById("adminRedeemSearch");
+
+let adminRedeemCodes = [];
+
+adminRedeemSearch?.addEventListener("input", () => {
+  renderAdminRedeemCodes();
+});
+
+async function loadAdminRedeemCodes() {
+
+
+  if (!adminRedeemList || !adminRedeemListCount) {
+    console.error("找不到官方兌換碼列表容器");
+    return;
+  }
+
+  adminRedeemList.textContent = "🎟️ 正在讀取兌換碼……";
+  adminRedeemListCount.textContent = "正在載入……";
+
+  const { data, error } =
+    await caibiSupabase.rpc("caibi_list_redeem_codes");
+
+  if (error) {
+    console.error("🎟️ 兌換碼列表讀取失敗：", error);
+    adminRedeemList.textContent = "❌ 兌換碼讀取失敗";
+    adminRedeemListCount.textContent = "";
+    return;
+  }
+
+  
+adminRedeemCodes = data || [];
+
+renderAdminRedeemCodes();
+}
+
+/* 🔍 篩選並顯示官方兌換碼 */
+function renderAdminRedeemCodes() {
+
+  const keyword =
+    (adminRedeemSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const codes = adminRedeemCodes.filter(item => {
+    const searchText =
+      `${item.code || ""} ${item.name || ""}`.toLowerCase();
+
+    return searchText.includes(keyword);
+  });
+
+  adminRedeemListCount.textContent = keyword
+    ? `找到 ${codes.length} 組／共 ${adminRedeemCodes.length} 組兌換碼`
+    : `共 ${adminRedeemCodes.length} 組兌換碼`;
+
+
+  adminRedeemList.replaceChildren();
+
+  if (codes.length === 0) {
+    adminRedeemList.textContent = "📭 目前沒有兌換碼";
+    return;
+  }
+
+  for (const item of codes) {
+
+    const card = document.createElement("article");
+    card.className = "admin-redeem-card";
+
+    const addLine = (label, value) => {
+      const line = document.createElement("div");
+      line.className = "admin-redeem-line";
+
+      const title = document.createElement("strong");
+      title.textContent = `${label}：`;
+
+      const content = document.createElement("span");
+      content.textContent = String(value ?? "—");
+
+      line.append(title, content);
+      card.appendChild(line);
+    };
+
+    
+    const reward =
+      item.reward_key === "diamonds"
+        ? `💎 鑽石 ×${item.reward_quantity}`
+        : item.reward_key === "gold_beans"
+          ? `🫘 金豆 ×${item.reward_quantity}`
+          : `${item.reward_key ?? "未知獎勵"} ×${item.reward_quantity ?? 0}`;
+
+    const formatDate = (value, emptyText) => {
+      if (!value) return emptyText;
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "日期資料異常";
+      }
+
+      return date.toLocaleString("zh-TW", {
+        timeZone: "Asia/Taipei",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    };
+
+    
+
+/* 🎟️ 兌換碼標題＋狀態標籤 */
+const codeHeader = document.createElement("div");
+codeHeader.className = "admin-redeem-code-header";
+
+const codeTitle = document.createElement("h3");
+codeTitle.className = "admin-redeem-code-title";
+codeTitle.textContent = `🎟️ ${item.code}`;
+
+const statusBadge = document.createElement("span");
+statusBadge.className = item.is_active
+  ? "admin-redeem-status is-active"
+  : "admin-redeem-status is-inactive";
+
+statusBadge.textContent = item.is_active
+  ? "🟢 啟用中"
+  : "🔴 已停用";
+
+codeHeader.append(codeTitle, statusBadge);
+card.appendChild(codeHeader);
+
+
+    
+addLine("📝 禮包名稱", item.name);
+addLine("🎁 獎勵", reward);
+
+/* 👥 兌換次數進度條 */
+const redeemedCount = Number(item.redeemed_count ?? 0);
+const maxRedemptions = item.max_redemptions == null
+  ? null
+  : Number(item.max_redemptions);
+
+const progressSection = document.createElement("div");
+progressSection.className = "admin-redeem-progress";
+
+const progressLabel = document.createElement("div");
+progressLabel.className = "admin-redeem-progress-label";
+
+if (maxRedemptions === null) {
+  progressLabel.textContent =
+    `👥 已兌換 ${redeemedCount} 次／不限量`;
+} else {
+  progressLabel.textContent =
+    `👥 兌換進度：${redeemedCount}／${maxRedemptions}`;
+
+  const progressTrack = document.createElement("div");
+  progressTrack.className = "admin-redeem-progress-track";
+
+  const progressFill = document.createElement("div");
+  progressFill.className = "admin-redeem-progress-fill";
+
+  const percentage = maxRedemptions > 0
+    ? Math.min(100, Math.max(0, redeemedCount / maxRedemptions * 100))
+    : 0;
+
+  progressFill.style.width = `${percentage}%`;
+
+  progressTrack.appendChild(progressFill);
+  progressSection.appendChild(progressTrack);
+
+  if (redeemedCount >= maxRedemptions) {
+    progressSection.classList.add("is-full");
+
+    const fullMessage = document.createElement("div");
+    fullMessage.className = "admin-redeem-progress-full";
+    fullMessage.textContent = "🎟️ 已達兌換上限";
+
+    progressSection.appendChild(fullMessage);
+  }
+}
+
+progressSection.prepend(progressLabel);
+card.appendChild(progressSection);
+
+    addLine("📅 開始時間", formatDate(item.starts_at, "立即生效"));
+    addLine("⏰ 到期時間", formatDate(item.expires_at, "永久有效"));
+    addLine("🗓️ 建立時間", formatDate(item.created_at, "—"));
+
+/* 🔴🟢 兌換碼啟用／停用按鈕 */
+const toggleButton = document.createElement("button");
+
+toggleButton.type = "button";
+toggleButton.className = "admin-redeem-toggle-button";
+
+toggleButton.textContent = item.is_active
+  ? "🔴 停用兌換碼"
+  : "🟢 重新啟用";
+
+toggleButton.addEventListener("click", async () => {
+
+  const nextActive = !item.is_active;
+
+  const confirmed = confirm(
+    `確定要${nextActive ? "重新啟用" : "停用"}兌換碼「${item.code}」嗎？`
+  );
+
+  if (!confirmed) return;
+
+  toggleButton.disabled = true;
+  toggleButton.textContent = "⏳ 處理中……";
+
+  const { error } = await caibiSupabase.rpc(
+    "caibi_set_redeem_code_active",
+    {
+      p_code_id: item.id,
+      p_is_active: nextActive
+    }
+  );
+
+  if (error) {
+    console.error("🎟️ 修改兌換碼狀態失敗：", error);
+    alert("❌ 修改失敗，請查看 Console。");
+    toggleButton.disabled = false;
+    toggleButton.textContent = item.is_active
+      ? "🔴 停用兌換碼"
+      : "🟢 重新啟用";
+    return;
+  }
+
+  await loadAdminRedeemCodes();
+
+});
+
+card.appendChild(toggleButton);
+
+adminRedeemList.appendChild(card);
+  }
+}
+
+/* =========================
+   🎟️ 官方管理－建立兌換碼
+========================= */
+
+const adminRedeemForm =
+  document.getElementById("adminRedeemForm");
+
+const adminRedeemSubmitButton =
+  document.getElementById("adminRedeemSubmitButton");
+
+const adminRedeemMessage =
+  document.getElementById("adminRedeemMessage");
+
+let adminRedeemCreating = false;
+
+adminRedeemForm?.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  // 防止重複建立
+  if (adminRedeemCreating) return;
+
+  const code =
+    document.getElementById("adminRedeemCode").value.trim().toUpperCase();
+
+  const name =
+    document.getElementById("adminRedeemName").value.trim();
+
+  const reward =
+    document.getElementById("adminRedeemReward").value;
+
+  const quantity =
+    Number(document.getElementById("adminRedeemQuantity").value);
+
+  const maxText =
+    document.getElementById("adminRedeemMax").value.trim();
+
+  const startText =
+    document.getElementById("adminRedeemStart").value;
+
+  const expiryText =
+    document.getElementById("adminRedeemExpiry").value;
+
+  adminRedeemMessage.textContent = "";
+
+  // 🎟️ 基本檢查
+  if (!code || !name) {
+    adminRedeemMessage.textContent =
+      "⚠️ 請填寫兌換碼及禮包名稱。";
+    return;
+  }
+
+  if (!Number.isSafeInteger(quantity) || quantity <= 0) {
+    adminRedeemMessage.textContent =
+      "⚠️ 獎勵數量必須是大於 0 的整數。";
+    return;
+  }
+
+  // 👥 全服兌換次數
+  let maxRedemptions = null;
+
+  if (maxText !== "") {
+    maxRedemptions = Number(maxText);
+
+    if (
+      !Number.isSafeInteger(maxRedemptions) ||
+      maxRedemptions <= 0
+    ) {
+      adminRedeemMessage.textContent =
+        "⚠️ 兌換上限必須是大於 0 的整數。";
+      return;
+    }
+  }
+
+  // ⏰ 日期轉換為 Supabase 可使用的格式
+  const parseDate = (value) => {
+    if (!value) return null;
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      throw new Error("日期格式不正確");
+    }
+
+    return date.toISOString();
+  };
+
+  let startsAt;
+  let expiresAt;
+
+  try {
+    startsAt = parseDate(startText);
+    expiresAt = parseDate(expiryText);
+  } catch (error) {
+    adminRedeemMessage.textContent =
+      "⚠️ 請檢查開始與到期時間。";
+    return;
+  }
+
+  if (expiresAt && new Date(expiresAt) <= new Date()) {
+    adminRedeemMessage.textContent =
+      "⚠️ 到期時間必須晚於現在。";
+    return;
+  }
+
+  if (
+    startsAt &&
+    expiresAt &&
+    new Date(expiresAt) <= new Date(startsAt)
+  ) {
+    adminRedeemMessage.textContent =
+      "⚠️ 到期時間必須晚於開始時間。";
+    return;
+  }
+
+  const rewardText =
+    reward === "diamonds"
+      ? `💎 鑽石 ×${quantity}`
+      : `🫘 金豆 ×${quantity}`;
+
+  // 📋 建立前再次確認
+  const confirmed = confirm(
+    `🎟️ 確定建立官方兌換碼？\n\n` +
+    `兌換碼：${code}\n` +
+    `禮包名稱：${name}\n` +
+    `獎勵：${rewardText}\n` +
+    `全服上限：${maxRedemptions ?? "不限"}\n` +
+    `開始時間：${startText || "立即生效"}\n` +
+    `到期時間：${expiryText || "永久有效"}`
+  );
+
+  if (!confirmed) return;
+
+  adminRedeemCreating = true;
+  adminRedeemSubmitButton.disabled = true;
+  adminRedeemSubmitButton.textContent = "🎟️ 建立中……";
+  adminRedeemMessage.textContent = "正在建立兌換碼……";
+
+  try {
+
+    const { data, error } =
+      await caibiSupabase.rpc("caibi_create_redeem_code", {
+        p_code: code,
+        p_name: name,
+        p_reward_key: reward,
+        p_quantity: quantity,
+        p_max_redemptions: maxRedemptions,
+        p_starts_at: startsAt,
+        p_expires_at: expiresAt
+      });
+
+    if (error) throw error;
+
+    console.log("🎟️ 官方兌換碼建立成功，ID：", data);
+
+    
+adminRedeemMessage.textContent =
+  `✅ 兌換碼 ${code} 建立成功！`;
+
+adminRedeemForm.reset();
+
+/* 🔄 建立成功後，自動更新兌換碼列表 */
+await loadAdminRedeemCodes();
+
+
+  } catch (error) {
+
+    console.error("🎟️ 官方兌換碼建立失敗：", error);
+
+    adminRedeemMessage.textContent =
+      error.message?.includes("已經存在")
+        ? "⚠️ 這組兌換碼已經存在，請換一組。"
+        : "❌ 建立失敗，請查看瀏覽器 Console。";
+
+  } finally {
+
+    adminRedeemCreating = false;
+    adminRedeemSubmitButton.disabled = false;
+    adminRedeemSubmitButton.textContent = "🎟️ 建立兌換碼";
+
+  }
+
+});
+
+/* =========================
+   📊 官方管理－兌換紀錄頁面
+========================= */
+
+const adminRedeemLogsButton =
+  document.getElementById("adminRedeemLogsButton");
+
+const adminRedeemLogsPage =
+  document.getElementById("adminRedeemLogsPage");
+
+const adminRedeemLogsBackButton =
+  document.getElementById("adminRedeemLogsBackButton");
+
+/* 📊 開啟兌換紀錄 */
+
+adminRedeemLogsButton?.addEventListener("click", async () => {
+
+  const { data: isAdmin, error } =
+    await caibiSupabase.rpc("is_caibi_admin");
+
+  if (error || isAdmin !== true) {
+    alert("⛔ 只有菜比官方管理員可以查看。");
+    return;
+  }
+
+  if (!adminRedeemLogsPage) {
+    console.error("找不到官方兌換紀錄頁面");
+    return;
+  }
+
+  adminPage.hidden = true;
+
+  gamePhone.classList.remove("admin-open");
+  gamePhone.classList.add("admin-redeem-logs-open");
+
+  adminRedeemLogsPage.hidden = false;
+  await loadAdminRedeemLogs();
+  
+});
+
+/* ← 返回官方管理中心 */
+
+adminRedeemLogsBackButton?.addEventListener("click", () => {
+
+  adminRedeemLogsPage.hidden = true;
+
+  gamePhone.classList.remove("admin-redeem-logs-open");
+  gamePhone.classList.add("admin-open");
+
+  adminPage.hidden = false;
+
+});
+
+
+/* =========================
+   📊 官方兌換紀錄－讀取與顯示
+========================= */
+
+const adminRedeemLogsSearch =
+  document.getElementById("adminRedeemLogsSearch");
+
+const adminRedeemLogsCount =
+  document.getElementById("adminRedeemLogsCount");
+
+const adminRedeemLogsList =
+  document.getElementById("adminRedeemLogsList");
+
+let adminRedeemLogs = [];
+
+async function loadAdminRedeemLogs() {
+
+  if (!adminRedeemLogsList || !adminRedeemLogsCount) return;
+
+  adminRedeemLogsList.textContent = "📊 正在讀取兌換紀錄……";
+  adminRedeemLogsCount.textContent = "正在載入……";
+
+  const { data, error } =
+    await caibiSupabase.rpc("caibi_list_redeem_logs");
+
+  if (error) {
+    console.error("📊 兌換紀錄讀取失敗：", error);
+    adminRedeemLogsList.textContent = "❌ 兌換紀錄讀取失敗";
+    adminRedeemLogsCount.textContent = "";
+    return;
+  }
+
+  const grouped = new Map();
+
+  for (const row of data || []) {
+
+    if (!grouped.has(row.history_id)) {
+      grouped.set(row.history_id, {
+        ...row,
+        rewards: []
+      });
+    }
+
+    if (row.reward_key) {
+      const reward =
+        row.reward_key === "diamonds"
+          ? `💎 鑽石 ×${row.quantity}`
+          : row.reward_key === "gold_beans"
+            ? `🫘 金豆 ×${row.quantity}`
+            : `${row.reward_key} ×${row.quantity}`;
+
+      grouped.get(row.history_id).rewards.push(reward);
+    }
+  }
+
+  adminRedeemLogs = [...grouped.values()];
+
+  renderAdminRedeemLogs();
+}
+
+function renderAdminRedeemLogs() {
+
+  if (!adminRedeemLogsList || !adminRedeemLogsCount) return;
+
+  const keyword =
+    (adminRedeemLogsSearch?.value || "")
+      .trim()
+      .toLowerCase();
+
+  const filtered = adminRedeemLogs.filter(log =>
+    [
+      log.display_name,
+      log.username,
+      log.code,
+      log.gift_name
+    ].join(" ").toLowerCase().includes(keyword)
+  );
+
+  adminRedeemLogsCount.textContent =
+    keyword
+      ? `找到 ${filtered.length} 筆／共 ${adminRedeemLogs.length} 筆兌換紀錄`
+      : `共 ${adminRedeemLogs.length} 筆兌換紀錄`;
+
+  adminRedeemLogsList.replaceChildren();
+
+  if (filtered.length === 0) {
+    adminRedeemLogsList.textContent =
+      keyword
+        ? "🔍 找不到符合的兌換紀錄"
+        : "📭 目前沒有兌換紀錄";
+    return;
+  }
+
+  for (const log of filtered) {
+
+    const card = document.createElement("article");
+    card.className = "admin-redeem-card";
+
+    const addLine = (label, value) => {
+      const line = document.createElement("div");
+      line.className = "admin-redeem-line";
+
+      const title = document.createElement("strong");
+      title.textContent = `${label}：`;
+
+      const content = document.createElement("span");
+      content.textContent = String(value ?? "—");
+
+      line.append(title, content);
+      card.appendChild(line);
+    };
+
+    const date = new Date(log.redeemed_at);
+
+    const formattedDate = Number.isNaN(date.getTime())
+      ? "日期資料異常"
+      : date.toLocaleString("zh-TW", {
+          timeZone: "Asia/Taipei",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        });
+
+    addLine(
+      "👤 玩家",
+      `${log.display_name || "未設定暱稱"}（${log.username || "未知帳號"}）`
+    );
+
+    addLine("🎟️ 兌換碼", log.code);
+    addLine("📝 禮包名稱", log.gift_name);
+    addLine("🎁 獲得獎勵", log.rewards.join("、") || "無獎勵資料");
+    addLine("📅 兌換時間", formattedDate);
+
+    adminRedeemLogsList.appendChild(card);
+  }
+}
+
+adminRedeemLogsSearch?.addEventListener(
+  "input",
+  renderAdminRedeemLogs
+);
+
+/* =========================
    🎰 前往全畫面抽獎
 ========================= */
 
@@ -2831,6 +4194,25 @@ const pressedKeys = new Set();
 ========================= */
 
 window.addEventListener("keydown", (event) => {
+
+  /* ⌨️ 正在輸入文字時，禁止人物移動 */
+  const target = event.target;
+
+  if (
+    target instanceof Element &&
+    target.closest(
+      'input, textarea, select, [contenteditable]:not([contenteditable="false"])'
+    )
+  ) {
+    pressedKeys.clear();
+    return;
+  }
+
+  /* 📱 菜比手機開啟時，禁止人物移動 */
+  if (gamePhonePanel.classList.contains("is-open")) {
+    pressedKeys.clear();
+    return;
+  }
 
   const key = event.key.toLowerCase();
 

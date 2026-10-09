@@ -741,9 +741,27 @@ playerBase.src =
   ) {
 
     const item =
-      equippedItem.clothing_items;
+  equippedItem.clothing_items;
 
-    applyClothingItem(item);
+applyClothingItem(item);
+
+/* 👗 記錄目前裝備的服裝 ID */
+const layerMap = {
+  socks: playerSocks,
+  shoes: playerShoes,
+  bottom: playerBottom,
+  top: playerTop,
+  dress: playerDress,
+  outerwear: playerOuterwear,
+  headwear: playerHeadwear
+};
+
+const equippedLayer = layerMap[equippedItem.slot];
+
+if (equippedLayer && equippedItem.clothing_item_id != null) {
+  equippedLayer.dataset.previewItemId =
+    String(equippedItem.clothing_item_id);
+}
   }
 
 
@@ -2067,6 +2085,379 @@ storageModal.addEventListener(
     }
   }
 );
+
+/* =========================
+   👗 衣櫃｜玩家服裝清單
+========================= */
+
+const wardrobeItems =
+  document.getElementById("wardrobeItems");
+
+const wardrobeCategories =
+  document.querySelectorAll(
+    ".wardrobe-categories button"
+  );
+
+let ownedClothingItems = [];
+let activeClothingCategory = "top";
+
+/* 顯示目前分類 */
+function renderWardrobeItems() {
+
+  if (!wardrobeItems) return;
+
+  wardrobeCategories.forEach(button => {
+    button.classList.toggle(
+      "is-active",
+      button.dataset.category === activeClothingCategory
+    );
+  });
+
+  wardrobeItems.innerHTML = "";
+
+  const filteredItems = ownedClothingItems.filter(
+    item => item.category === activeClothingCategory
+  );
+
+  if (filteredItems.length === 0) {
+    wardrobeItems.innerHTML = `
+      <div class="storage-empty">
+        這個分類目前沒有服裝 🥺
+      </div>
+    `;
+    return;
+  }
+
+  filteredItems.forEach(item => {
+
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "storage-furniture-card";
+    card.style.cursor = "pointer";
+
+    const image = document.createElement("img");
+    image.className = "storage-furniture-image";
+    image.src = getAvatarUrl(item.image_path);
+    image.alt = item.name;
+
+    const name = document.createElement("div");
+    name.className = "storage-furniture-name";
+    name.textContent = item.name;
+
+    
+    card.append(image, name);
+
+    /* 👗 點擊服裝立即試穿 */
+card.addEventListener("click", () => {
+
+  const preview = document.querySelector(
+    "#wardrobeCharacter"
+  );
+
+  if (!preview) return;
+
+  const layerIds = {
+    headwear: "playerHeadwear",
+    top: "playerTop",
+    bottom: "playerBottom",
+    dress: "playerDress",
+    shoes: "playerShoes"
+  };
+
+  const layerId = layerIds[item.category];
+  if (!layerId) return;
+
+  const layer = preview.querySelector(
+    `[data-layer-id="${layerId}"]`
+  );
+
+  if (!layer) return;
+
+  /* 👗 再點同一件 → 脫下 */
+const selectedItemId = String(item.id);
+
+if (layer.dataset.previewItemId === selectedItemId) {
+  layer.removeAttribute("src");
+  layer.style.display = "none";
+  delete layer.dataset.previewItemId;
+  return;
+}
+
+/* 👗 點不同件 → 換裝 */
+layer.src = getAvatarUrl(item.image_path);
+layer.style.display = "block";
+layer.dataset.previewItemId = selectedItemId;
+
+  /* 👗 穿洋裝時，隱藏上衣與下著 */
+  if (item.category === "dress") {
+
+    const top = preview.querySelector(
+      '[data-layer-id="playerTop"]'
+    );
+
+    const bottom = preview.querySelector(
+      '[data-layer-id="playerBottom"]'
+    );
+
+    if (top) top.style.display = "none";
+    if (bottom) bottom.style.display = "none";
+  }
+
+  /* 👕 穿上衣或下著時，隱藏洋裝 */
+  if (
+    item.category === "top" ||
+    item.category === "bottom"
+  ) {
+
+    const dress = preview.querySelector(
+      '[data-layer-id="playerDress"]'
+    );
+
+    if (dress) dress.style.display = "none";
+  }
+
+});
+
+    wardrobeItems.appendChild(card);
+
+  });
+}
+
+/* 讀取玩家持有的服裝 */
+async function loadWardrobeClothing() {
+
+  if (!wardrobeItems) return;
+
+  wardrobeItems.innerHTML = `
+    <div class="storage-empty">
+      服裝載入中... 👗
+    </div>
+  `;
+
+  const {
+    data: { session },
+    error: sessionError
+  } = await caibiSupabase.auth.getSession();
+
+  if (sessionError || !session) {
+    wardrobeItems.textContent = "請先登入 🥺";
+    return;
+  }
+
+  const {
+    data,
+    error
+  } = await caibiSupabase
+    .from("player_clothing")
+    .select(`
+      quantity,
+      clothing_items (
+        id,
+        name,
+        category,
+        image_path
+      )
+    `)
+    .eq("user_id", session.user.id)
+    .gt("quantity", 0);
+
+  if (error) {
+    console.error("讀取玩家服裝失敗：", error);
+    wardrobeItems.textContent = "服裝載入失敗 🥲";
+    return;
+  }
+
+  ownedClothingItems = (data || [])
+    .map(row => row.clothing_items)
+    .filter(item => item && item.image_path);
+
+  renderWardrobeItems();
+
+}
+
+/* 五種服裝分類切換 */
+wardrobeCategories.forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    activeClothingCategory =
+      button.dataset.category;
+
+    renderWardrobeItems();
+
+  });
+
+});
+
+/* =========================
+   👗 衣櫃畫面切換
+========================= */
+
+const wardrobeButton =
+  document.getElementById("wardrobeButton");
+
+const wardrobePage =
+  document.getElementById("wardrobePage");
+
+const wardrobeBackButton =
+  document.getElementById("wardrobeBackButton");
+
+/* 👗 開啟衣櫃 */
+wardrobeButton?.addEventListener("click", () => {
+
+  if (!wardrobePage) return;
+
+  pressedKeys.clear();
+
+  // 停止角色移動
+  targetX = playerX;
+  targetY = playerY;
+
+  // 隱藏房間
+  privateRoom.hidden = true;
+
+  // 顯示衣櫃
+  wardrobePage.hidden = false;
+
+  // 👤 將目前人物穿搭複製到換裝舞台
+const wardrobeCharacter =
+  document.getElementById("wardrobeCharacter");
+
+if (wardrobeCharacter) {
+
+  wardrobeCharacter.innerHTML = "";
+
+  const wardrobePreview =
+    playerCharacter.cloneNode(true);
+
+  wardrobePreview.removeAttribute("id");
+
+  wardrobePreview.querySelectorAll("[id]")
+  .forEach(element => {
+    element.dataset.layerId = element.id;
+    element.removeAttribute("id");
+  });
+
+  wardrobePreview.classList.remove(
+    "is-sleeping",
+    "is-bathing"
+  );
+
+  wardrobePreview.style.cssText = `
+    position: relative;
+    display: block;
+    left: auto;
+    top: auto;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    pointer-events: none;
+  `;
+
+  wardrobeCharacter.appendChild(wardrobePreview);
+
+}
+
+// 👗 載入玩家擁有的服裝
+loadWardrobeClothing();
+
+  console.log("👗 已進入衣櫃");
+
+});
+
+/* =========================
+   👗 ✓ 確認穿搭｜儲存至 Supabase
+========================= */
+
+const wardrobeConfirmButton =
+  document.getElementById("wardrobeConfirmButton");
+
+wardrobeConfirmButton?.addEventListener("click", async () => {
+
+  if (wardrobeConfirmButton.disabled) return;
+
+  const preview =
+    document.querySelector("#wardrobeCharacter");
+
+  if (!preview) return;
+
+  const layerMap = {
+    headwear: "playerHeadwear",
+    top: "playerTop",
+    bottom: "playerBottom",
+    dress: "playerDress",
+    shoes: "playerShoes"
+  };
+
+  const outfit = {};
+
+  for (const [slot, layerId] of Object.entries(layerMap)) {
+
+    const layer = preview.querySelector(
+      `[data-layer-id="${layerId}"]`
+    );
+
+    const isWearing =
+      layer &&
+      layer.style.display !== "none" &&
+      layer.getAttribute("src");
+
+    outfit[slot] = isWearing
+      ? (layer.dataset.previewItemId || null)
+      : null;
+  }
+
+  /* 👗 再次確保洋裝與上下著互斥 */
+  if (outfit.dress !== null) {
+    outfit.top = null;
+    outfit.bottom = null;
+  }
+
+  wardrobeConfirmButton.disabled = true;
+  wardrobeConfirmButton.textContent = "儲存中...";
+
+  try {
+
+    const { error } = await caibiSupabase.rpc(
+      "save_player_outfit",
+      { p_outfit: outfit }
+    );
+
+    if (error) throw error;
+
+    /* 👗 重新讀取資料庫中的正式穿搭 */
+    await checkRoomAccess();
+
+    wardrobePage.hidden = true;
+    privateRoom.hidden = false;
+
+    alert("穿搭儲存成功！👗✨");
+
+  } catch (error) {
+
+    console.error("儲存穿搭失敗：", error);
+    alert("穿搭儲存失敗 🥲\n" + error.message);
+
+  } finally {
+
+    wardrobeConfirmButton.disabled = false;
+    wardrobeConfirmButton.textContent = "✓ 確認穿搭";
+
+  }
+
+});
+
+/* ← 返回房間 */
+wardrobeBackButton?.addEventListener("click", () => {
+
+  if (!wardrobePage) return;
+
+  wardrobePage.hidden = true;
+  privateRoom.hidden = false;
+
+  console.log("🏠 已返回私人房間");
+
+});
 
 /* =========================
    🚪 返回 1F 客廳

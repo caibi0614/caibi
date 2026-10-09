@@ -180,6 +180,65 @@
 
   </main>
 
+  <!-- =========================
+     👗 玩家衣櫃畫面
+========================= -->
+<section
+  id="wardrobePage"
+  class="wardrobe-page"
+  hidden
+>
+  <header class="wardrobe-header">
+    <button
+      id="wardrobeBackButton"
+      type="button"
+      class="wardrobe-back-button"
+    >
+      ← 返回
+    </button>
+
+    <strong>👗 我的衣櫃</strong>
+
+    <!-- 👗 確認目前試穿的服裝 -->
+<button
+  id="wardrobeConfirmButton"
+  class="wardrobe-confirm-button"
+  type="button"
+>
+  ✓ 確認穿搭
+</button>
+
+  </header>
+
+  <!-- 👤 上半部：換裝舞台 -->
+  <div class="wardrobe-stage">
+    <div
+      id="wardrobeCharacter"
+      class="wardrobe-character"
+    ></div>
+  </div>
+
+  <!-- 👗 下半部：服裝選擇 -->
+  <div class="wardrobe-panel">
+
+    <nav class="wardrobe-categories">
+      <button type="button" data-category="headwear">🎀 頭飾</button>
+      <button type="button" data-category="top">👚 上衣</button>
+      <button type="button" data-category="bottom">👖 下著</button>
+      <button type="button" data-category="dress">👗 洋裝</button>
+      <button type="button" data-category="shoes">👟 鞋子</button>
+    </nav>
+
+    <div
+      id="wardrobeItems"
+      class="wardrobe-items"
+    >
+      <!-- 之後由 JS 顯示玩家擁有的服裝 -->
+    </div>
+
+  </div>
+</section>
+
 <!-- =========================
      📦 家具儲物箱
 ========================= -->

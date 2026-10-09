@@ -2579,3 +2579,1581 @@ body {
   }
 
 }
+
+/* ==================================================
+   📮 菜比手機－官方管理中心
+================================================== */
+
+/* 開啟官方管理時，隱藏手機首頁 */
+.game-phone.admin-open .game-phone-header,
+.game-phone.admin-open .game-phone-grid {
+  display: none;
+}
+
+/* 官方管理頁 */
+.admin-page {
+  width: 100%;
+}
+
+/* 官方管理面板 */
+.game-phone.admin-open {
+  width: min(480px, 90vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+/* 📮 標題 */
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.admin-header strong {
+  color: #55483b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* 📋 功能選單 */
+.admin-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* 管理功能按鈕 */
+.admin-menu button {
+  min-width: 0;
+  min-height: 115px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  padding: 14px 10px;
+
+  border: 1px solid #e1d2bd;
+  border-radius: 18px;
+
+  background: #fff;
+  color: #51483e;
+
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.admin-menu button:hover {
+  background: #f8efe2;
+  transform: translateY(-2px);
+}
+
+.admin-menu button span {
+  font-size: 30px;
+}
+
+.admin-menu button strong {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.admin-menu button small {
+  color: #8b7a67;
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* 📱 手機橫向 */
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.admin-open {
+    width: min(460px, 88vw);
+    max-height: 88dvh;
+    padding: 12px 16px;
+  }
+
+  .admin-header {
+    margin-bottom: 10px;
+  }
+
+  .admin-header strong {
+    font-size: 14px;
+  }
+
+  .admin-menu {
+    gap: 8px;
+  }
+
+  .admin-menu button {
+    min-height: 76px;
+    padding: 8px 6px;
+    gap: 3px;
+    border-radius: 13px;
+  }
+
+  .admin-menu button span {
+    font-size: 21px;
+  }
+
+  .admin-menu button strong {
+    font-size: 11px;
+  }
+
+  .admin-menu button small {
+    font-size: 9px;
+  }
+}
+
+/* ==================================================
+   💌 菜比手機－官方寄信表單
+================================================== */
+
+/* 寄信頁面開啟時，隱藏手機首頁 */
+.game-phone.admin-mail-open .game-phone-header,
+.game-phone.admin-mail-open .game-phone-grid {
+  display: none;
+}
+
+/* 寄信專用面板 */
+.game-phone.admin-mail-open {
+  width: min(600px, 92vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+
+  padding: 22px 24px;
+
+  background: linear-gradient(180deg, #fffaf1, #fff7ec);
+  border: 2px solid #d9c09e;
+  border-radius: 26px;
+}
+
+/* 寄信頁面 */
+.admin-mail-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 頁面標題 */
+.admin-mail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.admin-mail-header strong {
+  color: #55483b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* 表單排列 */
+.admin-mail-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+
+  width: 100%;
+}
+
+/* 欄位名稱 */
+.admin-mail-form label {
+  margin-top: 7px;
+
+  color: #665647;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 輸入框、選單、文字區 */
+.admin-mail-form input,
+.admin-mail-form select,
+.admin-mail-form textarea {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 11px 13px;
+
+  border: 1px solid #decbb4;
+  border-radius: 12px;
+
+  outline: none;
+
+  background: #fffdf9;
+  color: #51483e;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* 點選輸入框 */
+.admin-mail-form input:focus,
+.admin-mail-form select:focus,
+.admin-mail-form textarea:focus {
+  border-color: #c9a779;
+
+  box-shadow:
+    0 0 0 3px rgba(201, 167, 121, 0.14);
+}
+
+/* 提示文字 */
+.admin-mail-form input::placeholder,
+.admin-mail-form textarea::placeholder {
+  color: #b1a18f;
+}
+
+/* 信件內容 */
+.admin-mail-form textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* 寄送按鈕 */
+#adminMailSubmitButton {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 13px 16px;
+
+  border: 1px solid #cfa76e;
+  border-radius: 13px;
+
+  background: linear-gradient(
+    180deg,
+    #efd19a,
+    #e4bd7c
+  );
+
+  color: #5e472a;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 10px rgba(132, 91, 40, 0.13);
+}
+
+#adminMailSubmitButton:hover:not(:disabled) {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+#adminMailSubmitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 寄送結果提示 */
+#adminMailMessage {
+  min-height: 18px;
+  margin: 4px 0 0;
+
+  color: #846c50;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* ==================================================
+   📱 手機橫向／小螢幕
+================================================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.admin-mail-open {
+    width: min(560px, 94vw);
+    max-height: 88dvh;
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+
+  .admin-mail-header {
+    margin-bottom: 10px;
+  }
+
+  .admin-mail-header strong {
+    font-size: 14px;
+  }
+
+  .admin-mail-form {
+    gap: 5px;
+  }
+
+  .admin-mail-form label {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .admin-mail-form input,
+  .admin-mail-form select,
+  .admin-mail-form textarea {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: 11px;
+  }
+
+  .admin-mail-form textarea {
+    min-height: 70px;
+  }
+
+  #adminMailSubmitButton {
+    margin-top: 7px;
+    padding: 9px 12px;
+    font-size: 11px;
+  }
+
+  #adminMailMessage {
+    font-size: 10px;
+  }
+}
+
+/* 小尺寸桌機／平板 */
+@media (max-width: 600px) {
+
+  .game-phone.admin-mail-open {
+    width: 94vw;
+    padding: 14px;
+  }
+}
+
+/* ==================================================
+   👤 官方寄信－收件玩家下拉選單
+================================================== */
+
+.admin-mail-player-dropdown {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+/* 下拉選單開關 */
+#adminMailPlayerToggle {
+  width: 100%;
+  min-height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 11px 13px;
+
+  border: 1px solid #decbb4;
+  border-radius: 12px;
+
+  background: #fffdf9;
+  color: #51483e;
+
+  font-family: inherit;
+  font-size: 13px;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+#adminMailPlayerToggle:hover {
+  border-color: #c9a779;
+  background: #fff9ef;
+}
+
+/* 下拉內容 */
+#adminMailPlayerDropdownContent {
+  width: 100%;
+
+  margin-top: 6px;
+  padding: 10px;
+
+  border: 1px solid #decbb4;
+  border-radius: 12px;
+
+  background: #fffdf9;
+
+  box-shadow: 0 6px 18px rgba(79, 59, 38, 0.1);
+}
+
+/* 關閉時確實隱藏 */
+#adminMailPlayerDropdownContent[hidden] {
+  display: none !important;
+}
+
+/* 搜尋框 */
+#adminMailPlayerSearch {
+  margin-bottom: 8px;
+}
+
+/* 玩家列表：直向排列＋可捲動 */
+#adminMailPlayerList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  max-height: 180px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* 玩家選項 */
+#adminMailPlayerList button {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid #e8d9c5;
+  border-radius: 10px;
+
+  background: #fffaf3;
+  color: #5d5145;
+
+  font-family: inherit;
+  font-size: 12px;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+#adminMailPlayerList button:hover {
+  background: #f1e5d4;
+  border-color: #cfb897;
+}
+
+/* 📱 手機橫向 */
+@media (max-width: 900px) and (orientation: landscape) {
+
+  #adminMailPlayerToggle {
+    min-height: 32px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  #adminMailPlayerDropdownContent {
+    padding: 7px;
+  }
+
+  #adminMailPlayerList {
+    max-height: 110px;
+    gap: 4px;
+  }
+
+  #adminMailPlayerList button {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+}
+
+/* ==================================================
+   📋 菜比手機－官方寄信紀錄
+================================================== */
+
+/* 開啟紀錄時隱藏手機首頁 */
+.game-phone.admin-mail-logs-open .game-phone-header,
+.game-phone.admin-mail-logs-open .game-phone-grid {
+  display: none;
+}
+
+/* 寄信紀錄專用面板 */
+.game-phone.admin-mail-logs-open {
+  width: min(680px, 92vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+
+  padding: 22px 24px;
+
+  background: linear-gradient(180deg, #fffaf1, #fff7ec);
+  border: 2px solid #d9c09e;
+  border-radius: 26px;
+}
+
+/* 頁面 */
+.admin-mail-logs-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 頂部標題 */
+.admin-mail-logs-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.admin-mail-logs-header strong {
+  color: #55483b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* 搜尋區 */
+.admin-mail-logs-search {
+  margin-bottom: 12px;
+}
+
+#adminMailLogsSearch {
+  width: 100%;
+  min-width: 0;
+
+  padding: 11px 13px;
+
+  border: 1px solid #decbb4;
+  border-radius: 12px;
+  outline: none;
+
+  background: #fffdf9;
+  color: #51483e;
+
+  font-family: inherit;
+  font-size: 13px;
+}
+
+#adminMailLogsSearch:focus {
+  border-color: #c9a779;
+  box-shadow: 0 0 0 3px rgba(201, 167, 121, 0.14);
+}
+
+/* 紀錄數量 */
+.admin-mail-logs-count {
+  margin: 0 0 12px;
+
+  color: #8b7a67;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 紀錄列表 */
+.admin-mail-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  max-height: 55vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 2px;
+}
+
+/* 單筆寄信紀錄 */
+.admin-mail-log-item {
+  padding: 15px 16px;
+
+  background: #fffdf9;
+  border: 1px solid #e1d2bd;
+  border-radius: 15px;
+
+  box-shadow: 0 3px 10px rgba(100, 76, 49, 0.05);
+}
+
+.admin-mail-log-item strong {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #55483b;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.admin-mail-log-item p {
+  margin: 5px 0;
+
+  color: #786858;
+  font-size: 12px;
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+}
+
+/* 空紀錄／讀取提示 */
+.admin-mail-logs-list > p {
+  padding: 28px 12px;
+
+  background: #fffdf9;
+  border: 1px solid #e1d2bd;
+  border-radius: 14px;
+
+  color: #9b8b79;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ==================================================
+   📱 官方寄信紀錄－手機橫向
+================================================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.admin-mail-logs-open {
+    width: min(650px, 94vw);
+    max-height: 88dvh;
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+
+  .admin-mail-logs-header {
+    margin-bottom: 9px;
+  }
+
+  .admin-mail-logs-header strong {
+    font-size: 14px;
+  }
+
+  #adminMailLogsSearch {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .admin-mail-logs-count {
+    margin-bottom: 7px;
+    font-size: 10px;
+  }
+
+  .admin-mail-logs-list {
+    gap: 7px;
+    max-height: 48vh;
+  }
+
+  .admin-mail-log-item {
+    padding: 9px 11px;
+    border-radius: 11px;
+  }
+
+  .admin-mail-log-item strong {
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+
+  .admin-mail-log-item p {
+    margin: 3px 0;
+    font-size: 10px;
+  }
+}
+
+
+/* ==================================================
+   📋 官方寄信紀錄－卡片美化
+================================================== */
+
+/* 每封信獨立成卡片 */
+.admin-mail-logs-list .admin-mail-log-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 18px 20px;
+
+  background: linear-gradient(
+    145deg,
+    #fffefa,
+    #fff7eb
+  );
+
+  border: 1px solid #e2ccb0;
+  border-radius: 17px;
+
+  box-shadow: 0 5px 15px rgba(100, 76, 49, 0.08);
+}
+
+/* 每一行資訊 */
+.admin-mail-log-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px;
+
+  color: #665647;
+  font-size: 12px;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+/* 欄位名稱 */
+.admin-mail-log-line strong {
+  flex-shrink: 0;
+
+  color: #8b6d4d;
+  font-weight: 900;
+}
+
+/* 欄位內容 */
+.admin-mail-log-line span {
+  min-width: 0;
+  white-space: pre-wrap;
+}
+
+/* 信件標題 */
+.admin-mail-log-line:first-child {
+  margin-bottom: 5px;
+  padding-bottom: 11px;
+
+  border-bottom: 1px dashed #dfcbb2;
+
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.admin-mail-log-line:first-child strong,
+.admin-mail-log-line:first-child span {
+  color: #55402d;
+}
+
+/* 寄送原因 */
+.admin-mail-log-line:nth-child(5) {
+  padding: 10px 12px;
+
+  background: #f5ede1;
+  border-radius: 10px;
+}
+
+/* 信件正文 */
+.admin-mail-log-line:nth-child(6) {
+  padding: 12px;
+
+  background: #fff;
+  border: 1px solid #eee0cd;
+  border-radius: 11px;
+}
+
+/* 附件獎勵 */
+.admin-mail-log-line:nth-child(7) {
+  padding: 10px 12px;
+
+  background: #fff2d9;
+  border: 1px solid #ead2a8;
+  border-radius: 11px;
+
+  color: #86622f;
+  font-weight: 800;
+}
+
+/* 寄送時間、有效期限 */
+.admin-mail-log-line:nth-child(8),
+.admin-mail-log-line:nth-child(9) {
+  color: #9a8873;
+  font-size: 11px;
+}
+
+/* 📱 手機橫向 */
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .admin-mail-logs-list .admin-mail-log-card {
+    gap: 5px;
+    padding: 11px 13px;
+    border-radius: 12px;
+  }
+
+  .admin-mail-log-line {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .admin-mail-log-line:first-child {
+    font-size: 13px;
+    padding-bottom: 7px;
+  }
+
+  .admin-mail-log-line:nth-child(5),
+  .admin-mail-log-line:nth-child(6),
+  .admin-mail-log-line:nth-child(7) {
+    padding: 7px 9px;
+  }
+
+  .admin-mail-log-line:nth-child(8),
+  .admin-mail-log-line:nth-child(9) {
+    font-size: 9px;
+  }
+}
+
+
+/* ==================================================
+   🎟️ 菜比手機－官方兌換碼管理
+================================================== */
+
+/* 開啟管理頁時隱藏手機首頁 */
+.game-phone.admin-redeem-open .game-phone-header,
+.game-phone.admin-redeem-open .game-phone-grid {
+  display: none;
+}
+
+/* 🎟️ 管理專用面板 */
+.game-phone.admin-redeem-open {
+  width: min(600px, 92vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 22px 24px;
+
+  background: linear-gradient(180deg, #fffaf1, #fff7ec);
+  border: 2px solid #d9c09e;
+  border-radius: 26px;
+}
+
+/* 頁面 */
+.admin-redeem-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 標題 */
+.admin-redeem-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.admin-redeem-header strong {
+  color: #55483b;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* 表單 */
+.admin-redeem-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+
+  width: 100%;
+}
+
+/* 欄位名稱 */
+.admin-redeem-form label {
+  margin-top: 7px;
+
+  color: #665647;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 輸入框及下拉選單 */
+.admin-redeem-form input,
+.admin-redeem-form select {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 11px 13px;
+
+  border: 1px solid #decbb4;
+  border-radius: 12px;
+  outline: none;
+
+  background: #fffdf9;
+  color: #51483e;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* 輸入時高亮 */
+.admin-redeem-form input:focus,
+.admin-redeem-form select:focus {
+  border-color: #c9a779;
+  box-shadow: 0 0 0 3px rgba(201, 167, 121, 0.14);
+}
+
+.admin-redeem-form input::placeholder {
+  color: #b1a18f;
+}
+
+/* 建立兌換碼按鈕 */
+#adminRedeemSubmitButton {
+  width: 100%;
+
+  margin-top: 12px;
+  padding: 13px 16px;
+
+  border: 1px solid #cfa76e;
+  border-radius: 13px;
+
+  background: linear-gradient(
+    180deg,
+    #efd19a,
+    #e4bd7c
+  );
+
+  color: #5e472a;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(132, 91, 40, 0.13);
+}
+
+#adminRedeemSubmitButton:hover:not(:disabled) {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+#adminRedeemSubmitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 建立結果 */
+#adminRedeemMessage {
+  min-height: 18px;
+  margin: 4px 0 0;
+
+  color: #846c50;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* ==================================================
+   📱 官方兌換碼管理－手機橫向
+================================================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.admin-redeem-open {
+    width: min(560px, 94vw);
+    max-height: 88dvh;
+
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+
+  .admin-redeem-header {
+    margin-bottom: 10px;
+  }
+
+  .admin-redeem-header strong {
+    font-size: 14px;
+  }
+
+  .admin-redeem-form {
+    gap: 5px;
+  }
+
+  .admin-redeem-form label {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .admin-redeem-form input,
+  .admin-redeem-form select {
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: 11px;
+  }
+
+  #adminRedeemSubmitButton {
+    margin-top: 7px;
+    padding: 9px 12px;
+    font-size: 11px;
+  }
+
+  #adminRedeemMessage {
+    font-size: 10px;
+  }
+}
+
+/* 小尺寸螢幕 */
+@media (max-width: 600px) {
+
+  .game-phone.admin-redeem-open {
+    width: 94vw;
+    padding: 14px;
+  }
+}
+
+
+/* 🎟️ 官方兌換碼列表 */
+
+.admin-redeem-card {
+  margin-bottom: 14px;
+  padding: 18px 20px;
+  background: linear-gradient(145deg, #fffefa, #fff5e6);
+  border: 1px solid #e2ccb0;
+  border-radius: 18px;
+  box-shadow: 0 5px 15px rgba(100, 76, 49, 0.08);
+  color: #665647;
+  overflow-wrap: anywhere;
+}
+
+.admin-redeem-line {
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-redeem-line strong {
+  color: #795b43;
+}
+
+.admin-redeem-toggle-button {
+  margin-top: 12px;
+  padding: 9px 15px;
+  border: 1px solid #d8bda0;
+  border-radius: 11px;
+  background: #f4e8d7;
+  color: #765947;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-redeem-toggle-button:hover {
+  background: #ead8bf;
+}
+
+.admin-redeem-toggle-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* 📱 手機及手機橫向 */
+@media (max-width: 900px) {
+  .admin-redeem-card {
+    padding: 12px 14px;
+    border-radius: 13px;
+  }
+
+  .admin-redeem-line {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+}
+
+
+
+/* =========================
+   🎟️ 兌換碼標題＋狀態
+========================= */
+
+/* 標題列：左邊兌換碼，右邊狀態 */
+.admin-redeem-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+
+  border-bottom: 1px dashed #dfc8aa;
+}
+
+/* 兌換碼名稱 */
+.admin-redeem-code-title {
+  min-width: 0;
+  margin: 0;
+
+  color: #79563d;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+
+  overflow-wrap: anywhere;
+}
+
+/* 狀態標籤 */
+.admin-redeem-status {
+  flex-shrink: 0;
+
+  padding: 6px 11px;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* 🟢 啟用中 */
+.admin-redeem-status.is-active {
+  background: #e6f2e2;
+  border: 1px solid #b9d5b0;
+  color: #497448;
+}
+
+/* 🔴 已停用 */
+.admin-redeem-status.is-inactive {
+  background: #f9e7e4;
+  border: 1px solid #e7c0b9;
+  color: #a35b51;
+}
+
+/* 📱 手機橫向及小螢幕 */
+@media (max-width: 900px) {
+  .admin-redeem-code-header {
+    gap: 6px 8px;
+    margin-bottom: 10px;
+    padding-bottom: 9px;
+  }
+
+  .admin-redeem-code-title {
+    font-size: 17px;
+  }
+
+  .admin-redeem-status {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+
+/* =========================
+   🎟️ 兌換次數進度條
+========================= */
+
+.admin-redeem-progress {
+  margin: 14px 0;
+  padding: 12px 14px;
+  background: #fffaf2;
+  border: 1px solid #eadac4;
+  border-radius: 13px;
+}
+
+.admin-redeem-progress-label {
+  margin-bottom: 8px;
+  color: #765b43;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-redeem-progress-track {
+  width: 100%;
+  height: 10px;
+  overflow: hidden;
+  background: #eee2d1;
+  border-radius: 999px;
+}
+
+.admin-redeem-progress-fill {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #d9b67e, #e9cc95);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+/* 已達上限 */
+.admin-redeem-progress.is-full .admin-redeem-progress-fill {
+  background: linear-gradient(90deg, #c99a83, #dfb1a0);
+}
+
+.admin-redeem-progress-full {
+  margin-top: 8px;
+  color: #a46c58;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+/* 📱 手機及手機橫向 */
+@media (max-width: 900px) {
+  .admin-redeem-progress {
+    margin: 10px 0;
+    padding: 9px 11px;
+  }
+
+  .admin-redeem-progress-label {
+    font-size: 10px;
+  }
+
+  .admin-redeem-progress-track {
+    height: 8px;
+  }
+
+  .admin-redeem-progress-full {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================
+   🔍 官方兌換碼搜尋框
+========================= */
+
+.admin-redeem-search {
+  width: 100%;
+  margin: 14px 0 10px;
+}
+
+#adminRedeemSearch {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+
+  padding: 11px 15px;
+
+  background: #fffdf9;
+  border: 1px solid #decbb4;
+  border-radius: 13px;
+  outline: none;
+
+  color: #665647;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+/* 提示文字 */
+#adminRedeemSearch::placeholder {
+  color: #ac9984;
+  font-weight: 500;
+}
+
+/* 點擊搜尋框 */
+#adminRedeemSearch:focus {
+  background: #ffffff;
+  border-color: #c9a779;
+  box-shadow: 0 0 0 3px rgba(201, 167, 121, 0.15);
+}
+
+/* 滑鼠移入 */
+#adminRedeemSearch:hover:not(:focus) {
+  border-color: #cdb18e;
+}
+
+/* 📱 手機及手機橫向 */
+@media (max-width: 900px) {
+  .admin-redeem-search {
+    margin: 10px 0 8px;
+  }
+
+  #adminRedeemSearch {
+    height: 38px;
+    padding: 8px 11px;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+}
+
+
+/* ==================================================
+   📊 菜比之家｜官方兌換紀錄
+================================================== */
+
+/* 開啟紀錄時隱藏手機首頁 */
+.game-phone.admin-redeem-logs-open .game-phone-header,
+.game-phone.admin-redeem-logs-open .game-phone-grid {
+  display: none;
+}
+
+/* 📱 兌換紀錄專用面板 */
+.game-phone.admin-redeem-logs-open {
+  width: min(680px, 92vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 22px 24px;
+
+  background: linear-gradient(180deg, #fffaf1, #fff7ec);
+  border: 2px solid #d9c09e;
+  border-radius: 26px;
+
+  box-shadow: 0 22px 60px rgba(79, 59, 38, 0.25);
+}
+
+/* 頁面本體 */
+.admin-redeem-logs-page {
+  width: 100%;
+  min-width: 0;
+}
+
+/* 📊 頁面標題 */
+.admin-redeem-logs-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+
+  border-bottom: 1px dashed #decbb4;
+}
+
+.admin-redeem-logs-header strong {
+  color: #55483b;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+/* 返回按鈕 */
+.admin-redeem-logs-header .phone-back-button {
+  padding: 8px 13px;
+
+  background: #f1e5d4;
+  border: 1px solid #dfccb2;
+  border-radius: 12px;
+
+  color: #6d5b48;
+  font-weight: 800;
+}
+
+.admin-redeem-logs-header .phone-back-button:hover {
+  background: #e8d7c0;
+}
+
+/* 🔍 搜尋欄 */
+.admin-redeem-logs-search {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+#adminRedeemLogsSearch {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+
+  padding: 11px 15px;
+
+  background: #fffdf9;
+  border: 1px solid #decbb4;
+  border-radius: 13px;
+  outline: none;
+
+  color: #665647;
+  font-family: inherit;
+  font-size: 13px;
+
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+#adminRedeemLogsSearch::placeholder {
+  color: #ac9984;
+}
+
+#adminRedeemLogsSearch:focus {
+  border-color: #c9a779;
+  box-shadow: 0 0 0 3px rgba(201, 167, 121, 0.15);
+}
+
+/* 📋 紀錄數量 */
+.admin-redeem-logs-count {
+  margin: 0 0 14px;
+
+  color: #8b7a67;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 📜 紀錄列表 */
+.admin-redeem-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  max-height: 55vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: #d4bea2 transparent;
+}
+
+/* 🎟️ 單筆兌換卡片 */
+.admin-redeem-logs-list .admin-redeem-card {
+  flex-shrink: 0;
+
+  margin: 0;
+  padding: 18px 20px;
+
+  background: linear-gradient(145deg, #fffefa, #fff5e6);
+  border: 1px solid #e2ccb0;
+  border-radius: 18px;
+
+  box-shadow: 0 5px 15px rgba(100, 76, 49, 0.08);
+}
+
+/* 每一行資訊 */
+.admin-redeem-logs-list .admin-redeem-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px;
+
+  margin-bottom: 8px;
+
+  color: #665647;
+  font-size: 13px;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+.admin-redeem-logs-list .admin-redeem-line:last-child {
+  margin-bottom: 0;
+}
+
+/* 欄位名稱 */
+.admin-redeem-logs-list .admin-redeem-line strong {
+  flex-shrink: 0;
+  color: #8b6d4d;
+  font-weight: 900;
+}
+
+/* 欄位內容 */
+.admin-redeem-logs-list .admin-redeem-line span {
+  min-width: 0;
+  white-space: pre-wrap;
+}
+
+/* 👤 玩家資訊：卡片標題 */
+.admin-redeem-logs-list .admin-redeem-line:first-child {
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+
+  border-bottom: 1px dashed #dfc8aa;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.admin-redeem-logs-list .admin-redeem-line:first-child strong,
+.admin-redeem-logs-list .admin-redeem-line:first-child span {
+  color: #55402d;
+}
+
+/* 🎁 獲得獎勵：金色區塊 */
+.admin-redeem-logs-list .admin-redeem-line:nth-child(4) {
+  margin: 12px 0;
+  padding: 12px 14px;
+
+  background: #fff2d9;
+  border: 1px solid #ead2a8;
+  border-radius: 12px;
+
+  color: #86622f;
+  font-weight: 800;
+}
+
+/* 📅 兌換時間 */
+.admin-redeem-logs-list .admin-redeem-line:last-child {
+  padding-top: 8px;
+
+  color: #9a8873;
+  font-size: 11px;
+}
+
+/* 📭 空紀錄 */
+.admin-redeem-logs-list > p {
+  margin: 0;
+  padding: 30px 14px;
+
+  background: #fffdf9;
+  border: 1px solid #e1d2bd;
+  border-radius: 15px;
+
+  color: #9b8b79;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ==================================================
+   📱 手機橫向版
+================================================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .game-phone.admin-redeem-logs-open {
+    width: min(650px, 94vw);
+    max-height: 88dvh;
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+
+  .admin-redeem-logs-header {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+  }
+
+  .admin-redeem-logs-header strong {
+    font-size: 14px;
+  }
+
+  .admin-redeem-logs-header .phone-back-button {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+
+  .admin-redeem-logs-search {
+    margin-bottom: 7px;
+  }
+
+  #adminRedeemLogsSearch {
+    height: 36px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .admin-redeem-logs-count {
+    margin-bottom: 8px;
+    font-size: 10px;
+  }
+
+  .admin-redeem-logs-list {
+    max-height: 48vh;
+    gap: 8px;
+  }
+
+  .admin-redeem-logs-list .admin-redeem-card {
+    padding: 11px 13px;
+    border-radius: 12px;
+  }
+
+  .admin-redeem-logs-list .admin-redeem-line {
+    margin-bottom: 5px;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .admin-redeem-logs-list .admin-redeem-line:first-child {
+    margin-bottom: 8px;
+    padding-bottom: 7px;
+    font-size: 12px;
+  }
+
+  .admin-redeem-logs-list .admin-redeem-line:nth-child(4) {
+    margin: 8px 0;
+    padding: 8px 10px;
+  }
+
+  .admin-redeem-logs-list .admin-redeem-line:last-child {
+    font-size: 9px;
+  }
+}
